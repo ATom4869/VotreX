@@ -27,7 +27,7 @@ const BurnModal: React.FC<Props> = ({ isOpen, onClose, onBurn }) => {
 
   return (
     <div className="modal-container">
-      <div className="modal-content">
+      <div className="bg-base-100 modal-content">
         <h2 className="text-theme">Burn Tokens</h2>
         <form onSubmit={handleBurn}>
           <label className="text-theme">

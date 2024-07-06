@@ -30,7 +30,7 @@ const MintModal: React.FC<Props> = ({ isOpen, onClose, onMint }) => {
 
   return (
     <div className="modal-container">
-      <div className="modal-content">
+      <div className="bg-base-100 modal-content">
         <h2 className="text-theme">Mint Tokens</h2>
         <form onSubmit={handleMint}>
           <label className="text-theme">

@@ -31,7 +31,7 @@ const ContractStorageModal: React.FC<Props> = ({
       <button className="close-button" onClick={onClose}>
         <FontAwesomeIcon icon={faCircleXmark} />
       </button>
-      <div className="Contract-modal-content">
+      <div className="bg-base-100 Contract-modal-content">
         <div className="scrollable-content">
           <div className="Authorized-container">
             <h2>Authorized</h2>
