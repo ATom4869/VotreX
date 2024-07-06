@@ -1,28 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import UnAuthorizedPage from "../votreXTokenAdmin/components/UnAuthorizedPage";
-import { DebugContracts } from "./_components/DebugContracts";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import ButtonB from "./loginPage/component/ButtonB";
 import type { NextPage } from "next";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
+import ButtonA from "~~/components/ButtonA";
+import MaintenancePage from "~~/components/MaintenancePage";
 
-// import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
-
-const Debug: NextPage = () => {
+const VotreXSysDashboard: NextPage = () => {
   const { data: walletClient } = useWalletClient();
-
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_ADMIN_ADDRESS;
+  const VOTER_ADDRESS = process.env.NEXT_PUBLIC_VOTER_ADDRESS;
 
   useEffect(() => {
     const checkAdminAddress = async () => {
       setIsLoading(true);
       try {
         const currentAddress = await walletClient?.account.address;
-        if (currentAddress?.toLowerCase() === ADMIN_ADDRESS?.toLowerCase()) {
+        if (currentAddress?.toLowerCase() === ADMIN_ADDRESS?.toLowerCase() || VOTER_ADDRESS?.toLowerCase()) {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
@@ -49,29 +49,27 @@ const Debug: NextPage = () => {
   }
 
   if (!isAdmin) {
-    return (
-      <div>
-        <UnAuthorizedPage />
-        <ToastContainer />
-      </div>
-    );
+    <ToastContainer />;
+    return <MaintenancePage />;
   }
-  return (
-    <>
-      <DebugContracts />
 
-      <div className="text-center mt-8 bg-secondary p-10">
-        <h1 className="text-4xl my-0">Debug Contracts</h1>
-        <p className="text-neutral">
-          You can debug & interact with your deployed contracts here.
-          <br /> Check{" "}
-          <code className="italic bg-base-300 text-base font-bold [word-spacing:-0.5rem] px-1">
-            packages / nextjs / app / debug / page.tsx
-          </code>{" "}
-        </p>
+  return (
+    <div className="container container-sm justify-center">
+      <h1>VotreXSysDashboard</h1>
+      <br />
+      <ButtonB linkDest="votreXSystem/loginPage" buttonLabel="Login" />
+      <br className="divider divider-secondary" />
+      <div className="button-component row">
+        <Link href="votreXSystem/voter/registerPage" className="link">
+          <ButtonA buttonLabel="Register as Voter" />
+        </Link>
+        <br />
+        <Link href="votreXSystem/electionAdmin/registerPage" className="link">
+          <ButtonA buttonLabel="Register as Admin" />
+        </Link>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Debug;
+export default VotreXSysDashboard;
