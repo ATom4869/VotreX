@@ -39,6 +39,8 @@ const deployVotreXToken: DeployFunction = async function (hre: HardhatRuntimeEnv
   const VotreXTokenAddress = await VotreXToken.getAddress();
   console.log("VotreX Token Address: ", VotreXTokenAddress);
   console.log(" ");
+  const chainId = await hre.getChainId();
+  console.log("current chain id: ", chainId);
 };
 
 export default deployVotreXToken;
