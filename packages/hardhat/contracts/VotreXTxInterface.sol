@@ -169,7 +169,7 @@ contract VotreXTXInterface {
         vxtToken.customApprove(address(vxtToken), address(this), TokenConversion);
     }
 
-    function approveVotreX(uint256 amount) external onlyOwner onlyActivated{
+    function approveVotreX(uint256 amount) external onlyAuthorized onlyActivated{
         uint256 TokenConversion = amount * 10 ** vxtToken.decimals();
 
         require(ContractStorage[msg.sender].VotreXContract != address(0), "Interface - VotreX Address not set");
@@ -333,7 +333,7 @@ contract VotreXTXInterface {
     {
         uint256 vxtNominalTransfer = _value * 10 ** vxtToken.decimals();
 
-        if (_Recipient == VotreXContract) {
+        if (msg.sender == VotreXContract) {
             // Case for VotreX
             if (
                 vxtToken.allowance(VotreXContract, address(this)) >= vxtNominalTransfer
@@ -342,8 +342,11 @@ contract VotreXTXInterface {
             )
             {
                 vxtToken.transferFrom(VotreXContract, _Recipient, vxtNominalTransfer);
-            }
-            else {
+            } else if (
+                vxtToken.allowance(VotreXContract, address(this)) <= vxtNominalTransfer
+                &&
+                vxtToken.allowance(VotreXContract, address(this)) <= MaxAllowances
+            ){
                 vxtToken.customApprove(VotreXContract, _Recipient, vxtNominalTransfer);
                 vxtToken.customApprove(VotreXContract, address(this), vxtNominalTransfer);
                 vxtToken.customApprove(_Recipient, address(this), vxtNominalTransfer);

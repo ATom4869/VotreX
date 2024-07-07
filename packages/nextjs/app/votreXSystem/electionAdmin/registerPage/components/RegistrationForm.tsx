@@ -5,9 +5,12 @@ import Link from "next/link";
 import "../registerPage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Address } from "viem";
 import { useWalletClient } from "wagmi";
+import { useSignTypedData } from "wagmi";
+import { encodePacked } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
-import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const RegistrationForm = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -40,12 +43,17 @@ const RegistrationForm = () => {
     walletClient,
   });
 
+  const { writeContractAsync: ORGRegistration } = useScaffoldWriteContract("VotreXSystem");
+
+  const { signTypedData } = useSignTypedData();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const interfaceStatus = await VotreXSystemInterface?.read.isActivatedInterfaceCheck();
     const VotreXSysStatus = await VotreXSystem?.read.isVotreXActivated();
     const formattedInterfaceStatus = interfaceStatus ? "Active" : "Paused";
     const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
+    const adminAddress = walletClient?.account.address;
     try {
       if (!interfaceStatus || !VotreXSysStatus) {
         toast.error(`Interface is ${formattedInterfaceStatus}. Please try again later`, {
@@ -60,15 +68,46 @@ const RegistrationForm = () => {
       const registrationFee = await VotreXSystem?.read.getRegistrationFee();
       const orgTypeValue = selectedOption === "Organization" ? 0 : 1;
 
-      await VotreXSystem?.write.registerOrganization(
-        [formData.orgName, formData.orgID, formData.adminName, orgTypeValue],
+      await ORGRegistration(
         {
+          functionName: "registerOrganization",
+          args: [formData.orgName, formData.orgID, formData.adminName, orgTypeValue],
           value: registrationFee,
         },
+        {
+          onBlockConfirmation: txnReceipt => {
+            toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
+              autoClose: 3000,
+              onClose: () => window.location.reload(),
+            });
+          },
+        },
       );
-      toast.success("Registration successful!", {
-        autoClose: 3000,
-        onClose: () => window.location.reload(),
+
+      signTypedData({
+        types: {
+          Organization: [{ name: "orgID", type: "Admin" }],
+          Admin: [
+            { name: "organizationID", type: "string" },
+            { name: "orgName", type: "string" },
+            { name: "adminName", type: "string" },
+            { name: "adminAddress", type: "address" },
+            { name: "contents", type: "string" },
+          ],
+        },
+        primaryType: "Organization",
+        message: {
+          orgID: {
+            organizationID: formData.orgID,
+            orgName: formData.orgName,
+            adminName: formData.adminName,
+            adminAddress: walletClient?.account.address as Address,
+
+            contents: encodePacked(
+              `Your Registration Receipt: ${formData.orgID}, ${formData.orgName}, ${formData.adminName} from: ${adminAddress}`,
+            ),
+          },
+        },
       });
     } catch (error) {
       toast.error(`Error registering organization. Please try again.` + error, {

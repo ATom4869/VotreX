@@ -5,9 +5,12 @@ import Link from "next/link";
 import "../registerPage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useWalletClient } from "wagmi";
+import { Address } from "viem";
+// import { encodePacked } from "web3-utils";
+import { encodePacked } from "viem";
+import { useSignTypedData, useWalletClient } from "wagmi";
 import ButtonA from "~~/components/ButtonA";
-import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -34,6 +37,10 @@ const RegistrationForm = () => {
     walletClient,
   });
 
+  const { writeContractAsync: VoterRegistration } = useScaffoldWriteContract("VotreXSystem");
+
+  const { signTypedData } = useSignTypedData();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -53,9 +60,47 @@ const RegistrationForm = () => {
 
       const registrationFee = await VotreXSystem?.read.getRegistrationFee();
       const voterRegFee = (registrationFee as bigint) / 2n;
+      const voterAddress = walletClient?.account.address;
 
-      await VotreXSystem?.write.registerVoter([formData.voterName, formData.orgID], {
-        value: voterRegFee,
+      await VoterRegistration(
+        {
+          functionName: "registerVoter",
+          args: [formData.voterName, formData.orgID],
+          value: voterRegFee,
+        },
+        {
+          onBlockConfirmation: txnReceipt => {
+            toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
+              autoClose: 3000,
+              onClose: () => window.location.reload(),
+            });
+          },
+        },
+      );
+
+      signTypedData({
+        types: {
+          Organization: [{ name: "orgID", type: "Voter" }],
+          Voter: [
+            { name: "organizationID", type: "string" },
+            { name: "voterName", type: "string" },
+            { name: "voterAddress", type: "address" },
+            { name: "contents", type: "string" },
+          ],
+        },
+        primaryType: "Organization",
+        message: {
+          orgID: {
+            organizationID: formData.orgID,
+            voterName: formData.voterName,
+            voterAddress: voterAddress as Address,
+
+            contents: encodePacked(
+              ["string", "string", "string", "address"],
+              ["Registration Receipt: ", formData.orgID, formData.voterName, voterAddress as Address],
+            ),
+          },
+        },
       });
       toast.success("Registration successful!", {
         autoClose: 3000,
