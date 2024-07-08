@@ -80,8 +80,8 @@ const RegistrationForm = () => {
 
       signTypedData({
         types: {
-          Organization: [{ name: "orgID", type: "Voter" }],
-          Voter: [
+          Organization: [{ name: "orgData", type: "VoterData" }],
+          VoterData: [
             { name: "organizationID", type: "string" },
             { name: "voterName", type: "string" },
             { name: "voterAddress", type: "address" },
@@ -90,7 +90,7 @@ const RegistrationForm = () => {
         },
         primaryType: "Organization",
         message: {
-          orgID: {
+          orgData: {
             organizationID: formData.orgID,
             voterName: formData.voterName,
             voterAddress: voterAddress as Address,

@@ -30,6 +30,7 @@ contract VotreXSystem{
     mapping(bytes32 => ElectionDetail) public electionInfo;
     mapping(string  => ElectionResult) public electionResults;
     mapping(bytes32 => ActiveElectionList) private activeElection;
+    mapping(bytes32 => ArchivedElectionList) private archivedElection;
     mapping(bytes32 => bool) private electionExistanceChecks;
     mapping(bytes16 => bool) private votersIDExists;
     mapping(address => bool) private registeredAdmin;
@@ -49,7 +50,8 @@ contract VotreXSystem{
     struct Organization {
         OrganizationType orgType;
         address electionAdminAddresses;
-        uint256 electionEventCounter;
+        uint256 activeElectionEventCounter;
+        uint256 archivedElectionEventCounter;
         uint256 totalMembers;
         bytes32 orgName;
         string orgID;
@@ -70,6 +72,11 @@ contract VotreXSystem{
     struct ActiveElectionList{
         bytes32 orgID;
         bytes32 activeElectionID;
+    }
+
+    struct ArchivedElectionList{
+        bytes32 orgID;
+        bytes32 archivedElectionID;
     }
 
     struct ElectionResult {
@@ -105,6 +112,7 @@ contract VotreXSystem{
         uint startTime;
         uint endTime;
         string orgID;
+        uint256 totalParticipants;
         CandidateDetail[] candidates;
     }
 
@@ -323,7 +331,7 @@ contract VotreXSystem{
         newOrg.orgName = bytes32(abi.encodePacked(_orgName));
         newOrg.orgType = _orgType;
         newOrg.electionAdminAddresses = msg.sender;
-        newOrg.electionEventCounter = 0;
+        newOrg.activeElectionEventCounter = 0;
         newOrg.totalMembers = 1;
 
         bytes10 UniqueAdminvoterID = bytes10(abi.encodePacked(_orgID, "-", "Admin"));
@@ -465,7 +473,7 @@ contract VotreXSystem{
         );
 
         require(
-            organizationData[_orgID].electionEventCounter < 10,
+            organizationData[_orgID].activeElectionEventCounter < 10,
             "Maximum events reached"
         );
 
@@ -485,7 +493,7 @@ contract VotreXSystem{
         newElection.candidateList = _candidateCount;
         newElection.status = ElectionStatus.Preparation;
         electionExistanceChecks[generatedElectionID] = true;
-        ++organizationData[_orgID].electionEventCounter;
+        ++organizationData[_orgID].activeElectionEventCounter;
     }
 
     function startElection(string memory _userElectionID) external onlyOrgAdmin(_userElectionID){
@@ -564,6 +572,9 @@ contract VotreXSystem{
         removeFromActiveElections(orgIDs);
 
         delete electionInfo[userElectionID];
+        archivedElection[orgIDs].orgID = orgIDs;
+        archivedElection[orgIDs].archivedElectionID = userElectionID;
+        ++organizationData[UtilityLibrary.extractOrgId(_userElectionID)].archivedElectionEventCounter;
     }
 
     function calculateValidElection(string memory _userElectionID)
@@ -667,6 +678,7 @@ contract VotreXSystem{
             voter.participatedElectionEvents,
             string(abi.encodePacked(election.electionName))
         );
+        ++election.totalParticipants;
         TxInterface.VoteTx(msg.sender, VotesAmount);
     }
 
@@ -781,6 +793,26 @@ contract VotreXSystem{
         require(election.status == ElectionStatus.Started, "Election is not in progress");
 
         return election.candidates;
+    }
+
+    function getActiveElectionData(bytes32 _orgID) external view returns (
+        bytes32 orgID,
+        bytes32 activeElectionID
+    ){
+        return(
+            activeElection[_orgID].orgID,
+            activeElection[_orgID].activeElectionID
+        );
+    }
+
+    function getArchivedElectionData(bytes32 _orgID) external view returns (
+        bytes32 orgID,
+        bytes32 activeElectionID
+    ){
+        return(
+            archivedElection[_orgID].orgID,
+            archivedElection[_orgID].archivedElectionID
+        );
     }
 
     function getUserInfo() external view returns (

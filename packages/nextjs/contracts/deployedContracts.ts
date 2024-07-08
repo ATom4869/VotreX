@@ -813,6 +813,11 @@ const deployedContracts = {
               name: "orgID",
               type: "string",
             },
+            {
+              internalType: "uint256",
+              name: "totalParticipants",
+              type: "uint256",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -908,6 +913,54 @@ const deployedContracts = {
               internalType: "string",
               name: "",
               type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_orgID",
+              type: "bytes32",
+            },
+          ],
+          name: "getActiveElectionData",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "orgID",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "activeElectionID",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_orgID",
+              type: "bytes32",
+            },
+          ],
+          name: "getArchivedElectionData",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "orgID",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "activeElectionID",
+              type: "bytes32",
             },
           ],
           stateMutability: "view",
@@ -1176,7 +1229,12 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "electionEventCounter",
+              name: "activeElectionEventCounter",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "archivedElectionEventCounter",
               type: "uint256",
             },
             {
