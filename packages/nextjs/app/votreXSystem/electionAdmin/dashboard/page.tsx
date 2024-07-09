@@ -4,8 +4,12 @@ import React from "react";
 import BasicOrgData from "./components/BasicOrgData";
 import { NextPage } from "next";
 
-const AdminDashboard: NextPage = () => {
-  return <BasicOrgData />;
+const dashboard: NextPage = () => {
+  return (
+    <div className="Basic-Data-ORG">
+      <BasicOrgData />
+    </div>
+  );
 };
 
-export default AdminDashboard;
+export default dashboard;
