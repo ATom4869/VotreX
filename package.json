@@ -44,7 +44,7 @@
     "node": ">=18.17.0"
   },
   "dependencies": {
-    "next": "^14.0.4",
-    "@vercel/blob": "^0.23.4"
+    "@vercel/blob": "^0.23.4",
+    "next": "^14.0.4"
   }
 }

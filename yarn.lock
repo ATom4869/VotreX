@@ -12751,6 +12751,7 @@ __metadata:
     "@vercel/blob": ^0.23.4
     husky: ^8.0.1
     lint-staged: ^13.0.3
+    next: ^14.0.4
   languageName: unknown
   linkType: soft
 
