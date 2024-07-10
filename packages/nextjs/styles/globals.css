@@ -221,7 +221,7 @@ form input {
 .Basic-Data-ORG {
   flex-grow: 1;
   margin-top: -0.5rem;
-  padding: 2.5rem 6.5rem;
-  margin-left: -4.5rem; /* Adjust margin as needed */
+  padding: 4rem 20rem;
+  margin-left: -1.5rem; /* Adjust margin as needed */
   align-items: flex-start;
 }

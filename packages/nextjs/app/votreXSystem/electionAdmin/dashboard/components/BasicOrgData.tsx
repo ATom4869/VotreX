@@ -51,15 +51,17 @@ const BasicOrgData = () => {
         const adminName = hexToAscii((await adminData)?.[6] as string);
         const activeElection = orgData?.[2];
         const archiveElectionData = orgData?.[3];
-        const totalElectionData = BigInt(activeElection as bigint) + BigInt(archiveElectionData as bigint);
-
+        const totalElectionData =
+          activeElection !== undefined && archiveElectionData !== undefined
+            ? BigInt(activeElection) + BigInt(archiveElectionData)
+            : BigInt(0);
         setData({
           orgName: hexToAscii(orgData?.[5] as string),
           orgID: orgData?.[6],
           totalMember: Number(orgData?.[4]),
           adminName: adminName,
           adminAddress: adminAddress,
-          totalElection: totalElectionData,
+          totalElection: totalElectionData.toString(),
           activeElection: Number(orgData?.[2]),
           archiveElection: toNumber(orgData?.[3] as bigint),
         });
@@ -77,8 +79,8 @@ const BasicOrgData = () => {
   return (
     <section className="section-1">
       <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-        <div className="h-[5rem] w-[9.5rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
-          <div className="flex items-center justify-center space-x-2">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="h-[3rem] w-[9.5rem] bg-base-300 rounded-[22px] py-[0.65rem] shadow-lg shadow-base-300 flex items-center justify-center">
             <h3 className="my-0 text-sm">{data.orgName} Dashboard</h3>
           </div>
         </div>
