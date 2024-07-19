@@ -19,7 +19,7 @@ contract VotreXSystem{
     bool private VotreXActivated;
     address private previousVotreXOwnerAddress;
     address private VotreXOwnerAddress;
-    bytes32 public VotreXOwnerName = keccak256(abi.encode("ATom"));
+    bytes32 public VotreXOwnerName = keccak256(abi.encodePacked("ATom"));
     uint256 private organizationsCounter;
     uint256 private VotreXUserCounter;
     uint256 private OrganizationPriceFee = 20 ether;
@@ -29,8 +29,7 @@ contract VotreXSystem{
     mapping(address => Voter) public voters;
     mapping(bytes32 => ElectionDetail) public electionInfo;
     mapping(string  => ElectionResult) public electionResults;
-    mapping(bytes32 => ActiveElectionList) private activeElection;
-    mapping(bytes32 => ArchivedElectionList) private archivedElection;
+    mapping(string  => ElectionStatus) public activeElection;
     mapping(bytes32 => bool) private electionExistanceChecks;
     mapping(bytes16 => bool) private votersIDExists;
     mapping(address => bool) private registeredAdmin;
@@ -55,6 +54,9 @@ contract VotreXSystem{
         uint256 totalMembers;
         bytes32 orgName;
         string orgID;
+        bytes32[] electionIDs;
+        bytes32[] ElectionName;
+        ElectionStatus[] electionStatus;
     }
 
     struct ElectionAdmins {
@@ -67,16 +69,6 @@ contract VotreXSystem{
         bytes32 adminName;
         string RegisteredOrgID1;
         string RegisteredOrgID2;
-    }
-
-    struct ActiveElectionList{
-        bytes32 orgID;
-        bytes32 activeElectionID;
-    }
-
-    struct ArchivedElectionList{
-        bytes32 orgID;
-        bytes32 archivedElectionID;
     }
 
     struct ElectionResult {
@@ -150,7 +142,7 @@ contract VotreXSystem{
 
         require(
             isAdminRegisteredForOrg,
-            "Admin not in this organization"
+            "error:31a"
         );
         _;
     }
@@ -180,7 +172,8 @@ contract VotreXSystem{
 
         require(
             isAdminRegisteredForOrg || isVoterRegisteredForOrg,
-            "You are not an authorized member"
+            // error 31a = Incorrect access control
+            "error:31a"
         );
         _;
     }
@@ -188,7 +181,8 @@ contract VotreXSystem{
     modifier canCreateOrg() {
         require(
             block.number >= admin[msg.sender].nextOrgCreationBlock,
-            "Wait for the next block to create a new org"
+            // error 32 = error Block await for 2nd Admin Org Registration
+            "error:32"
         );
         _;
     }
@@ -196,7 +190,8 @@ contract VotreXSystem{
     modifier onlyVotreXOwner() {
         require(
             msg.sender == VotreXOwnerAddress,
-            "Not the contract owner"
+            // error 31b = errror Owner access
+            "error:31b"
         );
         _;
     }
@@ -204,7 +199,8 @@ contract VotreXSystem{
     modifier onlyWhenActivated() {
         require(
             VotreXActivated == true,
-            "System is not activated"
+            // error 33 = error system still disabled
+            "error:33"
         );
         _;
     }
@@ -213,7 +209,8 @@ contract VotreXSystem{
 
     function buyContract(string memory _YourName) public payable {
         require(VotreXActivated == false);
-        require(msg.value == 12 ether, "Please send 12 Ether");
+        // error 34 = error wrong ether value being sent
+        require(msg.value == 12 ether, "error:34");
 
         previousVotreXOwnerAddress = VotreXOwnerAddress;
         VotreXOwnerAddress = address(0);
@@ -235,10 +232,8 @@ contract VotreXSystem{
 
     function changeSystemState() external onlyVotreXOwner{
         if (VotreXActivated == false) {
-            require(VotreXActivated == false, "Activated!");
             VotreXActivated = true;
         } else if (VotreXActivated == true) {
-            require(VotreXActivated == true, "Paused!");
             VotreXActivated = false;
         }
     }
@@ -267,42 +262,49 @@ contract VotreXSystem{
 
         require(
             msg.value == OrganizationPriceFee,
-            "Please send correct amount"
+            // error 34 = error wrong ether value being sent
+            "error:34"
         );
 
         require(
             organizationsCounter < 32000,
-            "Maximum Organization reached"
+            // error 35 = error limit reached
+            "error:35"
         );
 
         require(
             bytes32(organizationData[_orgID].orgName).length > 0,
-            "Organization name is registered"
+            // error 36a = error incorrect null value
+            "error:36a"
         );
 
         require(
             organizationData[_orgID].electionAdminAddresses == address(0),
-            "Organization ID is registered"
+            // error 36a = error incorrect null value
+            "error:36a"
         );
 
         require(
             UtilityLibrary.onlyAlphanumericCharacters(_orgID),
-            "Org ID should be alphanumeric"
+            // error36b = Only Alpha Numeric character allowed
+            "error:36b"
         );
 
         require(
             bytes(_orgName).length > 0,
-            "Please fill Organization Name"
+            // error 36a = error incorrect null value
+            "error:36a"
         );
 
         require(
             bytes(_orgName).length < 32,
-            "Org name can't exceed 32"
+            // error 36c = error character length limit
+
+            "error:36c"
         );
 
         require(
-            bytes(_adminName).length > 1,
-            "Admin name can't be empty"
+            bytes(_adminName).length > 1
         );
 
         require(
@@ -323,7 +325,7 @@ contract VotreXSystem{
             keccak256(abi.encodePacked(admin[msg.sender].RegisteredOrgID2))
             !=
             keccak256(abi.encodePacked(_orgID)),
-            "Admin is registered in organization"
+            "Admin is registered"
         );
 
         Organization storage newOrg = organizationData[_orgID];
@@ -364,7 +366,8 @@ contract VotreXSystem{
 
     function registerVoter(
         string memory _voterName,
-        string memory _orgID
+        string memory _orgID,
+        bytes32 uniqueVoterID
     )
         external
         payable
@@ -376,9 +379,9 @@ contract VotreXSystem{
 
         Voter storage voter = voters[msg.sender];
         uint8 VXTAmount = 5;
-        string memory uniqueVoterID = generateUniqueVoterID(_orgID);
+        // string memory uniqueVoterID = generateUniqueVoterID(_orgID);
         bytes16 VoterID16 = bytes16(abi.encodePacked(uniqueVoterID));
-        bytes32 orgIDs = keccak256(abi.encodePacked(_orgID));
+        // bytes32 orgIDs = keccak256(abi.encodePacked(_orgID));
 
         require(
             organizationData[_orgID].totalMembers < 5000,
@@ -392,7 +395,7 @@ contract VotreXSystem{
 
         require(
             bytes(_voterName).length < 24,
-            "Voter name over than 24 characters"
+            "Voter name limit is 24 characters"
         );
 
         require(
@@ -409,13 +412,12 @@ contract VotreXSystem{
         );
 
         require(
-            !ElectionActiveCheck(orgIDs),
+            !ElectionActiveCheck(_orgID),
             "Election in progress!"
         );
 
         require(
-            bytes(uniqueVoterID).length > 0,
-            "Failed to generate unique Voter ID"
+            bytes16(uniqueVoterID).length > 0
         );
 
         if (bytes(voter.RegisteredOrgID1).length == 0) {
@@ -432,6 +434,7 @@ contract VotreXSystem{
         voter.isRegistered = true;
         votersIDExists[VoterID16] = true;
         ++VotreXUserCounter;
+        ++organizationData[_orgID].totalMembers;
 
         TxInterface.VotreXTx(msg.sender, VXTAmount);
     }
@@ -447,13 +450,13 @@ contract VotreXSystem{
         onlyOrgAdmin(_orgID)
     {
         require(
-            bytes(organizationData[_orgID].orgID).length > 0,
-            "Org ID not found"
+            bytes(organizationData[_orgID].orgID).length > 0
         );
 
         require(
             bytes(_userElectionID).length > 1,
-            "ID can't be empty"
+            // error 36a = error incorrect null value
+            "error 36a"
         
         );
 
@@ -463,8 +466,7 @@ contract VotreXSystem{
         );
 
         require(
-            bytes(_electionName).length > 1,
-            "Please fill name"
+            bytes(_electionName).length > 1
         );
 
         require(
@@ -493,14 +495,17 @@ contract VotreXSystem{
         newElection.candidateList = _candidateCount;
         newElection.status = ElectionStatus.Preparation;
         electionExistanceChecks[generatedElectionID] = true;
-        ++organizationData[_orgID].activeElectionEventCounter;
+        organizationData[_orgID].electionIDs.push(generatedElectionID);
+        organizationData[_orgID].ElectionName.push(bytes32(abi.encodePacked(_electionName)));
+        organizationData[_orgID].electionStatus.push(ElectionStatus.Preparation);
     }
 
     function startElection(string memory _userElectionID) external onlyOrgAdmin(_userElectionID){
-        require(bytes(_userElectionID).length > 0, "Election ID can't be empty");
+        // error 36a = error incorrect null value
+        require(bytes(_userElectionID).length > 0, "error:36a");
 
         bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
-        bytes32 orgIDs = keccak256(abi.encodePacked(UtilityLibrary.extractOrgId(_userElectionID)));
+        string memory orgIDs = UtilityLibrary.extractOrgId(_userElectionID);
 
         ElectionDetail storage election = electionInfo[userElectionID];
         require(bytes16(election.electionID).length > 0, "Election ID does not exist");
@@ -509,18 +514,30 @@ contract VotreXSystem{
 
         election.startTime = 5 + block.timestamp;
         election.status = ElectionStatus.Started;
-        activeElection[orgIDs].orgID = orgIDs;
-        activeElection[orgIDs].activeElectionID = userElectionID;
+        ++organizationData[orgIDs].activeElectionEventCounter;
+        uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, userElectionID);
+        // require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
+        organizationData[orgIDs].electionStatus[index] = ElectionStatus.Started; // or whichever status you're setting
+    
+    }
+
+    function findElectionIndex(bytes32[] storage array, bytes32 electionID) internal view returns (uint256) {
+        for (uint256 i = 0; i < array.length; i++) {
+            if (array[i] == electionID) {
+                return i;
+            }
+        }
+        revert("Election ID not found");
     }
 
     function finishElection(string memory _userElectionID)
         external
         onlyOrgAdmin(_userElectionID)
     {
-        bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
-        ElectionDetail storage elections = electionInfo[userElectionID];
+        bytes32 packedElectionID = bytes32(abi.encodePacked(_userElectionID));
+        ElectionDetail storage elections = electionInfo[packedElectionID];
         string memory orgName = string(abi.encodePacked(organizationData[elections.orgID].orgName));
-        bytes32 orgIDs = keccak256(abi.encodePacked(UtilityLibrary.extractOrgId(_userElectionID)));
+        string memory orgIDs = UtilityLibrary.extractOrgId(_userElectionID);
         string memory adminName = getAdminName(msg.sender);
         string memory electionName = string(abi.encodePacked(elections.electionName));
         string memory electionWinner = determineWinner(_userElectionID);
@@ -538,8 +555,9 @@ contract VotreXSystem{
         );
 
         require(
-            bytes32(electionInfo[userElectionID].electionID).length > 0,
-            "Election ID does not exist"
+            bytes32(electionInfo[packedElectionID].electionID).length > 0,
+            // error 36a = error incorrect null value
+            "error:36a"
         );
 
         require(!elections.isFinished, "Election finished");
@@ -571,9 +589,10 @@ contract VotreXSystem{
         newelectionResult.signedBy = adminName;
         removeFromActiveElections(orgIDs);
 
-        delete electionInfo[userElectionID];
-        archivedElection[orgIDs].orgID = orgIDs;
-        archivedElection[orgIDs].archivedElectionID = userElectionID;
+        delete electionInfo[packedElectionID];
+        uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, packedElectionID);
+        // require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
+        organizationData[orgIDs].electionStatus[index] = ElectionStatus.Finished;
         ++organizationData[UtilityLibrary.extractOrgId(_userElectionID)].archivedElectionEventCounter;
     }
 
@@ -605,6 +624,15 @@ contract VotreXSystem{
         return VotreXUserCounter;
     }
 
+    function getElectionListInOrg(string memory orgID)
+        public
+        view
+        returns (bytes32[] memory, bytes32[] memory, ElectionStatus[] memory)
+    {
+        Organization storage org = organizationData[orgID];
+        return (org.electionIDs, org.ElectionName, org.electionStatus);
+    }
+
     function getAdminName(address adminAddress) private view returns (string memory) {
         return string(abi.encodePacked(admin[adminAddress].adminName));
     }
@@ -623,7 +651,8 @@ contract VotreXSystem{
 
         require(
             bytes32(electionInfo[userElectionID].electionID).length > 0,
-            "Election ID does not exist"
+            // error 36a = error incorrect null value
+            "error:36a"
         );
 
         require(
@@ -656,7 +685,8 @@ contract VotreXSystem{
 
     function vote(
         string memory _userElectionID,
-        uint8 candidateID, uint256 VotesAmount
+        uint8 candidateID,
+        uint256 VotesAmount
     )
         external
         onlyWhenActivated
@@ -707,7 +737,6 @@ contract VotreXSystem{
         external
         view
         returns(
-            bool success,
             string memory candidateName,
             uint8 candidateID,
             uint256 voteCount
@@ -728,7 +757,6 @@ contract VotreXSystem{
                 keccak256(abi.encodePacked(_candidateName))
             ) {
                 return (
-                    true,
                     election.candidates[i].candidateName,
                     election.candidates[i].candidateID,
                     election.candidates[i].candidateVoteCount
@@ -736,7 +764,7 @@ contract VotreXSystem{
             }
         }
 
-        return (false,'', 0, 0);
+        return ('', 0, 0);
 
     }
 
@@ -747,25 +775,27 @@ contract VotreXSystem{
             bytes32 electionID,
             string memory electionName,
             uint256 totalCandidates,
+            uint8[] memory candidateIDs, // Added
             string[] memory candidateNames,
-            uint[] memory voteCounts
+            uint256[] memory voteCounts
         )
     {
         bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
 
         ElectionDetail storage election = electionInfo[userElectionID];
         require(
-            bytes32(election.electionID).length > 0,
-            "Election ID does not exist"
+            bytes32(election.electionID).length > 0
         );
 
         electionID = election.electionID;
-        electionName = string(abi.encodePacked (election.electionName));
+        electionName = string(abi.encodePacked(election.electionName));
         totalCandidates = election.candidates.length;
+        candidateIDs = new uint8[](totalCandidates); // Initialized
         candidateNames = new string[](totalCandidates);
-        voteCounts = new uint[](totalCandidates);
+        voteCounts = new uint256[](totalCandidates);
 
         for (uint256 i = 0; i < totalCandidates; ++i) {
+            candidateIDs[i] = election.candidates[i].candidateID; // Added
             candidateNames[i] = election.candidates[i].candidateName;
             voteCounts[i] = election.candidates[i].candidateVoteCount;
         }
@@ -774,9 +804,12 @@ contract VotreXSystem{
             electionID,
             electionName,
             totalCandidates,
-            candidateNames, voteCounts
+            candidateIDs,
+            candidateNames,
+            voteCounts
         );
     }
+
 
     function getCurrentVoteResult(string memory _userElectionID)
         external
@@ -788,31 +821,11 @@ contract VotreXSystem{
         bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
         ElectionDetail storage election = electionInfo[userElectionID];
 
-        require(bytes(_userElectionID).length > 0, "Election ID can't be empty");
+        require(bytes(_userElectionID).length > 0);
 
         require(election.status == ElectionStatus.Started, "Election is not in progress");
 
         return election.candidates;
-    }
-
-    function getActiveElectionData(bytes32 _orgID) external view returns (
-        bytes32 orgID,
-        bytes32 activeElectionID
-    ){
-        return(
-            activeElection[_orgID].orgID,
-            activeElection[_orgID].activeElectionID
-        );
-    }
-
-    function getArchivedElectionData(bytes32 _orgID) external view returns (
-        bytes32 orgID,
-        bytes32 activeElectionID
-    ){
-        return(
-            archivedElection[_orgID].orgID,
-            archivedElection[_orgID].archivedElectionID
-        );
     }
 
     function getUserInfo() external view returns (
@@ -879,13 +892,13 @@ contract VotreXSystem{
         }
     }
 
-    function ElectionActiveCheck(bytes32 _orgID) private view returns (bool) {
+    function ElectionActiveCheck(string memory _orgID) private view returns (bool) {
 
-        return activeElection[_orgID].activeElectionID != 0;
+        return activeElection[_orgID] == ElectionStatus.Started;
 
     }
 
-    function removeFromActiveElections(bytes32 _orgID) private {
+    function removeFromActiveElections(string memory _orgID) private {
         delete activeElection[_orgID];
     }
 
@@ -938,12 +951,12 @@ contract VotreXSystem{
         return winner;
     }
     
-    function generateUniqueVoterID(string memory _orgID) public view returns (string memory) {
-        uint256 CurrentID = organizationData[_orgID].totalMembers;
-        uint256 nextID = ++CurrentID;
+    // function generateUniqueVoterID(string memory _orgID) public view returns (string memory) {
+    //     uint256 CurrentID = organizationData[_orgID].totalMembers;
+    //     uint256 nextID = ++CurrentID;
 
-        return string(abi.encodePacked(_orgID, "-", UtilityLibrary.uint2str(nextID)));
-    }
+    //     return string(abi.encodePacked(_orgID, "-", UtilityLibrary.uint2str(nextID)));
+    // }
 
     function getOrgIDHash(string memory _orgID) external pure returns (bytes32) {
         bytes32 orgIDHash = keccak256(abi.encodePacked(_orgID));

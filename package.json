@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@vercel/blob": "^0.23.4",
+    "mongodb": "latest",
     "next": "^14.0.4"
   }
 }

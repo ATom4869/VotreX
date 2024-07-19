@@ -7,8 +7,7 @@ import type { NextPage } from "next";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
-
-// import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 const Debug: NextPage = () => {
   const { data: walletClient } = useWalletClient();
@@ -16,13 +15,14 @@ const Debug: NextPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_ADMIN_ADDRESS;
+  const VOTER_ADDRESS = process.env.NEXT_PUBLIC_VOTER_ADDRESS;
 
   useEffect(() => {
     const checkAdminAddress = async () => {
       setIsLoading(true);
       try {
         const currentAddress = await walletClient?.account.address;
-        if (currentAddress?.toLowerCase() === ADMIN_ADDRESS?.toLowerCase()) {
+        if (currentAddress?.toLowerCase() === ADMIN_ADDRESS?.toLowerCase() || currentAddress === VOTER_ADDRESS) {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);

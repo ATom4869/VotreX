@@ -5,12 +5,11 @@ import Link from "next/link";
 import "../registerPage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Address } from "viem";
-// import { encodePacked } from "web3-utils";
-import { encodePacked } from "viem";
+import { Address, Hex } from "viem";
 import { useSignTypedData, useWalletClient } from "wagmi";
+import { asciiToHex, encodePacked, padRight } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
-import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -37,6 +36,12 @@ const RegistrationForm = () => {
     walletClient,
   });
 
+  const { data: organizationDataFetches } = useScaffoldReadContract({
+    contractName: "VotreXSystem",
+    functionName: "organizationData",
+    args: [formData.orgID],
+  });
+
   const { writeContractAsync: VoterRegistration } = useScaffoldWriteContract("VotreXSystem");
 
   const { signTypedData } = useSignTypedData();
@@ -61,11 +66,16 @@ const RegistrationForm = () => {
       const registrationFee = await VotreXSystem?.read.getRegistrationFee();
       const voterRegFee = (registrationFee as bigint) / 2n;
       const voterAddress = walletClient?.account.address;
+      let currentMemberNumber = Number(organizationDataFetches?.[4] as bigint);
+
+      // Generate uniqueVoterID and pad it to 32 bytes
+      const uniqueVoterIDRaw = encodePacked((formData.orgID as string) + "-" + ++currentMemberNumber);
+      const uniqueVoterID = padRight(asciiToHex(uniqueVoterIDRaw), 64);
 
       await VoterRegistration(
         {
           functionName: "registerVoter",
-          args: [formData.voterName, formData.orgID],
+          args: [formData.voterName, formData.orgID, uniqueVoterID as Hex],
           value: voterRegFee,
         },
         {
@@ -94,10 +104,11 @@ const RegistrationForm = () => {
             organizationID: formData.orgID,
             voterName: formData.voterName,
             voterAddress: voterAddress as Address,
-
             contents: encodePacked(
-              ["string", "string", "string", "address"],
-              ["Registration Receipt: ", formData.orgID, formData.voterName, voterAddress as Address],
+              `Registration Receipt:,
+              ${formData.orgID},
+              ${formData.voterName},
+              ${voterAddress as Address} from : ${voterAddress}`,
             ),
           },
         },

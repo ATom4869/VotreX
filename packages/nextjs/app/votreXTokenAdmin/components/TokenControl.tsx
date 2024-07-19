@@ -158,7 +158,7 @@ const TokenControl = () => {
         await InterfaceContract?.write.setVotreXSys([votreXAddress as Address]);
         toast.success("VotreX System Contract Address set successfully", {
           autoClose: 3000,
-          onClose: () => window.location.reload(),
+          onOpen: () => setVotreXAddress(""),
         });
       }
       if (!Interfacestatus && !TokenStatus) {
@@ -201,7 +201,8 @@ const TokenControl = () => {
         await InterfaceContract?.write.balanceTx([accountDestination, balanceTransferAmountBigInt]);
         toast.success(`Success transfered ${balanceTransferAmountBigInt} VOX to ${accountDestination}`, {
           autoClose: 3000,
-          onClose: () => window.location.reload(),
+          onOpen: () => setBalanceTransferAmount(""),
+          onClose: () => setDestinationAddress(""),
         });
       }
       if (accountDestination === OwnerAddress) {
@@ -277,6 +278,7 @@ const TokenControl = () => {
         await VotreXTokenContract?.write.setInterface([interfaceContract as Address]);
         toast.success("Interface Contract Address set successfully", {
           autoClose: 3000,
+          onOpen: () => setInterfaceContract(""),
         });
       } else {
         toast.error("Token Status is still " + formattedTokenStatus + " Please Pause first", {
@@ -460,9 +462,9 @@ const TokenControl = () => {
       await InterfaceContract?.write.approveTxInterface([approvalValuesinNumber]);
       toast.success(`Approved ${approvalValuesinNumber.toString()} tokens for Interface successfully`, {
         autoClose: 3000,
-        onClose: () => window.location.reload(),
+        onOpen: () => setInterfaceApprovalValue(""),
       });
-      setInterfaceApprovalValue(interfaceApprovalValue);
+      // setInterfaceApprovalValue(interfaceApprovalValue);
     } catch (error) {
       toast.error("Error Approval tokens", {
         autoClose: 3000,

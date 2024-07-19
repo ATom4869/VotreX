@@ -642,6 +642,25 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "activeElection",
+          outputs: [
+            {
+              internalType: "enum VotreXSystem.ElectionStatus",
+              name: "",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
               name: "_userElectionID",
               type: "string",
             },
@@ -903,73 +922,6 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "_orgID",
-              type: "string",
-            },
-          ],
-          name: "generateUniqueVoterID",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "_orgID",
-              type: "bytes32",
-            },
-          ],
-          name: "getActiveElectionData",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "orgID",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes32",
-              name: "activeElectionID",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "_orgID",
-              type: "bytes32",
-            },
-          ],
-          name: "getArchivedElectionData",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "orgID",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes32",
-              name: "activeElectionID",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
               name: "_userElectionID",
               type: "string",
             },
@@ -981,11 +933,6 @@ const deployedContracts = {
           ],
           name: "getCandidateDetail",
           outputs: [
-            {
-              internalType: "bool",
-              name: "success",
-              type: "bool",
-            },
             {
               internalType: "string",
               name: "candidateName",
@@ -1036,6 +983,35 @@ const deployedContracts = {
               internalType: "struct VotreXSystem.CandidateDetail[]",
               name: "",
               type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "orgID",
+              type: "string",
+            },
+          ],
+          name: "getElectionListInOrg",
+          outputs: [
+            {
+              internalType: "bytes32[]",
+              name: "",
+              type: "bytes32[]",
+            },
+            {
+              internalType: "bytes32[]",
+              name: "",
+              type: "bytes32[]",
+            },
+            {
+              internalType: "enum VotreXSystem.ElectionStatus[]",
+              name: "",
+              type: "uint8[]",
             },
           ],
           stateMutability: "view",
@@ -1181,6 +1157,11 @@ const deployedContracts = {
               type: "uint256",
             },
             {
+              internalType: "uint8[]",
+              name: "candidateIDs",
+              type: "uint8[]",
+            },
+            {
               internalType: "string[]",
               name: "candidateNames",
               type: "string[]",
@@ -1295,6 +1276,11 @@ const deployedContracts = {
               internalType: "string",
               name: "_orgID",
               type: "string",
+            },
+            {
+              internalType: "bytes32",
+              name: "uniqueVoterID",
+              type: "bytes32",
             },
           ],
           name: "registerVoter",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -61,16 +61,37 @@ export const HeaderMenuLinks = () => {
  */
 export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [orgID, setOrgID] = useState<string | null>(null);
+  const pathname = usePathname();
   const burgerMenuRef = useRef<HTMLDivElement>(null);
   useOutsideClick(
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
 
+  useEffect(() => {
+    console.log("Current pathname:", pathname); // Debugging line
+    // Fetch OrgID from local storage
+    const storedOrgID = localStorage.getItem("orgID");
+    console.log("Stored OrgID:", storedOrgID); // Debugging line
+    if (
+      pathname.startsWith("/votreXSystem/electionAdmin/dashboard") ||
+      pathname.startsWith("/votreXSystem/voter/dashboard")
+    ) {
+      if (storedOrgID) {
+        setOrgID(storedOrgID);
+      } else {
+        setOrgID(null);
+      }
+    } else {
+      setOrgID(null);
+    }
+  }, [pathname]);
+
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
       <div className="navbar-start w-auto lg:w-1/2">
-        <div className="dropdown" ref={burgerMenuRef}>
+        <div className="dropdown dropdown-start" ref={burgerMenuRef}>
           <label
             tabIndex={0}
             className={`ml-1 btn btn-ghost ${isDrawerOpen ? "hover:bg-secondary" : "hover:bg-transparent"}`}
@@ -105,6 +126,13 @@ export const Header = () => {
           <HeaderMenuLinks />
         </ul> */}
       </div>
+      {/* Conditionally render "OrgID Dashboard" */}
+      {(pathname.startsWith("/votreXSystem/electionAdmin/dashboard") ||
+        pathname.startsWith("/votreXSystem/voter/dashboard")) && (
+        <div className="text-center p-3 flex bg-base-300 rounded-3xl border border-base-200 items-center">
+          <h2 className="text-sm font-bold truncate">{orgID ? `${orgID} Dashboard` : "Loading..."}</h2>
+        </div>
+      )}
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
         <FaucetButton />

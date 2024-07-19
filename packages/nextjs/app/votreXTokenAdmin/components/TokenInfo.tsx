@@ -158,7 +158,7 @@ const TokenInfo = () => {
   const copyToClipboard = async (address: string) => {
     try {
       await navigator.clipboard.writeText(address);
-      setCopySuccess("Copied!");
+      setCopySuccess("✅");
       setTimeout(() => setCopySuccess(""), 2000);
     } catch (err) {
       setCopySuccess("Failed to copy!");
@@ -178,7 +178,7 @@ const TokenInfo = () => {
                   className="ml-2 p-1 text-accent rounded"
                   onClick={() => copyToClipboard(tokenAddrData as string)}
                 >
-                  <FontAwesomeIcon icon={faCopy} />
+                  <FontAwesomeIcon icon={faCopy} size="sm" />
                 </button>
               )}
             </div>

@@ -78,7 +78,11 @@ const RegistrationForm = () => {
           onBlockConfirmation: txnReceipt => {
             toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
               autoClose: 3000,
-              onClose: () => window.location.reload(),
+              onClose: () => {
+                setTimeout(() => {
+                  window.location.href = "/votreXSystem";
+                }, 300); // Short delay to ensure toast is closed
+              },
             });
           },
         },
@@ -104,7 +108,10 @@ const RegistrationForm = () => {
             adminAddress: walletClient?.account.address as Address,
 
             contents: encodePacked(
-              `Your Registration Receipt: ${formData.orgID}, ${formData.orgName}, ${formData.adminName} from: ${adminAddress}`,
+              `Your Registration Receipt:
+              ${formData.orgID},
+              ${formData.orgName},
+              ${formData.adminName} from: ${adminAddress}`,
             ),
           },
         },
