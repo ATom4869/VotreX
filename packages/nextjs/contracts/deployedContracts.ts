@@ -956,42 +956,6 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "_userElectionID",
-              type: "string",
-            },
-          ],
-          name: "getCurrentVoteResult",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "uint8",
-                  name: "candidateID",
-                  type: "uint8",
-                },
-                {
-                  internalType: "uint256",
-                  name: "candidateVoteCount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "string",
-                  name: "candidateName",
-                  type: "string",
-                },
-              ],
-              internalType: "struct VotreXSystem.CandidateDetail[]",
-              name: "",
-              type: "tuple[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
               name: "orgID",
               type: "string",
             },
@@ -1170,6 +1134,11 @@ const deployedContracts = {
               internalType: "uint256[]",
               name: "voteCounts",
               type: "uint256[]",
+            },
+            {
+              internalType: "enum VotreXSystem.ElectionStatus",
+              name: "statusElection",
+              type: "uint8",
             },
           ],
           stateMutability: "view",

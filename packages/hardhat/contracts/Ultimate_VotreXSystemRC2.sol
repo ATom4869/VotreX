@@ -702,7 +702,7 @@ contract VotreXSystem{
         require(election.status == ElectionStatus.Started, "Election is not in progress");
         require(!hasParticipatedInElection(msg.sender, electionName), "You already voted in this election");
 
-        ++election.candidates[candidateID].candidateVoteCount;
+        // ++election.candidates[candidateID].candidateVoteCount;
         election.candidates[candidateID].candidateVoteCount += VotesAmount;
         voter.participatedElectionEvents = UtilityLibrary.appendToStringArray(
             voter.participatedElectionEvents,
@@ -777,7 +777,8 @@ contract VotreXSystem{
             uint256 totalCandidates,
             uint8[] memory candidateIDs, // Added
             string[] memory candidateNames,
-            uint256[] memory voteCounts
+            uint256[] memory voteCounts,
+            ElectionStatus statusElection
         )
     {
         bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
@@ -793,6 +794,7 @@ contract VotreXSystem{
         candidateIDs = new uint8[](totalCandidates); // Initialized
         candidateNames = new string[](totalCandidates);
         voteCounts = new uint256[](totalCandidates);
+        statusElection = electionInfo[userElectionID].status;
 
         for (uint256 i = 0; i < totalCandidates; ++i) {
             candidateIDs[i] = election.candidates[i].candidateID; // Added
@@ -806,27 +808,28 @@ contract VotreXSystem{
             totalCandidates,
             candidateIDs,
             candidateNames,
-            voteCounts
+            voteCounts,
+            statusElection
         );
     }
 
 
-    function getCurrentVoteResult(string memory _userElectionID)
-        external
-        view
-        returns (
-            CandidateDetail[] memory
-        )
-    {
-        bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
-        ElectionDetail storage election = electionInfo[userElectionID];
+    // function getCurrentVoteResult(string memory _userElectionID)
+    //     external
+    //     view
+    //     returns (
+    //         CandidateDetail[] memory
+    //     )
+    // {
+    //     bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
+    //     ElectionDetail storage election = electionInfo[userElectionID];
 
-        require(bytes(_userElectionID).length > 0);
+    //     require(bytes(_userElectionID).length > 0);
 
-        require(election.status == ElectionStatus.Started, "Election is not in progress");
+    //     require(election.status == ElectionStatus.Started, "Election is not in progress");
 
-        return election.candidates;
-    }
+    //     return election.candidates;
+    // }
 
     function getUserInfo() external view returns (
         bool isRegistered,

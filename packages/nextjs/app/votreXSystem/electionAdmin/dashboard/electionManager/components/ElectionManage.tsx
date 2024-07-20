@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii } from "web3-utils";
-import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface Election {
   electionID: string;
@@ -15,12 +16,13 @@ interface ElectionDetails {
   electionID: string;
   electionName: string;
   totalCandidates: number;
-  candidateIDs: number[];
+  candidateIDs: bigint[];
   candidateNames: string[];
   voteCounts: number[];
+  electionStatus: string;
 }
 
-const OnPrepElection = () => {
+const ElectionManage = () => {
   const { data: walletClient } = useWalletClient();
   const [orgID, setOrgID] = useState<string | null>(null);
   const [data, setData] = useState<Election[]>([]);
@@ -28,7 +30,9 @@ const OnPrepElection = () => {
   const [selectedElection, setSelectedElection] = useState<ElectionDetails | null>(null);
   const [showAddCandidate, setShowAddCandidate] = useState(false);
   const [candidateName, setCandidateName] = useState("");
+  const [voxTokenValue, setVoxTokenValue] = useState<bigint>(BigInt(0));
   const [error, setError] = useState<string | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<bigint | null>(null);
   const adminAddress = walletClient?.account.address;
 
   useEffect(() => {
@@ -53,6 +57,8 @@ const OnPrepElection = () => {
     functionName: "getelectionInfo",
     args: [orgID as string],
   });
+
+  const { writeContractAsync: doVote } = useScaffoldWriteContract("VotreXSystem");
 
   const hexToAscii = (hex: string): string => {
     const ascii = originalHexToAscii(hex);
@@ -81,7 +87,6 @@ const OnPrepElection = () => {
         const electionNames = ElectionList[1];
         const electionStatuses = ElectionList[2];
 
-        // Convert byte32 arrays to human-readable strings
         const elections = electionIDs.map((idHex: string, index: number) => {
           const electionID = hexToAscii(idHex);
           const electionName = hexToAscii(electionNames[index]);
@@ -148,9 +153,10 @@ const OnPrepElection = () => {
           electionID: hexToAscii(electionData[0]),
           electionName: electionData[1].replace(/\0/g, "").trim(),
           totalCandidates: Number(electionData[2]),
-          candidateIDs: electionData[3].map((id: any) => Number(id)), // Convert to number
+          candidateIDs: electionData[3].map((id: any) => BigInt(id)),
           candidateNames: [...electionData[4]],
           voteCounts: electionData[5].map((count: any) => Number(count)),
+          electionStatus: getStatusString(electionData[6]),
         };
         setSelectedElection(electionDetails);
       }
@@ -172,8 +178,40 @@ const OnPrepElection = () => {
       // Optionally refresh the election data or show a success message
       setCandidateName("");
       setShowAddCandidate(false);
+      toast.success(`Added ${candidateName} as new candidate`);
     } catch (error) {
       console.error("Error adding candidate:", error);
+    }
+  };
+
+  const handleVoteClick = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedElection || selectedCandidate === null || !voxTokenValue) return;
+
+    try {
+      await doVote(
+        {
+          functionName: "vote",
+          args: [selectedElection.electionID, Number(selectedCandidate), BigInt(voxTokenValue)],
+        },
+        {
+          onBlockConfirmation: txnReceipt => {
+            toast.success(`Success Voting: ${txnReceipt.blockHash} - ${txnReceipt.cumulativeGasUsed}`, {
+              autoClose: 3000,
+              onClose: () => {
+                setTimeout(() => {
+                  window.location.href = "/votreXSystem/electionAdmin/dashboard";
+                }, 300);
+              },
+            });
+          },
+        },
+      );
+      // Optionally refresh the election data or show a success message
+      setSelectedCandidate(null);
+      setVoxTokenValue(BigInt(0));
+    } catch (error) {
+      console.error("Error voting for candidate:", error);
     }
   };
 
@@ -201,70 +239,105 @@ const OnPrepElection = () => {
           </thead>
           <tbody>
             {data.map((election, index) => (
-              <tr key={index}>
+              <tr key={index} onClick={() => handleManageClick(election.electionID)}>
                 <td className="py-2 px-4 border-b text-center">{election.electionID}</td>
                 <td className="py-2 px-4 border-b text-center">{election.electionName}</td>
                 <td className="py-2 px-4 border-b text-center">{election.electionStatus}</td>
                 <td className="py-2 px-4 border-b text-center">
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={() => handleButtonClick(election.electionID, election.electionStatus)}
-                  >
-                    {getButtonText(election.electionStatus)}
-                  </button>
-
-                  <button className="btn btn-sm btn-secondary" onClick={() => handleManageClick(election.electionID)}>
-                    Manage
-                  </button>
+                  {election.electionStatus !== "Finished" && (
+                    <button
+                      className="btn btn-primary btn-xs"
+                      onClick={() => handleButtonClick(election.electionID, election.electionStatus)}
+                    >
+                      {getButtonText(election.electionStatus)}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {/* Display selected election details */}
-        {selectedElection && (
-          <div className="mt-6 p-4 bg-base-200 rounded-lg shadow-md">
-            <h3 className="text-lg font-bold">Election Details</h3>
-            <p>
-              <strong>ID:</strong> {selectedElection.electionID}
-            </p>
-            <p>
-              <strong>Name:</strong> {selectedElection.electionName}
-            </p>
-            <p>
-              <strong>Total Candidates:</strong> {selectedElection.totalCandidates}
-              <button className="btn btn-sm btn-secondary ml-2" onClick={handleAddCandidateClick}>
-                Add Candidate
-              </button>
-            </p>
-            {showAddCandidate && (
-              <form onSubmit={handleAddCandidateSubmit} className="mt-4">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium">Candidate Name</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    value={candidateName}
-                    onChange={e => setCandidateName(e.target.value)}
-                    required
-                  />
-                </div>
-                <button type="submit" className="btn btn-sm btn-primary">
-                  Submit
-                </button>
-              </form>
-            )}
 
-            <div className="mt-4">
-              <h4 className="text-md font-bold">Candidates</h4>
-              <ul>
+        {selectedElection && (
+          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-6 mx-auto w-3/4">
+            <h3 className="text-center text-xl font-bold mb-4">{selectedElection.electionName}</h3>
+            <p className="text-center text-xl font-regular mb-4">
+              Total Candidates: {selectedElection.totalCandidates}
+            </p>
+            <h3 className="text-center text-lg font-medium">Candidate List</h3>
+            <div className="flex justify-center">
+              <ul className="text-left mb-4">
                 {selectedElection.candidateNames.map((name, index) => (
-                  <li key={index}>
-                    {name} (Votes: {selectedElection.voteCounts[index]})
+                  <li key={index} className="mb-2">
+                    <div>
+                      <span className="font-bold mr-2">No: {index + 1}</span> {/* Candidate ID */}
+                      <span className="mr-4">{name}</span>
+                      <span className="text-left">Votes: {selectedElection.voteCounts[index]}</span> {/* Vote Count */}
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
+
+            {selectedElection.electionStatus === "On Preparation" && (
+              <div className="text-center">
+                <button className="btn btn-secondary text-center mt-3" onClick={handleAddCandidateClick}>
+                  {showAddCandidate ? "Hide Add Candidate Form" : "Add Candidate"}
+                </button>
+                {showAddCandidate && (
+                  <form onSubmit={handleAddCandidateSubmit} className="mt-3 justify-center">
+                    <input
+                      type="text"
+                      placeholder="Candidate Name"
+                      value={candidateName}
+                      onChange={e => setCandidateName(e.target.value)}
+                      className="input input-bordered input-sm w-full max-w-xs"
+                    />
+                    <button type="submit" className="btn btn-primary btn-sm mt-2">
+                      Add Candidate
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+
+            {selectedElection.electionStatus === "Ongoing" && (
+              <form onSubmit={handleVoteClick} className="mt-3">
+                <div>
+                  <hr />
+                  <label className="block text-center font-medium mb-1">Candidates:</label>
+                  {selectedElection.candidateNames.map((name, index) => (
+                    <label key={index} className="block mr-3 items-center text-center justify-content">
+                      <input
+                        type="radio"
+                        name="candidate"
+                        value={selectedElection.candidateIDs[index].toString()}
+                        checked={selectedCandidate === selectedElection.candidateIDs[index]}
+                        onChange={() => setSelectedCandidate(selectedElection.candidateIDs[index])}
+                        className="radio radio-secondary mt-4"
+                      />
+                      {name}
+                    </label>
+                  ))}
+                </div>
+                <div className="mt-3 text-center">
+                  <label className="block font-medium mb-1">Vox Token Value:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={voxTokenValue.toString()}
+                    onChange={e => setVoxTokenValue(BigInt(e.target.value))}
+                    className="input input-bordered input-sm w-full max-w-xs"
+                  />
+                </div>
+                <div className="flex justify-center mt-3">
+                  <button type="submit" className="btn btn-primary btn-sm">
+                    Vote Now
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         )}
       </div>
@@ -272,4 +345,4 @@ const OnPrepElection = () => {
   );
 };
 
-export default OnPrepElection;
+export default ElectionManage;

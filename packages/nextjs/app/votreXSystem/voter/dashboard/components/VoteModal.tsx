@@ -111,6 +111,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                   type="radio"
                   id={`candidate-${candidate.candidateID}`}
                   name="candidate"
+                  className="radio radio-secondary"
                   value={candidate.candidateID}
                   onChange={() => setSelectedCandidate(candidate.candidateID)}
                 />
@@ -130,7 +131,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
             id="votes"
             value={votesAmount.toString()}
             onChange={e => setVotesAmount(BigInt(e.target.value))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-center"
+            className="input input-secondary input-bordered input-sm w-full max-w-xs"
             min="1"
             max="5"
           />
