@@ -82,7 +82,7 @@ const RegistrationForm = () => {
           onBlockConfirmation: txnReceipt => {
             toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
               autoClose: 3000,
-              onClose: () => window.location.reload(),
+              onClose: () => (window.location.href = "/votreXSystem"),
             });
           },
         },
@@ -113,14 +113,10 @@ const RegistrationForm = () => {
           },
         },
       });
-      toast.success("Registration successful!", {
-        autoClose: 3000,
-        onClose: () => window.location.reload(),
-      });
     } catch (error) {
-      toast.error("Error registering as voter. Please try again." + error, {
-        autoClose: 3000,
-      });
+      // toast.error("Error registering as voter. Please try again." + error, {
+      //   autoClose: 3000,
+      // });
     }
   };
 

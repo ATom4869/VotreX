@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useWalletClient } from "wagmi";
+import { useBlockNumber, useWalletClient } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface Props {
@@ -35,23 +35,32 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
     }));
   };
 
+  const { data, error } = useBlockNumber();
   const handleCreateElection = async (event: React.FormEvent) => {
     event.preventDefault();
-    await createElection(
-      {
-        functionName: "createElection",
-        args: [orgID as string, formData.electionID, formData.electionName, formData.candidateCounts as number],
-      },
-      {
-        onBlockConfirmation: txnReceipt => {
-          toast.success(`Success creating election, Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
-            autoClose: 3000,
-            onClose: () => window.location.reload(),
-          });
+    try {
+      await createElection(
+        {
+          functionName: "createElection",
+          args: [orgID as string, formData.electionID, formData.electionName, formData.candidateCounts as number],
         },
-      },
-    );
-    onCreate();
+        {
+          onBlockConfirmation: txnReceipt => {
+            toast.success(
+              `Success creating election, Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed,
+              {
+                autoClose: 3000,
+                onClose: () => window.location.reload(),
+              },
+            );
+          },
+          // onError: error => {
+          //   toast.error(`Can't create electiion: ${error?.cause}`);
+          // },
+        },
+      );
+      onCreate();
+    } catch (e) {}
   };
 
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -94,20 +103,27 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
               />
             </label>
             <br />
+
             <label className="space-y-2">
               Candidate Counts:
               <input
                 id="candidateCounts"
                 name="candidateCounts"
-                className="input form-control input-bordered"
-                type="number"
-                min="0"
+                type="range"
+                min={1}
                 max="5"
-                style={{ color: "black" }}
                 value={formData.candidateCounts}
+                className="range"
+                step="1"
                 onChange={handleInputChange}
-                required
               />
+              <div className="flex w-full justify-between px-2 text-xs">
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
+              </div>
             </label>
             <br />
           </div>

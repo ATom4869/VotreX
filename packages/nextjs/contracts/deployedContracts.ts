@@ -1179,12 +1179,17 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "activeElectionEventCounter",
+              name: "onPreparationElectionCounter",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "archivedElectionEventCounter",
+              name: "activeElectionCounter",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "archivedElectionCounter",
               type: "uint256",
             },
             {

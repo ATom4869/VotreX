@@ -34,7 +34,6 @@ const BasicOrgData = () => {
 
   const hexToAscii = (hex: string): string => {
     const ascii = originalHexToAscii(hex);
-
     return ascii.replace(/\0/g, "").trim();
   };
 
@@ -44,26 +43,25 @@ const BasicOrgData = () => {
         const orgData = orgDataFetch;
         const adminData = VotreXContract?.read.admin([adminAddress as Address]);
         const adminName = hexToAscii((await adminData)?.[6] as string);
-        const activeElection = orgData?.[2];
-        const archiveElectionData = orgData?.[3];
+        const onPrepElection = orgData?.[2];
+        const activeElection = orgData?.[3];
+        const archiveElectionData = orgData?.[4];
         const totalElectionData =
           activeElection !== undefined && archiveElectionData !== undefined
-            ? BigInt(activeElection) + BigInt(archiveElectionData)
+            ? BigInt(onPrepElection as bigint) + BigInt(activeElection) + BigInt(archiveElectionData)
             : BigInt(0);
         setData({
-          orgName: hexToAscii(orgData?.[5] as string),
-          orgID: orgData?.[6],
-          totalMember: Number(orgData?.[4]),
+          orgName: hexToAscii(orgData?.[6] as string),
+          orgID: orgData?.[7],
+          totalMember: Number(orgData?.[5]),
           adminName: adminName,
           adminAddress: adminAddress,
-          totalElection: totalElectionData.toString(),
-          activeElection: Number(orgData?.[2]),
-          archiveElection: toNumber(orgData?.[3] as bigint),
+          totalElection: toNumber(totalElectionData as bigint),
+          onPrepElection: toNumber(orgData?.[2] as bigint),
+          activeElection: toNumber(orgData?.[3] as bigint),
+          archiveElection: toNumber(orgData?.[4] as bigint),
         });
-        console.log(("Admin Name is: " + data.adminName) as string);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      } catch (error) {}
     };
 
     if (orgID && adminAddress) {
@@ -139,7 +137,7 @@ const BasicOrgData = () => {
             Total Elections: <br /> {data.totalElection}
           </p>
           <p className="title-md">
-            On Prep Elections: {data.activeElection}
+            On Prep Elections: {data.onPrepElection}
             <br />
           </p>
           <p className="title-md">

@@ -70,10 +70,8 @@ export const Header = () => {
   );
 
   useEffect(() => {
-    console.log("Current pathname:", pathname); // Debugging line
     // Fetch OrgID from local storage
     const storedOrgID = localStorage.getItem("orgID");
-    console.log("Stored OrgID:", storedOrgID); // Debugging line
     if (
       pathname.startsWith("/votreXSystem/electionAdmin/dashboard") ||
       pathname.startsWith("/votreXSystem/voter/dashboard")

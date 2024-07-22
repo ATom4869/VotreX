@@ -49,8 +49,9 @@ contract VotreXSystem{
     struct Organization {
         OrganizationType orgType;
         address electionAdminAddresses;
-        uint256 activeElectionEventCounter;
-        uint256 archivedElectionEventCounter;
+        uint256 onPreparationElectionCounter;
+        uint256 activeElectionCounter;
+        uint256 archivedElectionCounter;
         uint256 totalMembers;
         bytes32 orgName;
         string orgID;
@@ -333,7 +334,7 @@ contract VotreXSystem{
         newOrg.orgName = bytes32(abi.encodePacked(_orgName));
         newOrg.orgType = _orgType;
         newOrg.electionAdminAddresses = msg.sender;
-        newOrg.activeElectionEventCounter = 0;
+        newOrg.activeElectionCounter = 0;
         newOrg.totalMembers = 1;
 
         bytes10 UniqueAdminvoterID = bytes10(abi.encodePacked(_orgID, "-", "Admin"));
@@ -420,6 +421,11 @@ contract VotreXSystem{
             bytes16(uniqueVoterID).length > 0
         );
 
+        require(
+            bytes(organizationData[_orgID].orgID).length != 0,
+            "Organization does not exist"
+        );
+
         if (bytes(voter.RegisteredOrgID1).length == 0) {
             voter.RegisteredOrgID1 = _orgID;
             voter.VoterIDOrg1 = VoterID16;
@@ -475,7 +481,7 @@ contract VotreXSystem{
         );
 
         require(
-            organizationData[_orgID].activeElectionEventCounter < 10,
+            organizationData[_orgID].activeElectionCounter < 10,
             "Maximum events reached"
         );
 
@@ -498,6 +504,7 @@ contract VotreXSystem{
         organizationData[_orgID].electionIDs.push(generatedElectionID);
         organizationData[_orgID].ElectionName.push(bytes32(abi.encodePacked(_electionName)));
         organizationData[_orgID].electionStatus.push(ElectionStatus.Preparation);
+        ++organizationData[_orgID].onPreparationElectionCounter;
     }
 
     function startElection(string memory _userElectionID) external onlyOrgAdmin(_userElectionID){
@@ -514,11 +521,11 @@ contract VotreXSystem{
 
         election.startTime = 5 + block.timestamp;
         election.status = ElectionStatus.Started;
-        ++organizationData[orgIDs].activeElectionEventCounter;
+        ++organizationData[orgIDs].activeElectionCounter;
+        --organizationData[orgIDs].onPreparationElectionCounter;
         uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, userElectionID);
-        // require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
+        require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
         organizationData[orgIDs].electionStatus[index] = ElectionStatus.Started; // or whichever status you're setting
-    
     }
 
     function findElectionIndex(bytes32[] storage array, bytes32 electionID) internal view returns (uint256) {
@@ -593,7 +600,8 @@ contract VotreXSystem{
         uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, packedElectionID);
         // require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
         organizationData[orgIDs].electionStatus[index] = ElectionStatus.Finished;
-        ++organizationData[UtilityLibrary.extractOrgId(_userElectionID)].archivedElectionEventCounter;
+        ++organizationData[UtilityLibrary.extractOrgId(_userElectionID)].archivedElectionCounter;
+        --organizationData[orgIDs].activeElectionCounter;
     }
 
     function calculateValidElection(string memory _userElectionID)

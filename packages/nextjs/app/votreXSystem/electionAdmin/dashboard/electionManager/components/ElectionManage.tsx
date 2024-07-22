@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -52,13 +53,7 @@ const ElectionManage = () => {
     args: [orgID as string],
   });
 
-  const { data: ElectionData } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
-    functionName: "getelectionInfo",
-    args: [orgID as string],
-  });
-
-  const { writeContractAsync: doVote } = useScaffoldWriteContract("VotreXSystem");
+  const { writeContractAsync: VOXCommand } = useScaffoldWriteContract("VotreXSystem");
 
   const hexToAscii = (hex: string): string => {
     const ascii = originalHexToAscii(hex);
@@ -119,29 +114,59 @@ const ElectionManage = () => {
     return status === "On Preparation" ? "Start Election" : "Finish Election";
   };
 
-  const handleButtonClick = async (electionID: string, status: string) => {
-    if (!electionID) {
-      console.error("Invalid Election ID");
-      return;
-    }
-
+  const handleButtonClick = async (e: React.MouseEvent, electionID: string, status: string) => {
+    e.stopPropagation();
     try {
       if (status === "On Preparation") {
-        // Call the smart contract method to start the election
-        await VotreXContract?.write.startElection([electionID]);
+        try {
+          await VOXCommand(
+            {
+              functionName: "startElection",
+              args: [electionID as string],
+            },
+            {
+              onBlockConfirmation: txnReceipt => {
+                toast.success(`Success Voting: ${txnReceipt.blockHash} - Gas Used: ${txnReceipt.cumulativeGasUsed}`, {
+                  autoClose: 3000,
+                  onClose: () => {
+                    window.location.reload();
+                  },
+                });
+              },
+            },
+          );
+        } catch (error) {
+          console.error("Error voting for candidate:", error);
+        }
       } else if (status === "Ongoing") {
-        // Call the smart contract method to finish the election
-        await VotreXContract?.write.finishElection([electionID]);
+        try {
+          await VOXCommand(
+            {
+              functionName: "finishElection",
+              args: [electionID as string],
+            },
+            {
+              onBlockConfirmation: txnReceipt => {
+                toast.success(`Success Voting: ${txnReceipt.blockHash} - ${txnReceipt.cumulativeGasUsed}`, {
+                  autoClose: 3000,
+                  onClose: () => {
+                    window.location.reload();
+                  },
+                });
+              },
+            },
+          );
+        } catch (error) {
+          console.error("Error voting for candidate:", error);
+        }
       }
-
-      // Reload the page to refresh data
-      window.location.reload();
     } catch (error) {
       console.error("Error interacting with smart contract:", error);
     }
   };
 
-  const handleManageClick = async (electionID: string) => {
+  const handleManageClick = async (e: React.MouseEvent, electionID: string) => {
+    e.stopPropagation();
     if (selectedElection?.electionID === electionID) {
       setSelectedElection(null);
       return;
@@ -178,7 +203,12 @@ const ElectionManage = () => {
       // Optionally refresh the election data or show a success message
       setCandidateName("");
       setShowAddCandidate(false);
-      toast.success(`Added ${candidateName} as new candidate`);
+      toast.success(`Added ${candidateName} as new candidate`, {
+        autoClose: 3000,
+        onClose: () => {
+          window.location.reload();
+        },
+      });
     } catch (error) {
       console.error("Error adding candidate:", error);
     }
@@ -189,19 +219,17 @@ const ElectionManage = () => {
     if (!selectedElection || selectedCandidate === null || !voxTokenValue) return;
 
     try {
-      await doVote(
+      await VOXCommand(
         {
           functionName: "vote",
           args: [selectedElection.electionID, Number(selectedCandidate), BigInt(voxTokenValue)],
         },
         {
           onBlockConfirmation: txnReceipt => {
-            toast.success(`Success Voting: ${txnReceipt.blockHash} - ${txnReceipt.cumulativeGasUsed}`, {
+            toast.success(`Success Voting: ${txnReceipt.blockHash} - Gas Used: ${txnReceipt.cumulativeGasUsed}`, {
               autoClose: 3000,
               onClose: () => {
-                setTimeout(() => {
-                  window.location.href = "/votreXSystem/electionAdmin/dashboard";
-                }, 300);
+                window.location.reload;
               },
             });
           },
@@ -220,6 +248,7 @@ const ElectionManage = () => {
 
   return (
     <section className="section-3 m-4">
+      <ToastContainer />
       <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative p-12">
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="h-[3rem] w-[9.5rem] bg-base-300 rounded-[22px] py-[0.65rem] shadow-lg shadow-base-300 flex items-center justify-center">
@@ -237,17 +266,17 @@ const ElectionManage = () => {
               <th className="py-2 px-4 bg-base-200 rounded-tr-xl">Control</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="cursor-pointer">
             {data.map((election, index) => (
-              <tr key={index} onClick={() => handleManageClick(election.electionID)}>
+              <tr key={index} onClick={e => handleManageClick(e, election.electionID)}>
                 <td className="py-2 px-4 border-b text-center">{election.electionID}</td>
                 <td className="py-2 px-4 border-b text-center">{election.electionName}</td>
                 <td className="py-2 px-4 border-b text-center">{election.electionStatus}</td>
                 <td className="py-2 px-4 border-b text-center">
                   {election.electionStatus !== "Finished" && (
                     <button
-                      className="btn btn-primary btn-xs"
-                      onClick={() => handleButtonClick(election.electionID, election.electionStatus)}
+                      className="btn btn-primary btn-sm"
+                      onClick={e => handleButtonClick(e, election.electionID, election.electionStatus)}
                     >
                       {getButtonText(election.electionStatus)}
                     </button>
@@ -259,8 +288,10 @@ const ElectionManage = () => {
         </table>
 
         {selectedElection && (
-          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-6 mx-auto w-3/4">
-            <h3 className="text-center text-xl font-bold mb-4">{selectedElection.electionName}</h3>
+          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-1/2">
+            <h3 className="text-center text-xl font-bold mb-4">
+              {selectedElection.electionName} - {selectedElection.electionID}
+            </h3>
             <p className="text-center text-xl font-regular mb-4">
               Total Candidates: {selectedElection.totalCandidates}
             </p>
@@ -306,30 +337,48 @@ const ElectionManage = () => {
                 <div>
                   <hr />
                   <label className="block text-center font-medium mb-1">Candidates:</label>
-                  {selectedElection.candidateNames.map((name, index) => (
-                    <label key={index} className="block mr-3 items-center text-center justify-content">
-                      <input
-                        type="radio"
-                        name="candidate"
-                        value={selectedElection.candidateIDs[index].toString()}
-                        checked={selectedCandidate === selectedElection.candidateIDs[index]}
-                        onChange={() => setSelectedCandidate(selectedElection.candidateIDs[index])}
-                        className="radio radio-secondary mt-4"
-                      />
-                      {name}
-                    </label>
-                  ))}
+                  <div className="space-y-2">
+                    {" "}
+                    {selectedElection.candidateNames.map((name, index) => (
+                      <label
+                        key={index}
+                        className="flex items-center space-x-2 justify-center m-3"
+                        style={{ lineHeight: "1.5rem" }}
+                      >
+                        <input
+                          type="radio"
+                          name="candidate"
+                          value={selectedElection.candidateIDs[index].toString()}
+                          checked={selectedCandidate === selectedElection.candidateIDs[index]}
+                          onChange={() => setSelectedCandidate(selectedElection.candidateIDs[index])}
+                          className="radio radio-secondary"
+                          style={{ marginTop: "2px" }} // Adjust margin if needed
+                        />
+                        <span className="ml-2">{name}</span> {/* Ensure spacing between radio and label */}
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div className="mt-3 text-center">
-                  <label className="block font-medium mb-1">Vox Token Value:</label>
+                  <label className="block font-medium mb-1">Vote Value:</label>
                   <input
-                    type="number"
-                    min="1"
+                    id="voteCounts"
+                    name="voteCounts"
+                    type="range"
+                    min={1}
                     max="5"
                     value={voxTokenValue.toString()}
+                    className="range w-2/3 mx-auto"
+                    step="1"
                     onChange={e => setVoxTokenValue(BigInt(e.target.value))}
-                    className="input input-bordered input-sm w-full max-w-xs"
                   />
+                  <div className="flex w-2/3 mx-auto justify-between px-2 text-xs">
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                  </div>
                 </div>
                 <div className="flex justify-center mt-3">
                   <button type="submit" className="btn btn-primary btn-sm">

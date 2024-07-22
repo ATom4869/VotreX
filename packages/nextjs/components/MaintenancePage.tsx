@@ -7,7 +7,6 @@ const UnAuthorizedPage = () => {
       <div style={{ width: "480px", margin: "0 auto" }}>
         <iframe
           allow="fullscreen"
-          frameBorder="0"
           height="271px"
           className="giphy-embed"
           src="https://giphy.com/embed/Sk3KytuxDQJQ4"

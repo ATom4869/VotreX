@@ -28,7 +28,6 @@ const VotreXSysDashboard: NextPage = () => {
           setIsAdmin(false);
         }
       } catch (error) {
-        console.error("Error detecting wallet address:", error);
         toast.error("Error detecting wallet address", {
           autoClose: 3000,
         });

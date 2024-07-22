@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useBlockNumber } from "wagmi";
+import { TxReceipt } from "~~/app/debug/_components/contract";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface Candidate {
@@ -26,6 +29,8 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
     functionName: "getelectionInfo",
     args: [electionID],
   });
+
+  const { data, error } = useBlockNumber();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,21 +82,16 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
         },
         {
           onBlockConfirmation: txnReceipt => {
-            toast.success(`Success Voting: ${txnReceipt.blockHash} - ${txnReceipt.cumulativeGasUsed}`, {
+            toast.success(`Success Voting: ${txnReceipt.blockHash} - Gas Used: ${txnReceipt.cumulativeGasUsed}`, {
               autoClose: 3000,
               onClose: () => {
-                setTimeout(() => {
-                  window.location.href = "/votreXSystem";
-                }, 300);
+                window.location.reload();
               },
             });
           },
         },
       );
-    } catch (error) {
-      toast.error("Failed to cast vote.");
-      console.error("Vote error:", error);
-    }
+    } catch (e) {}
   };
 
   if (!isOpen) return null;
@@ -126,15 +126,26 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
           <label htmlFor="votes" className="block text-sm font-medium">
             Number of Votes
           </label>
+
           <input
-            type="number"
-            id="votes"
-            value={votesAmount.toString()}
-            onChange={e => setVotesAmount(BigInt(e.target.value))}
-            className="input input-secondary input-bordered input-sm w-full max-w-xs"
-            min="1"
+            id="voteCounts"
+            name="voteCounts"
+            type="range"
+            min={1}
+            defaultValue={3}
             max="5"
+            value={votesAmount.toString()}
+            className="range w-full mx-auto"
+            step="1"
+            onChange={e => setVotesAmount(BigInt(e.target.value))}
           />
+          <div className="flex w-full mx-auto justify-between px-2 text-xs">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+          </div>
         </div>
         <div className="mt-4 flex justify-end">
           <button onClick={onClose} className="btn btn-secondary mr-2">

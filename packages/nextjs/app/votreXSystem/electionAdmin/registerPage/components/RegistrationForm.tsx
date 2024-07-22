@@ -6,7 +6,7 @@ import "../registerPage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Address } from "viem";
-import { useWalletClient } from "wagmi";
+import { useBlockNumber, useWalletClient } from "wagmi";
 import { useSignTypedData } from "wagmi";
 import { encodePacked } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
@@ -31,6 +31,8 @@ const RegistrationForm = () => {
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(event.target.value);
   };
+
+  const { data, error } = useBlockNumber();
 
   const { data: walletClient } = useWalletClient();
   const { data: VotreXSystem } = useScaffoldContract({
@@ -79,11 +81,12 @@ const RegistrationForm = () => {
             toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
               autoClose: 3000,
               onClose: () => {
-                setTimeout(() => {
-                  window.location.href = "/votreXSystem";
-                }, 300); // Short delay to ensure toast is closed
+                window.location.href = "/votreXSystem";
               },
             });
+          },
+          onError: error => {
+            toast.error(`Can't do registration: ${error?.cause}`);
           },
         },
       );
@@ -117,9 +120,9 @@ const RegistrationForm = () => {
         },
       });
     } catch (error) {
-      toast.error(`Error registering organization. Please try again.` + error, {
-        autoClose: 3000,
-      });
+      // toast.error(`Error registering organization. Please try again.` + error, {
+      //   autoClose: 3000,
+      // });
     }
   };
 
@@ -171,32 +174,35 @@ const RegistrationForm = () => {
       <div id="orgType" className="space-y-2">
         <span className="text-sm font-medium text-accent-700">Organization Type</span>
         <hr />
-        <div className=" join">
-          <label className="btn btn-secondary myRadButton join-item">
+        <div className="join">
+          <label className="btn btn-bg-300 cursor-pointer join-item flex items-center space-x-2">
             <input
-              className="join-item"
+              className="radio radio-accent join-item"
               type="radio"
               value="Organization"
               aria-label="Radio 1"
               checked={selectedOption === "Organization"}
               onChange={handleOptionChange}
               required
+              style={{ margin: 0 }}
             />
-            <span className="ml-2">Organization</span>
+            <span className="flex items-center ml-2">Organization</span>
           </label>
-          <label className="btn btn-secondary myRadButton join-item">
+          <label className="btn btn-bg-300 cursor-pointer join-item flex items-center space-x-2">
+            <span className="flex items-center mr-2">Corporate</span>
             <input
-              className="join-item"
+              className="radio radio-accent join-item"
               type="radio"
               value="Corporate"
               checked={selectedOption === "Corporate"}
               onChange={handleOptionChange}
               required
+              style={{ margin: 0 }}
             />
-            <span className="ml-2">Corporate</span>
           </label>
         </div>
       </div>
+
       <p>
         Not an admin? Register as Voter{" "}
         <Link href="/votreXSystem/voter/registerPage" style={{ color: "blue" }}>

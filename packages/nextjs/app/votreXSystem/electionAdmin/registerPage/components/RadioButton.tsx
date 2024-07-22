@@ -17,6 +17,7 @@ const RadioButton = () => {
       <label className="btn btn-secondary">
         <input
           type="radio"
+          className="radio radio-secondary"
           value="Organization"
           checked={selectedOption === "Organization"}
           onChange={handleOptionChange}
@@ -24,7 +25,13 @@ const RadioButton = () => {
         Organization
       </label>
       <label className="btn btn-secondary">
-        <input type="radio" value="Corporate" checked={selectedOption === "Corporate"} onChange={handleOptionChange} />
+        <input
+          type="radio"
+          className="radio radio-secondary"
+          value="Corporate"
+          checked={selectedOption === "Corporate"}
+          onChange={handleOptionChange}
+        />
         Corporate
       </label>
     </form>
