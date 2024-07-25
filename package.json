@@ -42,9 +42,5 @@
   },
   "engines": {
     "node": ">=18.17.0"
-  },
-  "dependencies": {
-    "@vercel/blob": "^0.23.4",
-    "next": "^14.0.4"
   }
 }
