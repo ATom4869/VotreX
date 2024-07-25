@@ -78,11 +78,13 @@ contract VotreXSystem{
         uint startTime; 
         uint endTime;
         uint totalVoter;
+        bytes32 electionID;
         bytes32 electionName;
         bytes32 digitalSignature;
         string registeredOrganization;
         string electionWinner;
         string signedBy;
+        CandidateDetail[] candidates;
     }
     
     struct Voter{
@@ -515,7 +517,7 @@ contract VotreXSystem{
         string memory orgIDs = UtilityLibrary.extractOrgId(_userElectionID);
 
         ElectionDetail storage election = electionInfo[userElectionID];
-        require(bytes16(election.electionID).length > 0, "Election ID does not exist");
+        require(bytes16(election.electionID).length > 0, "Invalid election ID");
         require(election.status == ElectionStatus.Preparation, "Election is not in preparation");
         require(election.candidateList == election.candidates.length, "Candidate Not full");
 
@@ -563,7 +565,6 @@ contract VotreXSystem{
 
         require(
             bytes32(electionInfo[packedElectionID].electionID).length > 0,
-            // error 36a = error incorrect null value
             "error:36a"
         );
 
@@ -579,7 +580,7 @@ contract VotreXSystem{
             "need 50% total member to finish"
         );
 
-        elections.endTime = 5+block.timestamp;
+        elections.endTime = 5 + block.timestamp;
         elections.status = ElectionStatus.Finished;
         elections.isFinished = true;
 
@@ -591,18 +592,31 @@ contract VotreXSystem{
         newelectionResult.endTime = elections.endTime;
         newelectionResult.digitalSignature = dataHash;
         newelectionResult.registeredOrganization = elections.orgID;
+        newelectionResult.electionID = packedElectionID;
         newelectionResult.electionName = elections.electionName;
         newelectionResult.electionWinner = electionWinner;
         newelectionResult.signedBy = adminName;
+
+        for (uint i = 0; i < elections.candidates.length; i++) {
+            CandidateDetail memory candidate = elections.candidates[i];
+            newelectionResult.candidates.push(
+                CandidateDetail({
+                    candidateID: candidate.candidateID,
+                    candidateName: candidate.candidateName,
+                    candidateVoteCount: candidate.candidateVoteCount
+                })
+            );
+        }
+
         removeFromActiveElections(orgIDs);
 
         delete electionInfo[packedElectionID];
         uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, packedElectionID);
-        // require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
         organizationData[orgIDs].electionStatus[index] = ElectionStatus.Finished;
         ++organizationData[UtilityLibrary.extractOrgId(_userElectionID)].archivedElectionCounter;
         --organizationData[orgIDs].activeElectionCounter;
     }
+
 
     function calculateValidElection(string memory _userElectionID)
         private
@@ -738,43 +752,43 @@ contract VotreXSystem{
     //     return organizationsCounter;
     // }
 
-    function getCandidateDetail(
-        string memory _userElectionID,
-        string memory _candidateName
-    )
-        external
-        view
-        returns(
-            string memory candidateName,
-            uint8 candidateID,
-            uint256 voteCount
-        )
-    {
-        require(
-            bytes(_userElectionID).length > 0,
-            "Election ID can't be empty"
-        );
+    // function getCandidateDetail(
+    //     string memory _userElectionID,
+    //     string memory _candidateName
+    // )
+    //     external
+    //     view
+    //     returns(
+    //         string memory candidateName,
+    //         uint8 candidateID,
+    //         uint256 voteCount
+    //     )
+    // {
+    //     require(
+    //         bytes(_userElectionID).length > 0,
+    //         "Election ID can't be empty"
+    //     );
 
-        bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
-        ElectionDetail storage election = electionInfo[userElectionID];
+    //     bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
+    //     ElectionDetail storage election = electionInfo[userElectionID];
 
-        for (uint32 i = 0; i < election.candidates.length; ++i) {
-            if (
-                keccak256(abi.encodePacked(election.candidates[i].candidateName))
-                ==
-                keccak256(abi.encodePacked(_candidateName))
-            ) {
-                return (
-                    election.candidates[i].candidateName,
-                    election.candidates[i].candidateID,
-                    election.candidates[i].candidateVoteCount
-                );
-            }
-        }
+    //     for (uint32 i = 0; i < election.candidates.length; ++i) {
+    //         if (
+    //             keccak256(abi.encodePacked(election.candidates[i].candidateName))
+    //             ==
+    //             keccak256(abi.encodePacked(_candidateName))
+    //         ) {
+    //             return (
+    //                 election.candidates[i].candidateName,
+    //                 election.candidates[i].candidateID,
+    //                 election.candidates[i].candidateVoteCount
+    //             );
+    //         }
+    //     }
 
-        return ('', 0, 0);
+    //     return ('', 0, 0);
 
-    }
+    // }
 
     function getelectionInfo(string memory _userElectionID)
         external
@@ -818,6 +832,35 @@ contract VotreXSystem{
             candidateNames,
             voteCounts,
             statusElection
+        );
+    }
+
+    function getCandidateResult(string memory _electionID) 
+        public 
+        view 
+        returns (
+            uint8[] memory candidateID,
+            string[] memory candidateName,
+            uint256[] memory candidateVoteCount
+        ) 
+    {
+
+        uint totalCandidates = electionResults[_electionID].candidates.length;
+
+        uint8[] memory candidateIDs = new uint8[](totalCandidates);
+        string[] memory candidateNames = new string[](totalCandidates);
+        uint256[] memory candidateVoteCounts = new uint256[](totalCandidates);
+
+        for (uint i = 0; i < totalCandidates; i++) {
+            candidateIDs[i] = electionResults[_electionID].candidates[i].candidateID;
+            candidateNames[i] = electionResults[_electionID].candidates[i].candidateName;
+            candidateVoteCounts[i] = electionResults[_electionID].candidates[i].candidateVoteCount;
+        }
+
+        return (
+            candidateIDs,
+            candidateNames,
+            candidateVoteCounts
         );
     }
 

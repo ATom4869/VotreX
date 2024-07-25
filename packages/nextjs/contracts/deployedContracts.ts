@@ -878,6 +878,11 @@ const deployedContracts = {
             },
             {
               internalType: "bytes32",
+              name: "electionID",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
               name: "electionName",
               type: "bytes32",
             },
@@ -922,31 +927,26 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "_userElectionID",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_candidateName",
+              name: "_electionID",
               type: "string",
             },
           ],
-          name: "getCandidateDetail",
+          name: "getCandidateResult",
           outputs: [
             {
-              internalType: "string",
-              name: "candidateName",
-              type: "string",
-            },
-            {
-              internalType: "uint8",
+              internalType: "uint8[]",
               name: "candidateID",
-              type: "uint8",
+              type: "uint8[]",
             },
             {
-              internalType: "uint256",
-              name: "voteCount",
-              type: "uint256",
+              internalType: "string[]",
+              name: "candidateName",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "candidateVoteCount",
+              type: "uint256[]",
             },
           ],
           stateMutability: "view",
