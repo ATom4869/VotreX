@@ -550,7 +550,6 @@ contract VotreXSystem{
         string memory adminName = getAdminName(msg.sender);
         string memory electionName = string(abi.encodePacked(elections.electionName));
         string memory electionWinner = determineWinner(_userElectionID);
-        uint256 totalVoter = calculateTotalVoter(_userElectionID);
         bytes32 dataHash = bytes32(keccak256(abi.encodePacked(orgName, electionName, adminName)));
 
         require(
@@ -576,7 +575,7 @@ contract VotreXSystem{
         );
 
         require(
-            totalVoter >= calculateValidElection(_userElectionID),
+            elections.totalParticipants >= calculateValidElection(_userElectionID),
             "need 50% total member to finish"
         );
 
@@ -586,7 +585,7 @@ contract VotreXSystem{
 
         ElectionResult storage newelectionResult = electionResults[_userElectionID];
         newelectionResult.isPruned = true;
-        newelectionResult.totalVoter = totalVoter;
+        newelectionResult.totalVoter = elections.totalParticipants;
         newelectionResult.adminAddress = msg.sender;
         newelectionResult.startTime = elections.startTime;
         newelectionResult.endTime = elections.endTime;
@@ -976,18 +975,6 @@ contract VotreXSystem{
         }
 
         return false; 
-    }
-
-    function calculateTotalVoter(string memory _userElectionID) private view returns (uint256) {
-        bytes8 userElectionID = bytes8(abi.encodePacked(_userElectionID));
-        ElectionDetail storage election = electionInfo[userElectionID];
-        uint256 totalVoter = 0;
-
-        for (uint8 i = 0; i < election.candidates.length; ++i) {
-            totalVoter += election.candidates[i].candidateVoteCount;
-        }
-
-        return totalVoter;
     }
 
     function determineWinner(string memory _userElectionID) private view returns (string memory) {

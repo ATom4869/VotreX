@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BarChart, Bar, ResponsiveContainer, Pie, PieChart, Tooltip, Legend, XAxis, YAxis, Cell } from "recharts";
 import { Hex } from "viem";
 import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii } from "web3-utils";
@@ -75,6 +76,8 @@ const ElectionManage = () => {
   });
 
   const { writeContractAsync: VOXCommand } = useScaffoldWriteContract("VotreXSystem");
+
+  const COLORS = ['#C738BD', '#00b900', '#ffc658', '#ff7300', '#d0ed57', '#a4de6c', '#8884d8', '#8dd1e1'];
 
   const hexToAscii = (hex: string): string => {
     const ascii = originalHexToAscii(hex);
@@ -237,6 +240,8 @@ const ElectionManage = () => {
               candidates,
             };
             setElectionResult(electionResult);
+
+
           }
           setSelectedElection(null);
         } else {
@@ -457,39 +462,38 @@ const ElectionManage = () => {
                     Vote Now
                   </button>
                 </div>
+                <ResponsiveContainer width="80%" height={300} className={"mx-auto"}>
+                  <BarChart
+                    data={selectedElection.candidateNames.map((name, index) => ({
+                      name: name,
+                      votes: selectedElection.voteCounts[index],
+                    }))}
+                    margin={{
+                      top: 10,
+                      right: 20,
+                      left: 10,
+                      bottom: 5,
+                    }}
+                  >
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend className="mx-auto" />
+                    <Bar
+                      dataKey="votes"
+                      radius={5}
+                      fill="#AF47D2"
+                      className="flex mx-auto justify-center"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </form>
-            )}
-
-            {electionResult && (
-              <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-1/2">
-                <h3 className="text-center text-xl font-bold mb-4 flex flex-col items-center">
-                  <span>Election Result:</span>
-                  <hr />
-                  <span className="text-lg">{electionResult.electionName} - {electionResult.electionID}</span>
-                </h3>
-                <p className="text-center text-lg font-regular mb-4">Total Voters: {electionResult.totalVoter}</p>
-                <p className="text-center text-lg font-regular mb-4">Winner: {electionResult.electionWinner}</p>
-                <h3 className="text-center text-lg font-medium">Candidates</h3>
-                <div className="flex justify-center">
-                  <ul className="text-left mb-4">
-                    {electionResult.candidates.map((candidate, index) => (
-                      <li key={index} className="mb-2">
-                        <div>
-                          <span className="font-bold mr-2">No: {index + 1}</span>
-                          <span className="mr-4">{candidate.name}</span>
-                          <span className="text-left">Votes: {candidate.voteCount}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
             )}
           </div>
         )}
 
         {electionResult && (
-          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-1/2">
+          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-2/3">
             <h3 className="text-center text-xl font-bold mb-4">
               Election Result: {electionResult.electionName} - {electionResult.electionID}
             </h3>
@@ -509,8 +513,30 @@ const ElectionManage = () => {
                 ))}
               </ul>
             </div>
+            <div className="flex justify-center">
+              <ResponsiveContainer width="70%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={electionResult.candidates.map(candidate => ({
+                      name: candidate.name,
+                      value: candidate.voteCount,
+                    }))}
+                    dataKey="value"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    label
+                  >
+                    {electionResult.candidates.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         )}
+
       </div>
     </section>
   );

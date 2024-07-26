@@ -64,13 +64,16 @@ module.exports = {
           },
           ".text-theme":{
             color: "#161612",
+          },
+          "barColor" : {
+            barColor: '#00b900',
           }
         },
       },
       {
         dark: {
             primary: "#C738BD",                     
-            "primary-content": "#0e010d",                     
+            "primary-content": "#0e010d",
             secondary: "#AF47D2",                     
             "secondary-content": "#F9FBFF",                     
             accent: "#E49BFF",                     
@@ -123,6 +126,9 @@ module.exports = {
           },
           ".text-theme":{
             color: "#e8d2e9",
+          },
+          "barColor" : {
+            fill: '#AF47D2',
           }
         },
       },
@@ -135,6 +141,10 @@ module.exports = {
       },
       animation: {
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      colors: {
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
       },
     },
   },

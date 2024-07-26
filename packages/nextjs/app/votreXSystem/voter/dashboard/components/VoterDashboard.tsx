@@ -3,6 +3,9 @@ import VoteModal from "./VoteModal";
 import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell, Pie, PieChart } from "recharts";
+import "./Dashboard.css"
+import { Hex } from "viem";
 
 interface Election {
   electionID: string;
@@ -20,6 +23,25 @@ interface ElectionDetails {
   electionStatus: string;
 }
 
+interface ElectionResult {
+  isPruned: boolean;
+  adminAddress: string;
+  startTime: number;
+  endTime: number;
+  totalVoter: number;
+  electionID: string;
+  electionName: string;
+  digitalSignature: string;
+  registeredOrganization: string;
+  electionWinner: string;
+  signedBy: string;
+  candidates: {
+    candidateID: bigint;
+    name: string;
+    voteCount: number;
+  }[];
+}
+
 const VoterDashboard = () => {
   const { data: walletClient } = useWalletClient();
   const [orgID, setOrgID] = useState<string | null>(null);
@@ -29,12 +51,16 @@ const VoterDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedElectionID, setSelectedElectionID] = useState<string>("");
   const [selectedElection, setSelectedElection] = useState<ElectionDetails | null>(null);
+  const [electionResult, setElectionResult] = useState<ElectionResult | null>(null);
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setOrgID(localStorage.getItem("orgID"));
     }
   }, [walletClient]);
+
+  const COLORS = ['#C738BD', '#00b900', '#ffc658', '#ff7300', '#d0ed57', '#a4de6c', '#8884d8', '#8dd1e1'];
 
   const { data: VotreXContract } = useScaffoldContract({
     contractName: "VotreXSystem",
@@ -100,27 +126,81 @@ const VoterDashboard = () => {
     setIsModalOpen(true);
   };
 
-  const handleManageClick = async (electionID: string) => {
-    if (selectedElection?.electionID === electionID) {
+  const handleManageClick = async (electionID: string, status: string) => {
+
+    if (selectedElection?.electionID === electionID && status === "On Preparation") {
       setSelectedElection(null);
-      return;
-    }
-    try {
-      const electionData = await VotreXContract?.read.getelectionInfo([electionID]);
-      if (electionData) {
-        const electionDetails: ElectionDetails = {
-          electionID: hexToAscii(electionData[0]),
-          electionName: electionData[1].replace(/\0/g, "").trim(),
-          totalCandidates: Number(electionData[2]),
-          candidateIDs: electionData[3].map((id: any) => BigInt(id)),
-          candidateNames: [...electionData[4]],
-          voteCounts: electionData[5].map((count: any) => Number(count)),
-          electionStatus: getStatusString(electionData[6]),
-        };
-        setSelectedElection(electionDetails);
+    } else if (selectedElection?.electionID === electionID && status === "Ongoing") {
+      setSelectedElection(null);
+    } else if (electionResult?.electionID === electionID && status === "Finished") {
+      setElectionResult(null);
+    } else {
+      try {
+        if (status === "Finished") {
+          const resultData = await VotreXContract?.read.electionResults([electionID]);
+          const candidateData = await VotreXContract?.read.getCandidateResult([electionID])
+          if (resultData && candidateData) {
+            const isPruned = resultData[0];
+            const adminAddress = resultData[1];
+            const startTime = Number(resultData[2]);
+            const endTime = Number(resultData[3]);
+            const totalVoter = Number(resultData[4]);
+            const electionIDHex = resultData?.[5] as Hex;
+            const electionNameHex = resultData[6];
+            const digitalSignatureHex = resultData[7];
+            const registeredOrganization = resultData[8];
+            const electionWinner = resultData[9];
+            const signedBy = resultData[10];
+            const candidateIDs = candidateData[0] as number[];
+            const candidateNames = candidateData[1] as string[];
+            const candidateVoteCounts = candidateData[2]
+
+            const candidates = candidateIDs.map((id: number, index: number) => ({
+              candidateID: BigInt(id), // Convert to BigInt
+              name: candidateNames[index].replace(/\0/g, "").trim(),
+              voteCount: Number(candidateVoteCounts[index]),
+            }));;
+
+
+            const electionResult: ElectionResult = {
+              isPruned,
+              adminAddress,
+              startTime,
+              endTime,
+              totalVoter,
+              electionID: hexToAscii(electionIDHex),
+              electionName: hexToAscii(electionNameHex),
+              digitalSignature: hexToAscii(digitalSignatureHex),
+              registeredOrganization: registeredOrganization.replace(/\0/g, "").trim(),
+              electionWinner: electionWinner.replace(/\0/g, "").trim(),
+              signedBy: signedBy.replace(/\0/g, "").trim(),
+              candidates,
+            };
+            setElectionResult(electionResult);
+
+
+          }
+          setSelectedElection(null);
+        } else {
+          const electionData = await VotreXContract?.read.getelectionInfo([electionID]);
+          if (electionData) {
+            const electionDetails: ElectionDetails = {
+              electionID: hexToAscii(electionData[0]),
+              electionName: electionData[1].replace(/\0/g, "").trim(),
+              totalCandidates: Number(electionData[2]),
+              candidateIDs: electionData[3].map((id: any) => BigInt(id)),
+              candidateNames: [...electionData[4]],
+              voteCounts: electionData[5].map((count: any) => Number(count)),
+              electionStatus: getStatusString(electionData[6]),
+            };
+            setSelectedElection(electionDetails);
+          }
+          setElectionResult(null);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data");
       }
-    } catch (error) {
-      console.error("Error fetching election details:", error);
     }
   };
 
@@ -153,7 +233,7 @@ const VoterDashboard = () => {
           </thead>
           <tbody className="cursor-pointer">
             {elections.map((election, index) => (
-              <tr key={index} onClick={() => handleManageClick(election.electionID)}>
+              <tr key={index} onClick={() => handleManageClick(election.electionID, election.electionStatus)}>
                 <td className="py-2 px-4 border-b text-center">{election.electionID}</td>
                 <td className="py-2 px-4 border-b text-center">{election.electionName}</td>
                 <td className="py-2 px-4 border-b text-center">{election.electionStatus}</td>
@@ -187,6 +267,71 @@ const VoterDashboard = () => {
                   </li>
                 ))}
               </ul>
+              <ResponsiveContainer width="70%" height={300}>
+                <BarChart
+                  data={selectedElection.candidateNames.map((name, index) => ({
+                    name: name,
+                    votes: selectedElection.voteCounts[index],
+                  }))}
+                  margin={{
+                    top: 10,
+                    right: 20,
+                    left: 10,
+                    bottom: 5,
+                  }}
+                >
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="votes" fill="#AF47D2" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+
+        {electionResult && (
+          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-2/3">
+            <h3 className="text-center text-xl font-bold mb-4">
+              Election Result: {electionResult.electionName} - {electionResult.electionID}
+            </h3>
+            <p className="text-center text-lg font-regular mb-4">Total Voters: {electionResult.totalVoter}</p>
+            <p className="text-center text-lg font-regular mb-4">Winner: {electionResult.electionWinner}</p>
+            <h3 className="text-center text-lg font-medium">Candidates</h3>
+            <div className="flex justify-center">
+              <ul className="text-left mb-4">
+                {electionResult.candidates.map((candidate, index) => (
+                  <li key={index} className="mb-2">
+                    <div>
+                      <span className="font-bold mr-2">No: {index + 1}</span>
+                      <span className="mr-4">{candidate.name}</span>
+                      <span className="text-left">Votes: {candidate.voteCount}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex justify-center">
+              <ResponsiveContainer width="70%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={electionResult.candidates.map(candidate => ({
+                      name: candidate.name,
+                      value: candidate.voteCount,
+                    }))}
+                    dataKey="value"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    label
+                  >
+                    {electionResult.candidates.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
         )}
