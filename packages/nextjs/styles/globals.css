@@ -4,14 +4,30 @@
 @import "tailwindcss/utilities";
 @import url('https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap');
 
-[data-theme] {
-  background: oklch(var(--b2));
+:root {
+  --primary: rgb(241, 0, 167);
+  --secondary: rgb(0, 185, 0);
+  --color-base-100: rgb(255, 253, 227);
+  --color-base-200: rgb(222, 220, 197);
+  --color-base-300: rgb(190, 188, 168);
 }
+
+/* Dark theme */
+[data-theme='dark'] {
+  --primary: rgb(199, 56, 189);
+  --secondary: rgb(175, 71, 210);
+  --color-base-100: rgb(133, 15, 141);
+  --color-base-200: rgb(115, 11, 122);
+  --color-base-300: rgb(97, 8, 103);
+}
+
 
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-base-200);
+  color: var(--color-primary);
 }
 
 h1,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import VoteModal from "./VoteModal";
 import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii } from "web3-utils";
-import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell, Pie, PieChart } from "recharts";
 import "./Dashboard.css"
 import { Hex } from "viem";
@@ -26,8 +26,8 @@ interface ElectionDetails {
 interface ElectionResult {
   isPruned: boolean;
   adminAddress: string;
-  startTime: number;
-  endTime: number;
+  startTime: bigint;
+  endTime: bigint;
   totalVoter: number;
   electionID: string;
   electionName: string;
@@ -142,12 +142,12 @@ const VoterDashboard = () => {
           if (resultData && candidateData) {
             const isPruned = resultData[0];
             const adminAddress = resultData[1];
-            const startTime = Number(resultData[2]);
-            const endTime = Number(resultData[3]);
+            const startTime = resultData[2];
+            const endTime = resultData[3];
             const totalVoter = Number(resultData[4]);
             const electionIDHex = resultData?.[5] as Hex;
             const electionNameHex = resultData[6];
-            const digitalSignatureHex = resultData[7];
+            const digitalSignatureHex = resultData[7].toString();
             const registeredOrganization = resultData[8];
             const electionWinner = resultData[9];
             const signedBy = resultData[10];
@@ -156,7 +156,7 @@ const VoterDashboard = () => {
             const candidateVoteCounts = candidateData[2]
 
             const candidates = candidateIDs.map((id: number, index: number) => ({
-              candidateID: BigInt(id), // Convert to BigInt
+              candidateID: BigInt(id),
               name: candidateNames[index].replace(/\0/g, "").trim(),
               voteCount: Number(candidateVoteCounts[index]),
             }));;
@@ -170,7 +170,7 @@ const VoterDashboard = () => {
               totalVoter,
               electionID: hexToAscii(electionIDHex),
               electionName: hexToAscii(electionNameHex),
-              digitalSignature: hexToAscii(digitalSignatureHex),
+              digitalSignature: digitalSignatureHex,
               registeredOrganization: registeredOrganization.replace(/\0/g, "").trim(),
               electionWinner: electionWinner.replace(/\0/g, "").trim(),
               signedBy: signedBy.replace(/\0/g, "").trim(),
@@ -207,6 +207,19 @@ const VoterDashboard = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedElectionID("");
+  };
+
+  const formatTimestamp = (timestamp: bigint) => {
+    const date = new Date(Number(timestamp) * 1000); // Convert seconds to milliseconds
+    return date.toLocaleString('en-US', {
+      weekday: 'long', // "Monday"
+      year: 'numeric', // "2024"
+      month: 'long', // "July"
+      day: 'numeric', // "27"
+      hour: 'numeric', // "10"
+      minute: 'numeric', // "30"
+      second: 'numeric', // "00"
+    });
   };
 
   if (loading) return <p>Loading...</p>;
@@ -260,9 +273,9 @@ const VoterDashboard = () => {
                 {selectedElection.candidateNames.map((name, index) => (
                   <li key={index} className="mb-2">
                     <div>
-                      <span className="font-bold mr-2">No: {index + 1}</span> {/* Candidate ID */}
+                      <span className="font-bold mr-2">No: {index + 1}</span>
                       <span className="mr-4">{name}</span>
-                      <span className="text-left">Votes: {selectedElection.voteCounts[index]}</span> {/* Vote Count */}
+                      <span className="text-left">Votes: {selectedElection.voteCounts[index]}</span>
                     </div>
                   </li>
                 ))}
@@ -297,7 +310,22 @@ const VoterDashboard = () => {
               Election Result: {electionResult.electionName} - {electionResult.electionID}
             </h3>
             <p className="text-center text-lg font-regular mb-4">Total Voters: {electionResult.totalVoter}</p>
-            <p className="text-center text-lg font-regular mb-4">Winner: {electionResult.electionWinner}</p>
+            <p className="text-center text-lg font-bold mb-4">Winner:</p>
+            <h2 className="text-center text-md font-bold">{electionResult.electionWinner}</h2>
+            <br />
+            <h3 className="text-center font-bold font-lg">
+              Start Time:
+            </h3>
+            <h3 className="text-center font-regular">
+              {formatTimestamp(electionResult.startTime)}
+            </h3>
+            <h3 className="text-center font-bold font-lg">
+              Finished Time:
+            </h3>
+            <h3 className="text-center">
+              {formatTimestamp(electionResult.endTime)}
+            </h3>
+            <br />
             <h3 className="text-center text-lg font-medium">Candidates</h3>
             <div className="flex justify-center">
               <ul className="text-left mb-4">
@@ -312,8 +340,15 @@ const VoterDashboard = () => {
                 ))}
               </ul>
             </div>
-            <div className="flex justify-center">
-              <ResponsiveContainer width="70%" height={300}>
+            <h3 className="text-center">
+              Signed By : {electionResult.signedBy}
+            </h3>
+            <br />
+            <h3 className="text-center">
+              Digital Signature : {(electionResult.digitalSignature)}
+            </h3>
+            <div className="flex flex-col items-center">
+              <ResponsiveContainer width="80%" height={400}>
                 <PieChart>
                   <Pie
                     data={electionResult.candidates.map(candidate => ({
@@ -330,6 +365,12 @@ const VoterDashboard = () => {
                     ))}
                   </Pie>
                   <Tooltip />
+                  <Legend
+                    layout="horizontal"
+                    align="center"
+                    verticalAlign="bottom"
+                    wrapperStyle={{ paddingTop: 10 }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>

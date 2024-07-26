@@ -75,7 +75,7 @@ contract VotreXSystem{
     struct ElectionResult {
         bool isPruned;
         address adminAddress;
-        uint startTime; 
+        uint startTime;
         uint endTime;
         uint totalVoter;
         bytes32 electionID;

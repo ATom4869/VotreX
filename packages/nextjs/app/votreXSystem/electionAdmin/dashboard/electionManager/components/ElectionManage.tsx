@@ -4,11 +4,15 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BarChart, Bar, ResponsiveContainer, Pie, PieChart, Tooltip, Legend, XAxis, YAxis, Cell } from "recharts";
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { useWalletClient } from "wagmi";
-import { hexToAscii as originalHexToAscii } from "web3-utils";
+import { hexToAscii as originalHexToAscii, encodePacked, sha3, soliditySha3 } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-
+import jsPDF from 'jspdf';
+import html2canvas from "html2canvas-pro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPrint } from "@fortawesome/free-solid-svg-icons";
+import { useSignTypedData } from "wagmi";
 interface Election {
   electionID: string;
   electionName: string;
@@ -28,8 +32,8 @@ interface ElectionDetails {
 interface ElectionResult {
   isPruned: boolean;
   adminAddress: string;
-  startTime: number;
-  endTime: number;
+  startTime: bigint;
+  endTime: bigint;
   totalVoter: number;
   electionID: string;
   electionName: string;
@@ -76,6 +80,7 @@ const ElectionManage = () => {
   });
 
   const { writeContractAsync: VOXCommand } = useScaffoldWriteContract("VotreXSystem");
+  const { signTypedData } = useSignTypedData();
 
   const COLORS = ['#C738BD', '#00b900', '#ffc658', '#ff7300', '#d0ed57', '#a4de6c', '#8884d8', '#8dd1e1'];
 
@@ -163,6 +168,8 @@ const ElectionManage = () => {
           console.error("Error voting for candidate:", error);
         }
       } else if (status === "Ongoing") {
+        const orgData = await VotreXContract?.read.organizationData([orgID as string]);
+        const orgName = hexToAscii(orgData?.[6] as Hex);
         try {
           await VOXCommand(
             {
@@ -180,12 +187,41 @@ const ElectionManage = () => {
               },
             },
           );
+          signTypedData({
+            types: {
+              Organization: [{ name: "orgData", type: "ElectionData" }],
+              ElectionData: [
+                { name: "orgName", type: "string" },
+                { name: "electionName", type: "string" },
+                { name: "adminName", type: "string" },
+                { name: "adminAddress", type: "address" },
+                { name: "contents", type: "string" },
+              ],
+            },
+            primaryType: "Organization",
+            message: {
+              orgData: {
+                orgName: orgName,
+                electionName: electionResult?.electionName as string,
+                adminName: electionResult?.signedBy as string,
+                adminAddress: walletClient?.account.address as Address,
+
+                // bytes32(keccak256(abi.encodePacked(orgName, electionName, adminName)));
+                contents: soliditySha3(
+                  { type: "string", value: orgName as string },
+                  { type: "string", value: electionResult?.electionName },
+                  { type: "string", value: electionResult?.signedBy },
+                ) as string,
+              },
+            },
+          });
         } catch (error) {
-          console.error("Error voting for candidate:", error);
+          toast.error(`Error voting for candidate: ${error}`);
         }
+
       }
     } catch (error) {
-      console.error("Error interacting with smart contract:", error);
+      toast.error(`Error interacting with smart contract: ${error}`);
     }
   };
 
@@ -205,8 +241,8 @@ const ElectionManage = () => {
           if (resultData && candidateData) {
             const isPruned = resultData[0];
             const adminAddress = resultData[1];
-            const startTime = Number(resultData[2]);
-            const endTime = Number(resultData[3]);
+            const startTime = resultData[2];
+            const endTime = resultData[3];
             const totalVoter = Number(resultData[4]);
             const electionIDHex = resultData?.[5] as Hex;
             const electionNameHex = resultData[6];
@@ -233,7 +269,7 @@ const ElectionManage = () => {
               totalVoter,
               electionID: hexToAscii(electionIDHex),
               electionName: hexToAscii(electionNameHex),
-              digitalSignature: hexToAscii(digitalSignatureHex),
+              digitalSignature: digitalSignatureHex.toString(),
               registeredOrganization: registeredOrganization.replace(/\0/g, "").trim(),
               electionWinner: electionWinner.replace(/\0/g, "").trim(),
               signedBy: signedBy.replace(/\0/g, "").trim(),
@@ -319,6 +355,157 @@ const ElectionManage = () => {
       console.error("Error voting for candidate:", error);
     }
   };
+
+  const centerText = (pdf: jsPDF, text: string, y: number, fontSize: number, fontStyle: 'normal' | 'bold' = 'normal') => {
+    pdf.setFontSize(fontSize);
+    pdf.setFont("helvetica", fontStyle);
+
+    // Get the width of the text
+    const textWidth = pdf.getStringUnitWidth(text) * fontSize / pdf.internal.scaleFactor;
+    // Get the width of the page
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    // Calculate x position for center alignment
+    const x = (pageWidth - textWidth) / 2;
+    pdf.text(text, x, y);
+  };
+
+  const saveAsPDF = () => {
+    const input = document.getElementById('pdf-content') as HTMLElement | null;
+    const pieChart = document.querySelector('#pdf-content .recharts-responsive-container') as HTMLElement | null;
+    const button = document.getElementById('save-pdf-button') as HTMLElement | null;
+    const electionID = electionResult?.electionID;
+
+    if (!input || !pieChart) return;
+
+    if (button) {
+      button.classList.add('hidden');
+    }
+
+    const originalStyles = {
+      backgroundColor: input.style.backgroundColor,
+      color: input.style.color,
+    };
+
+    input.style.backgroundColor = 'white';
+    input.style.color = 'black';
+
+    html2canvas(pieChart).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+
+      let yOffset: number = 10;
+
+      pdf.setFontSize(14);
+      centerText(pdf, `Election Result: ${electionResult?.electionName ?? ''} - ${electionResult?.electionID ?? ''}`, yOffset, 14, 'bold');
+      yOffset += 18;
+
+      pdf.setFontSize(12);
+      centerText(pdf, `Total Voters: ${electionResult?.totalVoter ?? ''}`, yOffset, 12);
+      yOffset += 16;
+
+      pdf.setFontSize(13);
+      pdf.setFont("helvetica", "bold");
+      centerText(pdf, 'Winner:', yOffset, 13);
+      yOffset += 8;
+
+      pdf.setFontSize(16);
+      pdf.setFont("helvetica", "bolditalic");
+      centerText(pdf, `${electionResult?.electionWinner ?? ''}`, yOffset, 16);
+      yOffset += 20;
+
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      centerText(pdf, 'Start Time:', yOffset, 14);
+      yOffset += 8;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      centerText(pdf, formatTimestamp(electionResult?.startTime as bigint), yOffset, 12);
+      yOffset += 16;
+
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      centerText(pdf, 'Finished Time:', yOffset, 14);
+      yOffset += 8;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      centerText(pdf, formatTimestamp(electionResult?.endTime as bigint), yOffset, 12);
+      yOffset += 16;
+
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      centerText(pdf, 'Candidates:', yOffset, 14);
+      yOffset += 8;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+
+      const candidatesText = electionResult?.candidates.map((candidate, index) =>
+        `No: ${index + 1} ${candidate.name} Votes: ${candidate.voteCount}`
+      ).join('\n');
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const lineHeight = 12;
+      let candidatesY = yOffset;
+
+      candidatesText?.split('\n').forEach(line => {
+        const textWidth = pdf.getStringUnitWidth(line) * 12 / pdf.internal.scaleFactor;
+        const x = (pageWidth - textWidth) / 2 - 2;
+        pdf.text(line, x, candidatesY);
+        candidatesY += lineHeight;
+      });
+
+      yOffset = candidatesY + 10;
+
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      centerText(pdf, `Signed By: ${electionResult?.signedBy ?? ''}`, yOffset, 14);
+      yOffset += 16;
+
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      centerText(pdf, 'Digital Signature:', yOffset, 14);
+      yOffset += 8;
+
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      centerText(pdf, `${electionResult?.digitalSignature?.toString() ?? ''}`, yOffset, 12);
+      yOffset += 10;
+
+      const imgWidth = 100;
+      const imgHeight = canvas.height * imgWidth / canvas.width; // Maintain aspect ratio
+      const xOffset = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
+
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+
+      pdf.save(`${electionID}-election-results.pdf`);
+
+      // Restore original styles
+      input.style.backgroundColor = originalStyles.backgroundColor;
+      input.style.color = originalStyles.color;
+
+      if (button) {
+        button.classList.remove('hidden');
+      }
+    });
+  };
+
+  const formatTimestamp = (timestamp: bigint) => {
+    const date = new Date(Number(timestamp) * 1000); // Convert seconds to milliseconds
+    return date.toLocaleString('en-US', {
+      weekday: 'long', // "Monday"
+      year: 'numeric', // "2024"
+      month: 'long', // "July"
+      day: 'numeric', // "27"
+      hour: 'numeric', // "10"
+      minute: 'numeric', // "30"
+      second: 'numeric', // "00"
+    });
+  };
+
+
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -493,12 +680,27 @@ const ElectionManage = () => {
         )}
 
         {electionResult && (
-          <div className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-2/3">
+          <div id="pdf-content" className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-2/3">
             <h3 className="text-center text-xl font-bold mb-4">
               Election Result: {electionResult.electionName} - {electionResult.electionID}
             </h3>
             <p className="text-center text-lg font-regular mb-4">Total Voters: {electionResult.totalVoter}</p>
-            <p className="text-center text-lg font-regular mb-4">Winner: {electionResult.electionWinner}</p>
+            <p className="text-center text-lg font-regular mb-4">Winner:</p>
+            <h2 className="text-center">{electionResult.electionWinner}</h2>
+            <br />
+            <h3 className="text-center font-bold font-lg">
+              Start Time:
+            </h3>
+            <h3 className="text-center font-regular">
+              {formatTimestamp(electionResult.startTime)}
+            </h3>
+            <h3 className="text-center font-bold font-lg">
+              Finished Time:
+            </h3>
+            <h3 className="text-center">
+              {formatTimestamp(electionResult.endTime)}
+            </h3>
+            <br />
             <h3 className="text-center text-lg font-medium">Candidates</h3>
             <div className="flex justify-center">
               <ul className="text-left mb-4">
@@ -513,8 +715,14 @@ const ElectionManage = () => {
                 ))}
               </ul>
             </div>
-            <div className="flex justify-center">
-              <ResponsiveContainer width="70%" height={300}>
+            <h3 className="text-center">
+              Signed By : {electionResult.signedBy}
+            </h3>
+            <br />
+            <h3 className="text-center font-bold font-lg">Digital Signature :</h3>
+            <h4 className="text-center font-medium">{(electionResult.digitalSignature)}</h4>
+            <div className="flex flex-col items-center">
+              <ResponsiveContainer width="80%" height={400}>
                 <PieChart>
                   <Pie
                     data={electionResult.candidates.map(candidate => ({
@@ -531,14 +739,26 @@ const ElectionManage = () => {
                     ))}
                   </Pie>
                   <Tooltip />
+                  <Legend
+                    layout="horizontal"
+                    align="center"
+                    verticalAlign="bottom"
+                    wrapperStyle={{ paddingTop: 10 }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <button id="save-pdf-button" onClick={saveAsPDF} className="bg-green-500 text-white px-4 py-2 rounded">
+                <FontAwesomeIcon icon={faPrint} size="sm" />
+              </button>
             </div>
           </div>
         )}
 
       </div>
-    </section>
+    </section >
   );
 };
 
