@@ -37,23 +37,19 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
       setLoading(true);
       try {
         if (electionData) {
-          // Properly handle the updated tuple data
           const [electionID, electionName, totalCandidates, candidateIDs, candidateNames, voteCounts] =
             electionData as unknown as [string, string, number, number[], string[], bigint[]];
 
           if (candidateNames.length > 0) {
-            // Map candidates with IDs
             const fetchedCandidates = candidateIDs.map((id, index) => ({
               candidateID: id,
               candidateName: candidateNames[index],
             }));
             setCandidates(fetchedCandidates);
           } else {
-            // No candidates found - handle gracefully without setting an error
             setCandidates([]);
           }
         } else {
-          // Handle absence of election data gracefully
           setCandidates([]);
         }
       } catch (error) {
@@ -85,13 +81,13 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
             toast.success(`Success Voting: ${txnReceipt.blockHash} - Gas Used: ${txnReceipt.cumulativeGasUsed}`, {
               autoClose: 3000,
               onClose: () => {
-                window.location.reload();
+                onClose();
               },
             });
           },
         },
       );
-    } catch (e) {}
+    } catch (e) { }
   };
 
   if (!isOpen) return null;

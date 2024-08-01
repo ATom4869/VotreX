@@ -20,6 +20,7 @@ interface ElectionDetails {
   candidateIDs: bigint[];
   candidateNames: string[];
   voteCounts: number[];
+  totalParticipants: number;
   electionStatus: string;
 }
 
@@ -191,7 +192,8 @@ const VoterDashboard = () => {
               candidateIDs: electionData[3].map((id: any) => BigInt(id)),
               candidateNames: [...electionData[4]],
               voteCounts: electionData[5].map((count: any) => Number(count)),
-              electionStatus: getStatusString(electionData[6]),
+              totalParticipants: Number(electionData[6]),
+              electionStatus: getStatusString(electionData[7]),
             };
             setSelectedElection(electionDetails);
           }
@@ -267,6 +269,9 @@ const VoterDashboard = () => {
             <p className="text-center text-xl font-regular mb-4">
               Total Candidates: {selectedElection.totalCandidates}
             </p>
+            <p className="text-center text-xl font-regular mb-4">
+              Total Participants: {selectedElection.totalParticipants}
+            </p>
             <h3 className="text-center text-lg font-medium">Candidate List</h3>
             <div className="flex justify-center">
               <ul className="text-left mb-4">
@@ -280,26 +285,28 @@ const VoterDashboard = () => {
                   </li>
                 ))}
               </ul>
-              <ResponsiveContainer width="70%" height={300}>
-                <BarChart
-                  data={selectedElection.candidateNames.map((name, index) => ({
-                    name: name,
-                    votes: selectedElection.voteCounts[index],
-                  }))}
-                  margin={{
-                    top: 10,
-                    right: 20,
-                    left: 10,
-                    bottom: 5,
-                  }}
-                >
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="votes" fill="#AF47D2" />
-                </BarChart>
-              </ResponsiveContainer>
+              {selectedElection && selectedElection.voteCounts.some((count) => count > 0) && (
+                <ResponsiveContainer width="70%" height={300}>
+                  <BarChart
+                    data={selectedElection.candidateNames.map((name, index) => ({
+                      name: name,
+                      votes: selectedElection.voteCounts[index],
+                    }))}
+                    margin={{
+                      top: 10,
+                      right: 20,
+                      left: 10,
+                      bottom: 5,
+                    }}
+                  >
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="votes" fill="#AF47D2" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
         )}
@@ -347,6 +354,7 @@ const VoterDashboard = () => {
             <h3 className="text-center">
               Digital Signature : {(electionResult.digitalSignature)}
             </h3>
+
             <div className="flex flex-col items-center">
               <ResponsiveContainer width="80%" height={400}>
                 <PieChart>

@@ -6,13 +6,15 @@ import "react-toastify/dist/ReactToastify.css";
 import { BarChart, Bar, ResponsiveContainer, Pie, PieChart, Tooltip, Legend, XAxis, YAxis, Cell } from "recharts";
 import { Address, Hex } from "viem";
 import { useWalletClient } from "wagmi";
-import { hexToAscii as originalHexToAscii, encodePacked, sha3, soliditySha3 } from "web3-utils";
+import { hexToAscii as originalHexToAscii, soliditySha3 } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import jsPDF from 'jspdf';
 import html2canvas from "html2canvas-pro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { useSignTypedData } from "wagmi";
+
+
 interface Election {
   electionID: string;
   electionName: string;
@@ -26,6 +28,7 @@ interface ElectionDetails {
   candidateIDs: bigint[];
   candidateNames: string[];
   voteCounts: number[];
+  totalParticipants: number;
   electionStatus: string;
 }
 
@@ -60,6 +63,7 @@ const ElectionManage = () => {
   const [voxTokenValue, setVoxTokenValue] = useState<bigint>(BigInt(0));
   const [error, setError] = useState<string | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<bigint | null>(null);
+
   const adminAddress = walletClient?.account.address;
 
   useEffect(() => {
@@ -169,12 +173,17 @@ const ElectionManage = () => {
         }
       } else if (status === "Ongoing") {
         const orgData = await VotreXContract?.read.organizationData([orgID as string]);
+        const adminData = await VotreXContract?.read.admin([adminAddress as Address])
         const orgName = hexToAscii(orgData?.[6] as Hex);
+        const dataHash = soliditySha3(
+          { type: "string", value: orgName as string + selectedElection?.electionName + orgData?.[6] + adminData?.[6] }
+        )
+
         try {
           await VOXCommand(
             {
               functionName: "finishElection",
-              args: [electionID as string],
+              args: [electionID as string, dataHash as Hex],
             },
             {
               onBlockConfirmation: txnReceipt => {
@@ -205,12 +214,8 @@ const ElectionManage = () => {
                 electionName: electionResult?.electionName as string,
                 adminName: electionResult?.signedBy as string,
                 adminAddress: walletClient?.account.address as Address,
-
-                // bytes32(keccak256(abi.encodePacked(orgName, electionName, adminName)));
                 contents: soliditySha3(
-                  { type: "string", value: orgName as string },
-                  { type: "string", value: electionResult?.electionName },
-                  { type: "string", value: electionResult?.signedBy },
+                  { type: "string", value: orgName as string + selectedElection?.electionName + orgData?.[6] + adminData?.[6] }
                 ) as string,
               },
             },
@@ -290,7 +295,8 @@ const ElectionManage = () => {
               candidateIDs: electionData[3].map((id: any) => BigInt(id)),
               candidateNames: [...electionData[4]],
               voteCounts: electionData[5].map((count: any) => Number(count)),
-              electionStatus: getStatusString(electionData[6]),
+              totalParticipants: Number(electionData[6]),
+              electionStatus: getStatusString(electionData[7]),
             };
             setSelectedElection(electionDetails);
           }
@@ -319,7 +325,7 @@ const ElectionManage = () => {
       toast.success(`Added ${candidateName} as new candidate`, {
         autoClose: 3000,
         onClose: () => {
-          window.location.reload();
+          handleManageClick(selectedElection.electionID, "On Preparation");
         },
       });
     } catch (error) {
@@ -393,11 +399,12 @@ const ElectionManage = () => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF();
 
-      let yOffset: number = 10;
+      let yOffset: number = 12;
 
       pdf.setFontSize(14);
+      yOffset += 10;
       centerText(pdf, `Election Result: ${electionResult?.electionName ?? ''} - ${electionResult?.electionID ?? ''}`, yOffset, 14, 'bold');
-      yOffset += 18;
+      yOffset += 10;
 
       pdf.setFontSize(12);
       centerText(pdf, `Total Voters: ${electionResult?.totalVoter ?? ''}`, yOffset, 12);
@@ -504,6 +511,19 @@ const ElectionManage = () => {
     });
   };
 
+  // const handleAddSignature = async () => {
+  //   try {
+  //     const orgData = await VotreXContract?.read.organizationData([orgID as string]);
+  //     const orgName = hexToAscii(orgData?.[6] as Hex);
+  //     const adminData = await VotreXContract?.read.admin([adminAddress as Address])
+  //     const computedSig = soliditySha3(
+  //       { type: "string", value: orgName as string + selectedElection?.electionName + orgData?.[6] + adminData?.[6] }
+  //     )
+  //     setComputedSignature(computedSig as HexString);
+  //   } catch (error) {
+  //     console.error("Error computing signature:", error);
+  //   }
+  // };
 
 
 
@@ -559,6 +579,9 @@ const ElectionManage = () => {
             </h3>
             <p className="text-center text-xl font-regular mb-4">
               Total Candidates: {selectedElection.totalCandidates}
+            </p>
+            <p className="text-center text-xl font-regular mb-4">
+              Total Participants: {selectedElection.totalParticipants}
             </p>
             <h3 className="text-center text-lg font-medium">Candidate List</h3>
             <div className="flex justify-center">
@@ -618,7 +641,7 @@ const ElectionManage = () => {
                           className="radio radio-secondary"
                           style={{ marginTop: "2px" }}
                         />
-                        <span className="ml-2">{name}</span>
+                        <span className="">{name}</span>
                       </label>
                     ))}
                   </div>
@@ -649,31 +672,33 @@ const ElectionManage = () => {
                     Vote Now
                   </button>
                 </div>
-                <ResponsiveContainer width="80%" height={300} className={"mx-auto"}>
-                  <BarChart
-                    data={selectedElection.candidateNames.map((name, index) => ({
-                      name: name,
-                      votes: selectedElection.voteCounts[index],
-                    }))}
-                    margin={{
-                      top: 10,
-                      right: 20,
-                      left: 10,
-                      bottom: 5,
-                    }}
-                  >
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend className="mx-auto" />
-                    <Bar
-                      dataKey="votes"
-                      radius={5}
-                      fill="#AF47D2"
-                      className="flex mx-auto justify-center"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
+                {selectedElection && selectedElection.voteCounts.some((count) => count > 0) && (
+                  <ResponsiveContainer width="80%" height={300} className={"mx-auto"}>
+                    <BarChart
+                      data={selectedElection.candidateNames.map((name, index) => ({
+                        name: name,
+                        votes: selectedElection.voteCounts[index],
+                      }))}
+                      margin={{
+                        top: 10,
+                        right: 20,
+                        left: 10,
+                        bottom: 5,
+                      }}
+                    >
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend className="mx-auto" />
+                      <Bar
+                        dataKey="votes"
+                        radius={5}
+                        fill="#AF47D2"
+                        className="flex mx-auto justify-center"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </form>
             )}
           </div>
@@ -684,6 +709,9 @@ const ElectionManage = () => {
             <h3 className="text-center text-xl font-bold mb-4">
               Election Result: {electionResult.electionName} - {electionResult.electionID}
             </h3>
+            {/* <button onClick={handleAddSignature} className="btn btn-secondary mt-3 justify-center">
+              <h2>Add Signature</h2>
+            </button> */}
             <p className="text-center text-lg font-regular mb-4">Total Voters: {electionResult.totalVoter}</p>
             <p className="text-center text-lg font-regular mb-4">Winner:</p>
             <h2 className="text-center">{electionResult.electionWinner}</h2>
@@ -721,6 +749,12 @@ const ElectionManage = () => {
             <br />
             <h3 className="text-center font-bold font-lg">Digital Signature :</h3>
             <h4 className="text-center font-medium">{(electionResult.digitalSignature)}</h4>
+            {/* {computedSignature && (
+              <div className="mt-4">
+                <h3 className="text-center font-bold font-lg">Computed Signature:</h3>
+                <h4 className="text-center font-medium">{computedSignature}</h4>
+              </div>
+            )} */}
             <div className="flex flex-col items-center">
               <ResponsiveContainer width="80%" height={400}>
                 <PieChart>

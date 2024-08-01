@@ -10,26 +10,45 @@ module.exports = {
       {
         light: {
           
-          primary: "#f100a7",
-          "primary-content": "#14000a",
-          secondary: "#00b900",
-          "secondary-content": "#000d00",
-          accent: "#007aff",
-          "accent-content": "#000516",
-          neutral: "#fff9b4",
-          "neutral-content": "#16150c",
-          "base-100": "#fffde3",
-          "base-200": "#dedcc5",
-          "base-300": "#bebca8",
-          "base-content": "#161612",
-          info: "#00c5ff",
-          "info-content": "#000e16",
-          success: "#00c96d",
-          "success-content": "#000f04",
-          warning: "#fec800",
-          "warning-content": "#160f00",
-          error: "#e20a39",
-          "error-content": "#ffd8d6",
+          primary: "#987D9A",
+                    
+          "primary-content": "#080509",
+                    
+          secondary: "#bb9ab1",
+                    
+          "secondary-content": "#0d090c",
+                    
+          accent: "#eeceb9",
+                    
+          "accent-content": "#140f0d",
+                    
+          neutral: "#fefbd9",
+                    
+          "neutral-content": "#161511",
+                    
+          "base-100": "#F3FEB8",
+                    
+          "base-200": "#d3dda0",
+                    
+          "base-300": "#b4bd88",
+                    
+          "base-content": "#14160c",
+                    
+          info: "#00b9ff",
+                    
+          "info-content": "#000d16",
+                    
+          success: "#00b060",
+                    
+          "success-content": "#000b03",
+                    
+          warning: "#9c5800",
+                    
+          "warning-content": "#ecddd0",
+                    
+          error: "#d30238",
+                    
+          "error-content": "#fdd6d5",
 
           "--rounded-btn": "9999rem",
 

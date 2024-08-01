@@ -539,18 +539,15 @@ contract VotreXSystem{
         revert("Election ID not found");
     }
 
-    function finishElection(string memory _userElectionID)
+    function finishElection(string memory _userElectionID, bytes32 _dataHash)
         external
         onlyOrgAdmin(_userElectionID)
     {
         bytes32 packedElectionID = bytes32(abi.encodePacked(_userElectionID));
         ElectionDetail storage elections = electionInfo[packedElectionID];
-        string memory orgName = string(abi.encodePacked(organizationData[elections.orgID].orgName));
         string memory orgIDs = UtilityLibrary.extractOrgId(_userElectionID);
         string memory adminName = getAdminName(msg.sender);
-        string memory electionName = string(abi.encodePacked(elections.electionName));
         string memory electionWinner = determineWinner(_userElectionID);
-        bytes32 dataHash = bytes32(keccak256(abi.encodePacked(orgName, electionName, adminName)));
 
         require(
             bytes(_userElectionID).length > 0,
@@ -567,6 +564,11 @@ contract VotreXSystem{
             "error:36a"
         );
 
+        require(
+            _dataHash.length > 0,
+            "error:36a"
+        );
+
         require(!elections.isFinished, "Election finished");
 
         require(
@@ -575,7 +577,7 @@ contract VotreXSystem{
         );
 
         require(
-            elections.totalParticipants >= calculateValidElection(_userElectionID),
+            elections.totalParticipants > calculateValidElection(_userElectionID),
             "need 50% total member to finish"
         );
 
@@ -589,7 +591,7 @@ contract VotreXSystem{
         newelectionResult.adminAddress = msg.sender;
         newelectionResult.startTime = elections.startTime;
         newelectionResult.endTime = elections.endTime;
-        newelectionResult.digitalSignature = dataHash;
+        newelectionResult.digitalSignature = _dataHash;
         newelectionResult.registeredOrganization = elections.orgID;
         newelectionResult.electionID = packedElectionID;
         newelectionResult.electionName = elections.electionName;
@@ -799,6 +801,7 @@ contract VotreXSystem{
             uint8[] memory candidateIDs, // Added
             string[] memory candidateNames,
             uint256[] memory voteCounts,
+            uint256 totalParticipants,
             ElectionStatus statusElection
         )
     {
@@ -816,6 +819,7 @@ contract VotreXSystem{
         candidateNames = new string[](totalCandidates);
         voteCounts = new uint256[](totalCandidates);
         statusElection = electionInfo[userElectionID].status;
+        totalParticipants = election.totalParticipants;
 
         for (uint256 i = 0; i < totalCandidates; ++i) {
             candidateIDs[i] = election.candidates[i].candidateID; // Added
@@ -830,6 +834,7 @@ contract VotreXSystem{
             candidateIDs,
             candidateNames,
             voteCounts,
+            totalParticipants,
             statusElection
         );
     }

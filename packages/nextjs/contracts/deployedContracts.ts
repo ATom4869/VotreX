@@ -917,6 +917,11 @@ const deployedContracts = {
               name: "_userElectionID",
               type: "string",
             },
+            {
+              internalType: "bytes32",
+              name: "_dataHash",
+              type: "bytes32",
+            },
           ],
           name: "finishElection",
           outputs: [],
@@ -1134,6 +1139,11 @@ const deployedContracts = {
               internalType: "uint256[]",
               name: "voteCounts",
               type: "uint256[]",
+            },
+            {
+              internalType: "uint256",
+              name: "totalParticipants",
+              type: "uint256",
             },
             {
               internalType: "enum VotreXSystem.ElectionStatus",
