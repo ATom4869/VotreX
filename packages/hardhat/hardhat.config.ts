@@ -20,7 +20,7 @@ const deployerPrivateKey =
   process.env.DEPLOYER_PRIVATE_KEY ?? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 // If not set, it uses ours Etherscan default API key.
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
-const deployerAddress = process.env.LOCAL_DEPLOYER_ADDRESS;
+const deployerAddress = process.env.DEPLOYER_FLARE_ADDRES as string;
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -34,11 +34,12 @@ const config: HardhatUserConfig = {
       viaIR: true,
     },
   },
-  defaultNetwork: "localhost",
+  defaultNetwork: "flareTestnet",
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer
-      default: 0
+      default: deployerAddress
+      // deployerAddress
     },
   },
   networks: {
@@ -80,6 +81,10 @@ const config: HardhatUserConfig = {
     },
     polygon: {
       url: `https://polygon-mainnet.g.alchemy.com/v2/${providerApiKey}`,
+      accounts: [deployerPrivateKey],
+    },
+    flareTestnet: {
+      url: `https://rpc.ankr.com/flare_coston2/${flareAPIKey}`,
       accounts: [deployerPrivateKey],
     },
     polygonMumbai: {
@@ -125,11 +130,7 @@ const config: HardhatUserConfig = {
     pgnTestnet: {
       url: "https://sepolia.publicgoods.network",
       accounts: [deployerPrivateKey],
-    },
-    flareTestnet: {
-      url: `https://rpc.ankr.com/flare_coston2/${flareAPIKey}`,
-      accounts: [deployerPrivateKey],
-    },
+    }
   },
   // configuration for harhdat-verify plugin
   etherscan: {

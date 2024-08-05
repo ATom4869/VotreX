@@ -6,11 +6,12 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract VotreXToken is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit {
+contract VotreXTokenT2 is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit {
 	constructor(
 		uint256 _initialMintedToken,
 		uint256 _MaxSupplies
-	) ERC20("VotreXToken", "VOX") ERC20Permit("VotreXToken") {
+	)
+	ERC20("VotreXTokenT2", "VOXT2") ERC20Permit("VotreXToken") {
 		Owner = msg.sender;
 		MAXSupply = _MaxSupplies * 10 ** decimals();
 		_mint(address(this), _initialMintedToken * 10 ** decimals());

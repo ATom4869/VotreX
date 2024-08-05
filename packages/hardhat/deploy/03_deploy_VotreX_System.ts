@@ -25,7 +25,7 @@ const deployVotreXSystem: DeployFunction = async function (hre: HardhatRuntimeEn
   const Interface = await hre.ethers.getContract<Contract>("VotreXTXInterface", deployer);
   const InterfaceAddress = await Interface.getAddress();
 
-  await deploy("VotreXSystem", {
+  await deploy("VotreXSystemA1", {
     from: deployer,
     // Contract constructor arguments
     args: [`${InterfaceAddress}`],
@@ -33,11 +33,11 @@ const deployVotreXSystem: DeployFunction = async function (hre: HardhatRuntimeEn
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
-    gasLimit: "5650000",
+    gasLimit: "5300000",
   });
 
   // Get the deployed contract to interact with it after deploying.
-  const VotreXSystem = await hre.ethers.getContract<Contract>("VotreXSystem", deployer);
+  const VotreXSystem = await hre.ethers.getContract<Contract>("VotreXSystemA1", deployer);
   const VotreXSystemAddress = await VotreXSystem.getAddress();
   const OwnerName = await VotreXSystem.getOwnerName();
   console.log("VotreX System Address: ", VotreXSystemAddress);
@@ -49,4 +49,4 @@ export default deployVotreXSystem;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployVotreXSystem.tags = ["VotreXSystem"];
+deployVotreXSystem.tags = ["VotreXSystemA1"];

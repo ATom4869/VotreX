@@ -8,13 +8,13 @@ contract VotreXTXInterface {
     constructor(address _tokenAddress) {
         InterfaceMaster = msg.sender;
         interfaceActivated = false;
-        vxtToken = VotreXToken(_tokenAddress);
+        vxtToken = VotreXTokenT2(_tokenAddress);
         ContractStorage[msg.sender].tokenContract = _tokenAddress;
     }
 
     // gas: 646200;
 
-    VotreXToken internal immutable vxtToken;
+    VotreXTokenT2 internal immutable vxtToken;
     bool private interfaceActivated;
     address private VotreXContract;
     address private dexContract;

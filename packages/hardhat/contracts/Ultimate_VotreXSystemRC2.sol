@@ -5,7 +5,7 @@ pragma solidity ^0.8.24;
 import "./UtilityLibrary.sol";
 import "./VotreXTxInterface.sol";
 
-contract VotreXSystem{
+contract VotreXSystemA1{
 
     using UtilityLibrary for *;
 

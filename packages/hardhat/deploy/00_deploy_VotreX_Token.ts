@@ -23,7 +23,7 @@ const deployVotreXToken: DeployFunction = async function (hre: HardhatRuntimeEnv
   console.log("Deployed from address: ", `${deployer}`);
   const { deploy } = hre.deployments;
 
-  await deploy("VotreXToken", {
+  await deploy("VotreXTokenT2", {
     from: deployer,
     // Contract constructor arguments
     args: [83200000000, 128000000000],
@@ -34,7 +34,7 @@ const deployVotreXToken: DeployFunction = async function (hre: HardhatRuntimeEnv
   });
 
   // Get the deployed contract to interact with it after deploying.
-  const VotreXToken = await hre.ethers.getContract<Contract>("VotreXToken", deployer);
+  const VotreXToken = await hre.ethers.getContract<Contract>("VotreXTokenT2", deployer);
   console.log("👋 Current Contract Balance", await VotreXToken.balanceOf(VotreXToken));
   const VotreXTokenAddress = await VotreXToken.getAddress();
   console.log("VotreX Token Address: ", VotreXTokenAddress);
@@ -47,4 +47,4 @@ export default deployVotreXToken;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployVotreXToken.tags = ["VotreXToken"];
+deployVotreXToken.tags = ["VotreXTokenT2"];

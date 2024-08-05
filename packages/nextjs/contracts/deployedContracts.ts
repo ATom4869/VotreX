@@ -5,9 +5,9 @@
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
-  31337: {
+  114: {
     VotreXDex: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0xe94Ae4C4eD8938B0678c7B518783b5533dd99c29",
       abi: [
         {
           inputs: [
@@ -246,7 +246,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     VotreXStake: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0xD726D018f56DdB2B0d390063327e6E489B9048c3",
       abi: [
         {
           inputs: [
@@ -585,8 +585,8 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    VotreXSystem: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    VotreXSystemA1: {
+      address: "0xE4D9b841A2Cd0db17461a8F8c3fEE640cD283f48",
       abi: [
         {
           inputs: [
@@ -774,7 +774,7 @@ const deployedContracts = {
           name: "electionInfo",
           outputs: [
             {
-              internalType: "enum VotreXSystem.ElectionStatus",
+              internalType: "enum VotreXSystemA1.ElectionStatus",
               name: "status",
               type: "uint8",
             },
@@ -959,7 +959,7 @@ const deployedContracts = {
               type: "bytes32[]",
             },
             {
-              internalType: "enum VotreXSystem.ElectionStatus[]",
+              internalType: "enum VotreXSystemA1.ElectionStatus[]",
               name: "",
               type: "uint8[]",
             },
@@ -1140,7 +1140,7 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "enum VotreXSystem.ElectionStatus",
+              internalType: "enum VotreXSystemA1.ElectionStatus",
               name: "statusElection",
               type: "uint8",
             },
@@ -1172,7 +1172,7 @@ const deployedContracts = {
           name: "organizationData",
           outputs: [
             {
-              internalType: "enum VotreXSystem.OrganizationType",
+              internalType: "enum VotreXSystemA1.OrganizationType",
               name: "orgType",
               type: "uint8",
             },
@@ -1233,7 +1233,7 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "enum VotreXSystem.OrganizationType",
+              internalType: "enum VotreXSystemA1.OrganizationType",
               name: "_orgType",
               type: "uint8",
             },
@@ -1378,8 +1378,8 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    VotreXToken: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    VotreXTokenT2: {
+      address: "0x6c826F349d8fd94C7C5a5ABb916E7227aa28683c",
       abi: [
         {
           inputs: [
@@ -2227,41 +2227,10 @@ const deployedContracts = {
           type: "function",
         },
       ],
-      inheritedFunctions: {
-        allowance:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        approve:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        balanceOf:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        decimals:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        name: "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        symbol:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        totalSupply:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        transfer:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        transferFrom:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        burn: "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
-        burnFrom:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
-        paused:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol",
-        DOMAIN_SEPARATOR:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        eip712Domain:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        nonces:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        permit:
-          "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-      },
+      inheritedFunctions: {},
     },
     VotreXTXInterface: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0x5A676999715177E69Ce8CEdE05686C3e98f3E9c8",
       abi: [
         {
           inputs: [
