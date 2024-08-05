@@ -29,7 +29,6 @@ contract VotreXSystem{
     mapping(address => Voter) public voters;
     mapping(bytes32 => ElectionDetail) public electionInfo;
     mapping(string  => ElectionResult) public electionResults;
-    mapping(string  => ElectionStatus) public activeElection;
     mapping(bytes32 => bool) private electionExistanceChecks;
     mapping(bytes16 => bool) private votersIDExists;
     mapping(address => bool) private registeredAdmin;
@@ -208,8 +207,6 @@ contract VotreXSystem{
         _;
     }
 
-    // event Received(address UserAddress, uint256 FLRSent);
-
     function buyContract(string memory _YourName) public payable {
         require(VotreXActivated == false);
         // error 34 = error wrong ether value being sent
@@ -246,7 +243,7 @@ contract VotreXSystem{
     }
 
     receive() external payable {
-        // emit Received(msg.sender, msg.value);
+
     }
 
     function registerOrganization(
@@ -415,7 +412,7 @@ contract VotreXSystem{
         );
 
         require(
-            !ElectionActiveCheck(_orgID),
+            ElectionActiveCheck(_orgID) < 1,
             "Election in progress!"
         );
 
@@ -527,7 +524,7 @@ contract VotreXSystem{
         --organizationData[orgIDs].onPreparationElectionCounter;
         uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, userElectionID);
         require(index < organizationData[orgIDs].electionIDs.length, "Election not found");
-        organizationData[orgIDs].electionStatus[index] = ElectionStatus.Started; // or whichever status you're setting
+        organizationData[orgIDs].electionStatus[index] = ElectionStatus.Started;
     }
 
     function findElectionIndex(bytes32[] storage array, bytes32 electionID) internal view returns (uint256) {
@@ -609,12 +606,10 @@ contract VotreXSystem{
             );
         }
 
-        removeFromActiveElections(orgIDs);
-
         delete electionInfo[packedElectionID];
         uint256 index = findElectionIndex(organizationData[orgIDs].electionIDs, packedElectionID);
         organizationData[orgIDs].electionStatus[index] = ElectionStatus.Finished;
-        ++organizationData[UtilityLibrary.extractOrgId(_userElectionID)].archivedElectionCounter;
+        ++organizationData[orgIDs].archivedElectionCounter;
         --organizationData[orgIDs].activeElectionCounter;
     }
 
@@ -638,10 +633,6 @@ contract VotreXSystem{
     function getOwnerName() external view returns (bytes32) {
         return VotreXOwnerName;
     }
-
-    // function getTotalOrg()external view returns (uint256) {
-    //     return organizationsCounter;
-    // }
 
     function getTotalUser() external view returns (uint256) {
         return VotreXUserCounter;
@@ -725,7 +716,6 @@ contract VotreXSystem{
         require(election.status == ElectionStatus.Started, "Election is not in progress");
         require(!hasParticipatedInElection(msg.sender, electionName), "You already voted in this election");
 
-        // ++election.candidates[candidateID].candidateVoteCount;
         election.candidates[candidateID].candidateVoteCount += VotesAmount;
         voter.participatedElectionEvents = UtilityLibrary.appendToStringArray(
             voter.participatedElectionEvents,
@@ -749,9 +739,9 @@ contract VotreXSystem{
         return OrganizationPriceFee;
     }
 
-    // function getTotalOrganization() external virtual view returns (uint256) {
-    //     return organizationsCounter;
-    // }
+    function getTotalOrganization() external virtual view returns (uint256) {
+        return organizationsCounter;
+    }
 
     // function getCandidateDetail(
     //     string memory _userElectionID,
@@ -868,24 +858,6 @@ contract VotreXSystem{
         );
     }
 
-
-    // function getCurrentVoteResult(string memory _userElectionID)
-    //     external
-    //     view
-    //     returns (
-    //         CandidateDetail[] memory
-    //     )
-    // {
-    //     bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
-    //     ElectionDetail storage election = electionInfo[userElectionID];
-
-    //     require(bytes(_userElectionID).length > 0);
-
-    //     require(election.status == ElectionStatus.Started, "Election is not in progress");
-
-    //     return election.candidates;
-    // }
-
     function getUserInfo() external view returns (
         bool isRegistered,
         bool isAdmin,
@@ -950,14 +922,10 @@ contract VotreXSystem{
         }
     }
 
-    function ElectionActiveCheck(string memory _orgID) private view returns (bool) {
+    function ElectionActiveCheck(string memory _orgID) private view returns (uint256) {
 
-        return activeElection[_orgID] == ElectionStatus.Started;
-
-    }
-
-    function removeFromActiveElections(string memory _orgID) private {
-        delete activeElection[_orgID];
+        return organizationData[_orgID].activeElectionCounter;
+    
     }
 
     function hasParticipatedInElection(

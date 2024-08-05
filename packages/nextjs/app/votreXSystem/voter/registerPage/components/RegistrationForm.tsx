@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Address, Hex } from "viem";
 import { useSignTypedData, useWalletClient } from "wagmi";
-import { asciiToHex, encodePacked, padRight } from "web3-utils";
+import { asciiToHex, encodePacked, soliditySha3, padRight } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -104,12 +104,9 @@ const RegistrationForm = () => {
             organizationID: formData.orgID,
             voterName: formData.voterName,
             voterAddress: voterAddress as Address,
-            contents: encodePacked(
-              `Registration Receipt:,
-              ${formData.orgID},
-              ${formData.voterName},
-              ${voterAddress as Address} from : ${voterAddress}`,
-            ),
+            contents: soliditySha3(
+              { type: "string", value: formData.orgID + formData.voterName + 'from:' + voterAddress }
+            ) as string,
           },
         },
       });
@@ -143,7 +140,6 @@ const RegistrationForm = () => {
             id="orgID"
             name="orgID"
             className="input form-control input-bordered"
-            style={{ color: "black" }}
             value={formData.orgID}
             onChange={handleInputChange}
             required

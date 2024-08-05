@@ -16,6 +16,8 @@ import {
 import { BlockieAvatar, isENS } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const allowedNetworks = getTargetNetworks();
 
@@ -34,6 +36,13 @@ export const AddressInfoDropdown = ({
 }: AddressInfoDropdownProps) => {
   const { disconnect } = useDisconnect();
   const checkSumAddress = getAddress(address);
+
+  const disconnectFunction = () => {
+    disconnect();
+    localStorage.removeItem("orgID");
+    toast.success("Disconnected Account")
+  };
+
 
   const [addressCopied, setAddressCopied] = useState(false);
 
@@ -125,7 +134,7 @@ export const AddressInfoDropdown = ({
             <button
               className="menu-item text-error btn-sm !rounded-xl flex gap-3 py-3"
               type="button"
-              onClick={() => disconnect()}
+              onClick={() => disconnectFunction()}
             >
               <ArrowLeftOnRectangleIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Disconnect</span>
             </button>

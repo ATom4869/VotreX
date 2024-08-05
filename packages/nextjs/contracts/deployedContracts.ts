@@ -642,25 +642,6 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          name: "activeElection",
-          outputs: [
-            {
-              internalType: "enum VotreXSystem.ElectionStatus",
-              name: "",
-              type: "uint8",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
               name: "_userElectionID",
               type: "string",
             },
@@ -1034,6 +1015,19 @@ const deployedContracts = {
         {
           inputs: [],
           name: "getRegistrationFee",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getTotalOrganization",
           outputs: [
             {
               internalType: "uint256",

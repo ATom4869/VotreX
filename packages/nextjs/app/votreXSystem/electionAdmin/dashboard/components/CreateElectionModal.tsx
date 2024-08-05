@@ -60,7 +60,7 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
         },
       );
       onCreate();
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -113,11 +113,11 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
                 min={1}
                 max="5"
                 value={formData.candidateCounts}
-                className="range"
+                className="range range-sm range-accent px-3"
                 step="1"
                 onChange={handleInputChange}
               />
-              <div className="flex w-full justify-between px-2 text-xs">
+              <div className="flex w-full justify-between px-3 text-sm">
                 <span>1</span>
                 <span>2</span>
                 <span>3</span>

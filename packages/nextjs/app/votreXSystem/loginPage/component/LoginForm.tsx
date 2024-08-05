@@ -66,16 +66,21 @@ const LoginForm = () => {
         });
       }
     } catch (e) {
-      console.error("Error during login:", e);
-      toast.error("Error during login. Please try again.", {
-        autoClose: 3000,
-      });
+      toast.error("Error during login. Have you connect the wallet?");
     }
   };
 
   return (
     <form onSubmit={loginCheck}>
-      <ToastContainer />
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div>
         <label>
           Organization ID:

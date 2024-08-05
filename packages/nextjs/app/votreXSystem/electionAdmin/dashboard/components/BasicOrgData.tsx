@@ -7,19 +7,16 @@ import { Address } from "viem";
 import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii, toNumber } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BasicOrgData = () => {
   const { data: walletClient } = useWalletClient();
   const [data, setData] = useState<any>({});
   const [orgID, setOrgID] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const adminAddress = walletClient?.account.address;
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setOrgID(localStorage.getItem("orgID"));
-    }
-  }, [walletClient]);
 
   const { data: orgDataFetch } = useScaffoldReadContract({
     contractName: "VotreXSystem",
@@ -36,6 +33,32 @@ const BasicOrgData = () => {
     const ascii = originalHexToAscii(hex);
     return ascii.replace(/\0/g, "").trim();
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrgID(localStorage.getItem("orgID"));
+    }
+  }, [walletClient]);
+
+  useEffect(() => {
+    const checkAdminAddress = async () => {
+
+      if (!walletClient || !VotreXContract) return;
+
+      const currentAddress = walletClient.account.address;
+      const userInfo = await VotreXContract.read.getUserInfo();
+      const contractAdminAddress = userInfo?.[2];
+
+      if (currentAddress !== contractAdminAddress) {
+        window.location.href = "/votreXSystem/loginPage";
+      } else {
+        setIsAdmin(true);
+      }
+
+    };
+
+    checkAdminAddress();
+  }, [walletClient, VotreXContract]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +84,7 @@ const BasicOrgData = () => {
           activeElection: toNumber(orgData?.[3] as bigint),
           archiveElection: toNumber(orgData?.[4] as bigint),
         });
-      } catch (error) {}
+      } catch (error) { }
     };
 
     if (orgID && adminAddress) {
@@ -80,6 +103,10 @@ const BasicOrgData = () => {
   const handleCreateElection = () => {
     setIsModalOpen(false);
   };
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className="flex justify-center">

@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Address } from "viem";
 import { useBlockNumber, useWalletClient } from "wagmi";
 import { useSignTypedData } from "wagmi";
-import { encodePacked } from "web3-utils";
+import { soliditySha3 } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
 import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -110,19 +110,13 @@ const RegistrationForm = () => {
             adminName: formData.adminName,
             adminAddress: walletClient?.account.address as Address,
 
-            contents: encodePacked(
-              `Your Registration Receipt:
-              ${formData.orgID},
-              ${formData.orgName},
-              ${formData.adminName} from: ${adminAddress}`,
-            ),
+            contents: soliditySha3(
+              { type: "string", value: formData.orgID + formData.orgName + formData.adminName + 'from:' + adminAddress }
+            ) as string,
           },
         },
       });
     } catch (error) {
-      // toast.error(`Error registering organization. Please try again.` + error, {
-      //   autoClose: 3000,
-      // });
     }
   };
 

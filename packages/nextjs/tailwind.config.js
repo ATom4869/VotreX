@@ -9,46 +9,45 @@ module.exports = {
     themes: [
       {
         light: {
+          primary: "#6d28d9",
           
-          primary: "#987D9A",
+          "primary-content": "#ded8fb",
                     
-          "primary-content": "#080509",
+          secondary: "#a21caf",
                     
-          secondary: "#bb9ab1",
+          "secondary-content": "#efd6f1",
                     
-          "secondary-content": "#0d090c",
+          accent: "#62a900",
                     
-          accent: "#eeceb9",
+          "accent-content": "#030a00",
                     
-          "accent-content": "#140f0d",
+          neutral: "#1d1617",
                     
-          neutral: "#fefbd9",
+          "neutral-content": "#cccacb",
                     
-          "neutral-content": "#161511",
+          "base-100": "#bebeb2",
                     
-          "base-100": "#F3FEB8",
+          "base-200": "#a5a59a",
                     
-          "base-200": "#d3dda0",
+          "base-300": "#8c8c83",
                     
-          "base-300": "#b4bd88",
+          "base-content": "#0d0d0c",
                     
-          "base-content": "#14160c",
+          info: "#00d2ff",
                     
-          info: "#00b9ff",
+          "info-content": "#001016",
                     
-          "info-content": "#000d16",
+          success: "#81e36e",
                     
-          success: "#00b060",
+          "success-content": "#061204",
                     
-          "success-content": "#000b03",
+          warning: "#ffb400",
                     
-          warning: "#9c5800",
+          "warning-content": "#160c00",
                     
-          "warning-content": "#ecddd0",
+          error: "#cc2633",
                     
-          error: "#d30238",
-                    
-          "error-content": "#fdd6d5",
+          "error-content": "#fbd8d5",
 
           "--rounded-btn": "9999rem",
 
@@ -69,13 +68,13 @@ module.exports = {
           },
 
           ".modal-form-control": {
-            backgroundColor: "#fffff0",
+            backgroundColor: "#bebeb2",
             borderColor: "#120916",
             color: "#161612",
           },
           
           ".Contract-modal-content": {
-            backgroundColor: "#fffde3",
+            backgroundColor: "#bebeb2",
             color: "#120916",
           },
           ".modal-content":{
