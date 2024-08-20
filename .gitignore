@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-# dependencies
-node_modules
-
-# yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# eslint
-.eslintcache
-
-# misc
-.DS_Store
-
-# IDE
-.vscode
-.idea
-
-# cli
-dist
-=======
 # Logs
 logs
 *.log
@@ -153,4 +128,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
->>>>>>> e37d9603680fae254960ef2ad4f6b7725566e587
