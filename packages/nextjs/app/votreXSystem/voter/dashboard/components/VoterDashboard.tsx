@@ -5,7 +5,7 @@ import { hexToAscii as originalHexToAscii } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell, Pie, PieChart } from "recharts";
 import "./Dashboard.css"
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 
 interface Election {
   electionID: string;
@@ -64,14 +64,35 @@ const VoterDashboard = () => {
   const COLORS = ['#C738BD', '#00b900', '#ffc658', '#ff7300', '#d0ed57', '#a4de6c', '#8884d8', '#8dd1e1'];
 
   const { data: VotreXContract } = useScaffoldContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     walletClient,
   });
 
   const { data: ElectionList } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "getElectionListInOrg",
     args: [orgID as string],
+  });
+
+  const { data: getElectionInfo } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "getelectionInfo",
+    args: [selectedElection?.electionID as string],
+    account: walletClient?.account.address as Address,
+  });
+
+  const { data: getCandidateData } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "getCandidateResult",
+    args: [selectedElection?.electionID as string],
+    account: walletClient?.account.address as Address,
+  });
+
+  const { data: electionResultData } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "electionResults",
+    args: [selectedElection?.electionID as string],
+    account: walletClient?.account.address as Address,
   });
 
   const hexToAscii = (hex: string): string => {
@@ -148,7 +169,7 @@ const VoterDashboard = () => {
             const totalVoter = Number(resultData[4]);
             const electionIDHex = resultData?.[5] as Hex;
             const electionNameHex = resultData[6];
-            const digitalSignatureHex = resultData[7].toString();
+            const digitalSignatureHex = resultData[7];
             const registeredOrganization = resultData[8];
             const electionWinner = resultData[9];
             const signedBy = resultData[10];
@@ -157,7 +178,7 @@ const VoterDashboard = () => {
             const candidateVoteCounts = candidateData[2]
 
             const candidates = candidateIDs.map((id: number, index: number) => ({
-              candidateID: BigInt(id),
+              candidateID: BigInt(id), // Convert to BigInt
               name: candidateNames[index].replace(/\0/g, "").trim(),
               voteCount: Number(candidateVoteCounts[index]),
             }));;
@@ -171,7 +192,7 @@ const VoterDashboard = () => {
               totalVoter,
               electionID: hexToAscii(electionIDHex),
               electionName: hexToAscii(electionNameHex),
-              digitalSignature: digitalSignatureHex,
+              digitalSignature: digitalSignatureHex.toString(),
               registeredOrganization: registeredOrganization.replace(/\0/g, "").trim(),
               electionWinner: electionWinner.replace(/\0/g, "").trim(),
               signedBy: signedBy.replace(/\0/g, "").trim(),

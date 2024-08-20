@@ -198,12 +198,52 @@ form input {
 }
 
 .main-container {
+  max-width: 100%;
   display: flex;
   margin-top: -3rem;
-  margin-left: -24px;
+  margin-left: 24px;
   flex-direction: row;
-  padding: 1rem;
+  padding: 5rem;
+  justify-content: center;
 }
+
+.centered-control {
+  justify-content: center;
+  align-items: center; /* Center vertically */
+}
+
+.sticky-card {
+  position: sticky;
+  top: 1rem;
+  max-width: 300px;
+  width: 2rem;
+  margin-left: -3rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.show-token-info-btn-container {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.show-token-info-btn {
+  font-size: 1.5rem;
+  color: #000;
+  cursor: pointer;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 
 .button-container{
   display: flex;
@@ -212,7 +252,6 @@ form input {
   top: 0px;
   margin-top: -3rem;
   margin-bottom: -2rem;
-  margin-left: -2rem;
   padding: 24px;
 }
 
@@ -220,19 +259,28 @@ form input {
   position: sticky;
   top: 1rem;
   left: -32px;
-  width: 22rem; /* Adjust width as needed */
+  width: 22rem;
   z-index: 2;
   margin-top: 2px;
   padding: 2rem;
 }
 
 .token-control-container {
+  position: relative;
   flex-grow: 1;
-  margin-top: -0.5rem;
-  padding: 2.5rem 6.5rem;
-  margin-left: -4.5rem; /* Adjust margin as needed */
+  margin-top: -1.5rem; 
+  padding: 2.5rem 2rem;
+  margin-left: 2; 
   align-items: flex-start;
 }
+
+@media (max-width: 768px) {
+  .token-control-container {
+    padding: 2.5rem 6rem; 
+    margin-left: -4.5rem;
+  }
+}
+
 
 .Basic-Data-ORG {
   flex-grow: 1;

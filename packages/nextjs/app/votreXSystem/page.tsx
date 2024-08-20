@@ -53,20 +53,25 @@ const VotreXSysDashboard: NextPage = () => {
   }
 
   return (
-    <div className="container container-sm justify-center">
-      <h1>VotreXSysDashboard</h1>
-      <br />
-      <ButtonB linkDest="votreXSystem/loginPage" buttonLabel="Login" />
-      <br className="divider divider-secondary" />
-      <div className="button-component row">
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold text-center mb-6">VotreXSysDashboard</h1>
+
+      <div className="flex justify-center mb-4">
+        <ButtonB linkDest="votreXSystem/loginPage" buttonLabel="Login" />
+      </div>
+
+      <div className="divider my-6" />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
         <Link href="votreXSystem/voter/registerPage" className="link">
           <ButtonA buttonLabel="Register as Voter" />
         </Link>
-        <br />
         <Link href="votreXSystem/electionAdmin/registerPage" className="link">
           <ButtonA buttonLabel="Register as Admin" />
         </Link>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };

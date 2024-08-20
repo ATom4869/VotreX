@@ -8,24 +8,29 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Address } from "viem";
 import { useWalletClient } from "wagmi";
-import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const TokenControl = () => {
   const { data: walletClient } = useWalletClient();
 
   const adminAddress = walletClient?.account.address as string;
 
-  const { data: VotreXTokenContract } = useScaffoldContract({
-    contractName: "VotreXToken",
+  const { data: VotreXTokenT2Contract } = useScaffoldContract({
+    contractName: "VotreXTokenT2",
     walletClient,
   });
 
   const { data: VotreXSysContract } = useScaffoldContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     walletClient,
   });
 
-  const { writeContractAsync: ContractETHWitdrawals } = useScaffoldWriteContract("VotreXSystem");
+  const { data: VotreXStateCheck } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "isVotreXActivated",
+  });
+
+  const { writeContractAsync: VotreXControl } = useScaffoldWriteContract("VotreXSystemA1");
   const { writeContractAsync: TokenWithdrawals } = useScaffoldWriteContract("VotreXTXInterface");
 
   const { data: InterfaceContract } = useScaffoldContract({
@@ -56,9 +61,9 @@ const TokenControl = () => {
 
   const activateTokenFunction = async () => {
     try {
-      const status = await VotreXTokenContract?.read.paused();
+      const status = await VotreXTokenT2Contract?.read.paused();
       if (status) {
-        await VotreXTokenContract?.write.Activate();
+        await VotreXTokenT2Contract?.write.Activate();
         toast.success("Activated token", {
           autoClose: 3000,
           onClose: () => window.location.reload(),
@@ -77,9 +82,9 @@ const TokenControl = () => {
 
   const pauseTokenFunction = async () => {
     try {
-      const status = await VotreXTokenContract?.read.paused();
+      const status = await VotreXTokenT2Contract?.read.paused();
       if (!status) {
-        await VotreXTokenContract?.write.pause();
+        await VotreXTokenT2Contract?.write.pause();
         toast.success("Paused token system", {
           autoClose: 3000,
           onClose: () => window.location.reload(),
@@ -123,19 +128,43 @@ const TokenControl = () => {
 
   const ChangeVotreXSysStatusFunction = async () => {
     try {
-      const status = await VotreXSysContract?.read.isVotreXActivated();
+      const status = VotreXStateCheck
       if (status) {
-        await VotreXSysContract?.write.changeSystemState();
-        toast.success("Paused VotreX successfully", {
-          autoClose: 3000,
-          onClose: () => window.location.reload(),
-        });
+        await VotreXControl(
+          {
+            functionName: "changeSystemState",
+          },
+          {
+            onBlockConfirmation: txnReceipt => {
+              toast.success(
+                `Paused VotreX successfully, gas used: ` +
+                txnReceipt.cumulativeGasUsed,
+                {
+                  autoClose: 3000,
+                  onClose: () => window.location.reload(),
+                },
+              );
+            },
+          },
+        );
       } else {
-        await VotreXSysContract?.write.changeSystemState();
-        toast.success("Activating VotreX successfully", {
-          autoClose: 3000,
-          onClose: () => window.location.reload(),
-        });
+        await VotreXControl(
+          {
+            functionName: "changeSystemState",
+          },
+          {
+            onBlockConfirmation: txnReceipt => {
+              toast.success(
+                `Paused VotreX successfully, gas used: ` +
+                txnReceipt.cumulativeGasUsed,
+                {
+                  autoClose: 3000,
+                  onClose: () => window.location.reload(),
+                },
+              );
+            },
+          },
+        );
       }
     } catch (e) {
       toast.error("Error changing system state", {
@@ -148,13 +177,13 @@ const TokenControl = () => {
   const handleSetVotreXAddress = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const Interfacestatus = await InterfaceContract?.read.isActivatedInterfaceCheck();
-    const TokenStatus = await VotreXTokenContract?.read.paused();
+    const TokenStatus = await VotreXTokenT2Contract?.read.paused();
     const formattedInterfaceStatus = Interfacestatus ? "Active" : "Paused";
     const formattedTokensStatus = TokenStatus ? "Paused" : "Active";
 
     try {
       if (!Interfacestatus && TokenStatus) {
-        await VotreXTokenContract?.write.setVotreXContract([votreXAddress as Address]);
+        await VotreXTokenT2Contract?.write.setVotreXContract([votreXAddress as Address]);
         await InterfaceContract?.write.setVotreXSys([votreXAddress as Address]);
         toast.success("VotreX System Contract Address set successfully", {
           autoClose: 3000,
@@ -174,10 +203,10 @@ const TokenControl = () => {
       if (Interfacestatus && !TokenStatus) {
         toast.error(
           "Interface Sys Status is " +
-            formattedTokensStatus +
-            " & Token System Status is " +
-            formattedInterfaceStatus +
-            " Please Pause both first",
+          formattedTokensStatus +
+          " & Token System Status is " +
+          formattedInterfaceStatus +
+          " Please Pause both first",
           {
             autoClose: 3000,
           },
@@ -235,10 +264,10 @@ const TokenControl = () => {
             console.log("📦 Transaction blockHash", txnReceipt.blockHash);
             toast.success(
               `Success transfered ${TokenBalanceTransferAmountBigInt} VOX from ` +
-                VotreXaddr +
-                " to Admin Address, Receipt: " +
-                txnReceipt.blockHash +
-                txnReceipt.cumulativeGasUsed,
+              VotreXaddr +
+              " to Admin Address, Receipt: " +
+              txnReceipt.blockHash +
+              txnReceipt.cumulativeGasUsed,
               {
                 autoClose: 3000,
                 onClose: () => window.location.reload(),
@@ -247,7 +276,7 @@ const TokenControl = () => {
           },
         },
       );
-      await ContractETHWitdrawals(
+      await VotreXControl(
         {
           functionName: "withdrawFees",
         },
@@ -255,8 +284,8 @@ const TokenControl = () => {
           onBlockConfirmation: txnReceipt => {
             toast.success(
               `Success withdrawn all ETH to Admin Address, Receipt: ` +
-                txnReceipt.blockHash +
-                txnReceipt.cumulativeGasUsed,
+              txnReceipt.blockHash +
+              txnReceipt.cumulativeGasUsed,
               {
                 autoClose: 3000,
                 onClose: () => window.location.reload(),
@@ -265,17 +294,17 @@ const TokenControl = () => {
           },
         },
       );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleSetInterfaceContract = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const TokenStatus = await VotreXTokenContract?.read.paused();
+    const TokenStatus = await VotreXTokenT2Contract?.read.paused();
     const formattedTokenStatus = TokenStatus ? "Paused" : "Active";
 
     try {
       if (TokenStatus) {
-        await VotreXTokenContract?.write.setInterface([interfaceContract as Address]);
+        await VotreXTokenT2Contract?.write.setInterface([interfaceContract as Address]);
         toast.success("Interface Contract Address set successfully", {
           autoClose: 3000,
           onOpen: () => setInterfaceContract(""),
@@ -295,13 +324,13 @@ const TokenControl = () => {
   const handleSetStakingContract = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const Interfacestatus = await InterfaceContract?.read.isActivatedInterfaceCheck();
-    const TokenStatus = await VotreXTokenContract?.read.paused();
+    const TokenStatus = await VotreXTokenT2Contract?.read.paused();
     const formattedInterfaceStatus = Interfacestatus ? "Active" : "Paused";
     const formattedTokensStatus = TokenStatus ? "Paused" : "Active";
 
     try {
       if (!Interfacestatus && TokenStatus) {
-        await VotreXTokenContract?.write.setStakingContract([votreXAddress as Address]);
+        await VotreXTokenT2Contract?.write.setStakingContract([votreXAddress as Address]);
         await InterfaceContract?.write.setStakingContract([votreXAddress as Address]);
         toast.success("Setting Staking Contract Address to Token successfully", {
           autoClose: 3000,
@@ -325,10 +354,10 @@ const TokenControl = () => {
       if (Interfacestatus && !TokenStatus) {
         toast.error(
           "Interface Sys Status is " +
-            formattedTokensStatus +
-            " & Token System Status is " +
-            formattedInterfaceStatus +
-            " Please Pause both first",
+          formattedTokensStatus +
+          " & Token System Status is " +
+          formattedInterfaceStatus +
+          " Please Pause both first",
           {
             autoClose: 3000,
           },
@@ -344,13 +373,13 @@ const TokenControl = () => {
   const handleSetDexContract = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const Interfacestatus = await InterfaceContract?.read.isActivatedInterfaceCheck();
-    const TokenStatus = await VotreXTokenContract?.read.paused();
+    const TokenStatus = await VotreXTokenT2Contract?.read.paused();
     const formattedInterfaceStatus = Interfacestatus ? "Active" : "Paused";
     const formattedTokensStatus = TokenStatus ? "Paused" : "Active";
 
     try {
       if (!Interfacestatus && TokenStatus) {
-        await VotreXTokenContract?.write.setDexContract([votreXAddress as Address]);
+        await VotreXTokenT2Contract?.write.setDexContract([votreXAddress as Address]);
         toast.success("DEx Contract Address set successfully to Token Contract", {
           autoClose: 3000,
         });
@@ -372,10 +401,10 @@ const TokenControl = () => {
       if (Interfacestatus && !TokenStatus) {
         toast.error(
           "Interface Sys Status is " +
-            formattedTokensStatus +
-            " & Token System Status is " +
-            formattedInterfaceStatus +
-            " Please Pause both first",
+          formattedTokensStatus +
+          " & Token System Status is " +
+          formattedInterfaceStatus +
+          " Please Pause both first",
           {
             autoClose: 3000,
           },
@@ -390,9 +419,9 @@ const TokenControl = () => {
 
   const handleBurnTokens = async (burnAmountBigInt: bigint) => {
     try {
-      const tokenStatus = await VotreXTokenContract?.read.paused();
+      const tokenStatus = await VotreXTokenT2Contract?.read.paused();
       if (!tokenStatus) {
-        await VotreXTokenContract?.write.burn([burnAmountBigInt]);
+        await VotreXTokenT2Contract?.write.burn([burnAmountBigInt]);
         toast.success(`Burned ${burnAmountBigInt.toString()} tokens successfully`, {
           autoClose: 3000,
           onClose: () => window.location.reload(),
@@ -412,9 +441,9 @@ const TokenControl = () => {
 
   const handleMintTokens = async (MintDestinationAddr: Address, mintAmountBigInt: bigint) => {
     try {
-      const tokenStatus = await VotreXTokenContract?.read.paused();
+      const tokenStatus = await VotreXTokenT2Contract?.read.paused();
       if (!tokenStatus) {
-        await VotreXTokenContract?.write.mint([MintDestinationAddr, mintAmountBigInt]);
+        await VotreXTokenT2Contract?.write.mint([MintDestinationAddr, mintAmountBigInt]);
         toast.success(`Minted ${mintAmountBigInt.toString()} tokens successfully`, {
           autoClose: 3000,
           onClose: () => window.location.reload(),
@@ -434,7 +463,7 @@ const TokenControl = () => {
 
   const handleContractStrgCheck = async () => {
     try {
-      const contractStorage2 = await VotreXTokenContract?.read.ContractStorage([adminAddress as Address]);
+      const contractStorage2 = await VotreXTokenT2Contract?.read.ContractStorage([adminAddress as Address]);
       const AirdropContractAddr2 = await InterfaceContract?.read.ContractStorage([adminAddress as Address]);
 
       setContractStorageData({
@@ -507,8 +536,8 @@ const TokenControl = () => {
   return (
     <div className="token-control-container">
       <section>
-        <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-          <div className="h-[5rem] w-[7rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+        <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border z-2 border-base-300 flex flex-col mt-10 relative">
+          <div className="flex justify-center items-center h-[3rem] w-[8rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] left-1/2 transform -translate-x-1/2 z--1 py-[0.65rem] shadow-lg shadow-base-300">
             <div className="flex items-center justify-center space-x-2">
               <p className="my-0 text-sm">Token System</p>
             </div>
@@ -636,7 +665,7 @@ const TokenControl = () => {
       <br />
       <section className="interface-section">
         <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-          <div className="h-[5rem] w-[8rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+          <div className="flex justify-center items-center h-[3rem] w-[9rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] left-1/2 transform -translate-x-1/2 z--1 py-[0.65rem] shadow-lg shadow-base-300">
             <div className="flex items-center justify-center space-x-2">
               <p className="my-0 text-sm">Interface Control</p>
             </div>
@@ -722,7 +751,7 @@ const TokenControl = () => {
       <br />
       <section className="VotreXSys-section">
         <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-          <div className="h-[5rem] w-[8rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+          <div className="flex justify-center items-center h-[3rem] w-[8rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] left-1/2 transform -translate-x-1/2 z--1 py-[0.65rem] shadow-lg shadow-base-300">
             <div className="flex items-center justify-center space-x-2">
               <p className="my-0 text-sm">VotreX System</p>
             </div>

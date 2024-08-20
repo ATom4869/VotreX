@@ -38,7 +38,7 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer
-      default: deployerAddress
+      default: 0,
       // deployerAddress
     },
   },

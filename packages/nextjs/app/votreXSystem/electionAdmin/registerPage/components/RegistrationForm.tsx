@@ -10,7 +10,7 @@ import { useBlockNumber, useWalletClient } from "wagmi";
 import { useSignTypedData } from "wagmi";
 import { soliditySha3 } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
-import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const RegistrationForm = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -35,27 +35,36 @@ const RegistrationForm = () => {
   const { data, error } = useBlockNumber();
 
   const { data: walletClient } = useWalletClient();
-  const { data: VotreXSystem } = useScaffoldContract({
-    contractName: "VotreXSystem",
-    walletClient,
+
+  const { data: adminRegistrationFeeChecks } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "getRegistrationFee",
   });
 
-  const { data: VotreXSystemInterface } = useScaffoldContract({
+  const { data: InterfaceCheck } = useScaffoldReadContract({
     contractName: "VotreXTXInterface",
-    walletClient,
+    functionName: "isActivatedInterfaceCheck",
   });
 
-  const { writeContractAsync: ORGRegistration } = useScaffoldWriteContract("VotreXSystem");
+  const { data: VotreXStatusCheck } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "isVotreXActivated",
+    account: walletClient?.account.address,
+  });
+
+  const { writeContractAsync: ORGRegistration } = useScaffoldWriteContract("VotreXSystemA1");
 
   const { signTypedData } = useSignTypedData();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const interfaceStatus = await VotreXSystemInterface?.read.isActivatedInterfaceCheck();
-    const VotreXSysStatus = await VotreXSystem?.read.isVotreXActivated();
+    const interfaceStatus = InterfaceCheck;
+    const VotreXSysStatus = VotreXStatusCheck;
     const formattedInterfaceStatus = interfaceStatus ? "Active" : "Paused";
     const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
+    const registrationFee = adminRegistrationFeeChecks as bigint;
     const adminAddress = walletClient?.account.address;
+    const orgTypeValue = selectedOption === "Organization" ? 0 : 1;
     try {
       if (!interfaceStatus || !VotreXSysStatus) {
         toast.error(`Interface is ${formattedInterfaceStatus}. Please try again later`, {
@@ -67,18 +76,16 @@ const RegistrationForm = () => {
         return;
       }
 
-      const registrationFee = await VotreXSystem?.read.getRegistrationFee();
-      const orgTypeValue = selectedOption === "Organization" ? 0 : 1;
-
       await ORGRegistration(
         {
           functionName: "registerOrganization",
           args: [formData.orgName, formData.orgID, formData.adminName, orgTypeValue],
           value: registrationFee,
+          account: walletClient?.account.address,
         },
         {
           onBlockConfirmation: txnReceipt => {
-            toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
+            toast.success(`Registration success. gas used: ` + txnReceipt.cumulativeGasUsed, {
               autoClose: 3000,
               onClose: () => {
                 window.location.href = "/votreXSystem";
@@ -199,7 +206,7 @@ const RegistrationForm = () => {
 
       <p>
         Not an admin? Register as Voter{" "}
-        <Link href="/votreXSystem/voter/registerPage" style={{ color: "blue" }}>
+        <Link href="/VotreXSystemA1/voter/registerPage" style={{ color: "blue" }}>
           Here
         </Link>
       </p>

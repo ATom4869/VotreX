@@ -15,17 +15,16 @@ const BasicOrgData = () => {
   const [data, setData] = useState<any>({});
   const [orgID, setOrgID] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const adminAddress = walletClient?.account.address;
 
   const { data: orgDataFetch } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "organizationData",
     args: [orgID as string],
   });
 
   const { data: VotreXContract } = useScaffoldContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     walletClient,
   });
 
@@ -39,26 +38,6 @@ const BasicOrgData = () => {
       setOrgID(localStorage.getItem("orgID"));
     }
   }, [walletClient]);
-
-  useEffect(() => {
-    const checkAdminAddress = async () => {
-
-      if (!walletClient || !VotreXContract) return;
-
-      const currentAddress = walletClient.account.address;
-      const userInfo = await VotreXContract.read.getUserInfo();
-      const contractAdminAddress = userInfo?.[2];
-
-      if (currentAddress !== contractAdminAddress) {
-        window.location.href = "/votreXSystem/loginPage";
-      } else {
-        setIsAdmin(true);
-      }
-
-    };
-
-    checkAdminAddress();
-  }, [walletClient, VotreXContract]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,7 +66,7 @@ const BasicOrgData = () => {
       } catch (error) { }
     };
 
-    if (orgID && adminAddress) {
+    if (orgID) {
       fetchData();
     }
   }, [orgDataFetch, orgID, adminAddress]);
@@ -103,10 +82,6 @@ const BasicOrgData = () => {
   const handleCreateElection = () => {
     setIsModalOpen(false);
   };
-
-  if (!isAdmin) {
-    return null;
-  }
 
   return (
     <div className="flex justify-center">

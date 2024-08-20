@@ -22,10 +22,10 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
   const [votesAmount, setVotesAmount] = useState<bigint>(BigInt(0));
   const [loading, setLoading] = useState(true);
 
-  const { writeContractAsync: doVote } = useScaffoldWriteContract("VotreXSystem");
+  const { writeContractAsync: doVote } = useScaffoldWriteContract("VotreXSystemA1");
 
   const { data: electionData } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "getelectionInfo",
     args: [electionID],
   });

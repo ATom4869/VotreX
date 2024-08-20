@@ -18,7 +18,7 @@ const scaffoldConfig = {
   // it has no effect if you only target the local network (default is 4000)
   pollingInterval: 10000,
   
-  tokenIcon: "VOX✅",
+  tokenIcon: "VOX",
 
   // This is ours Alchemy's default API key.
   // You can get your own at https://dashboard.alchemyapi.io

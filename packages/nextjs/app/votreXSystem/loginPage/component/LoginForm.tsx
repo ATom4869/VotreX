@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Address } from "viem";
 import { useWalletClient } from "wagmi";
 import ButtonA from "~~/components/ButtonA";
-import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -22,8 +22,27 @@ const LoginForm = () => {
   };
 
   const { data: walletClient } = useWalletClient();
-  const { data: VotreXSystemContract } = useScaffoldContract({
-    contractName: "VotreXSystem",
+  const { data: VotreXSystemA1Contract } = useScaffoldContract({
+    contractName: "VotreXSystemA1",
+  });
+
+  const { data: VotreXOrgData } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "organizationData",
+    args: [formData.orgID],
+    account: walletClient?.account.address,
+  });
+
+  const { data: getUserInfo } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "getUserInfo",
+    account: walletClient?.account.address,
+  });
+
+  const { data: votersData } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "voters",
+    args: [walletClient?.account.address],
   });
 
   const loginCheck = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,15 +51,14 @@ const LoginForm = () => {
       const currentAddress = walletClient?.account.address;
 
       // Check if the current address is the admin of the organization
-      const orgIDCheck = await VotreXSystemContract?.read.organizationData([formData.orgID]);
-      if (orgIDCheck?.[1] && currentAddress === orgIDCheck?.[1]) {
-        const accountCheck = await VotreXSystemContract?.read.getUserInfo();
-        if (accountCheck?.[1]) {
+
+      if (VotreXOrgData?.[1] && currentAddress === VotreXOrgData?.[1]) {
+        if (getUserInfo?.[1]) {
           toast.success("You are an Admin", {
             autoClose: 3000,
             onClose: () => {
               localStorage.setItem("orgID", formData.orgID);
-              localStorage.setItem("adminAddress", currentAddress);
+              localStorage.setItem("adminAddress", currentAddress as string);
 
               window.location.href = "/votreXSystem/electionAdmin/dashboard/";
             },
@@ -49,8 +67,7 @@ const LoginForm = () => {
         }
       }
 
-      const voterCheck = await VotreXSystemContract?.read.voters([currentAddress as Address]);
-      if (voterCheck?.[0] && (voterCheck[5] === formData.orgID || voterCheck[6] === formData.orgID)) {
+      if (votersData?.[0] && (votersData[5] === formData.orgID || votersData[6] === formData.orgID)) {
         toast.success("You are a Voter", {
           autoClose: 3000,
           onClose: () => {

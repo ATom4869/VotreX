@@ -27,7 +27,7 @@ const RegistrationForm = () => {
 
   const { data: walletClient } = useWalletClient();
   const { data: VotreXSystem } = useScaffoldContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     walletClient,
   });
 
@@ -37,20 +37,31 @@ const RegistrationForm = () => {
   });
 
   const { data: organizationDataFetches } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "organizationData",
     args: [formData.orgID],
   });
 
-  const { writeContractAsync: VoterRegistration } = useScaffoldWriteContract("VotreXSystem");
+  const { data: InterfaceCheck } = useScaffoldReadContract({
+    contractName: "VotreXTXInterface",
+    functionName: "isActivatedInterfaceCheck",
+  });
+
+  const { data: VotreXStatusCheck } = useScaffoldReadContract({
+    contractName: "VotreXSystemA1",
+    functionName: "isVotreXActivated",
+    account: walletClient?.account.address,
+  });
+
+  const { writeContractAsync: VoterRegistration } = useScaffoldWriteContract("VotreXSystemA1");
 
   const { signTypedData } = useSignTypedData();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const interfaceStatus = await VotreXSystemInterface?.read.isActivatedInterfaceCheck();
-      const VotreXSysStatus = await VotreXSystem?.read.isVotreXActivated();
+      const interfaceStatus = InterfaceCheck;
+      const VotreXSysStatus = VotreXStatusCheck;
       const formattedInterfaceStatus = interfaceStatus ? "Active" : "Paused";
       const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
       if (!interfaceStatus && VotreXSysStatus) {
@@ -111,9 +122,9 @@ const RegistrationForm = () => {
         },
       });
     } catch (error) {
-      // toast.error("Error registering as voter. Please try again." + error, {
-      //   autoClose: 3000,
-      // });
+      toast.error("Error registering as voter. Please try again." + error, {
+        autoClose: 3000,
+      });
     }
   };
 

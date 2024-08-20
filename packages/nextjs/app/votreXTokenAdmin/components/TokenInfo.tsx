@@ -1,26 +1,28 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWalletClient } from "wagmi";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { faCopy, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 
-const TokenInfo = () => {
+interface TokenInfoProps {
+  onClose: () => void;
+}
+
+const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
   const { data: walletClient } = useWalletClient();
   const { data: VotreXToken } = useScaffoldContract({
-    contractName: "VotreXToken",
+    contractName: "VotreXTokenT2",
     walletClient,
   });
 
   const { data: VotreXTokenMAXSupply } = useScaffoldReadContract({
-    contractName: "VotreXToken",
+    contractName: "VotreXTokenT2",
     functionName: "MAXSupply",
   });
 
   const { data: VotreXStatus } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "isVotreXActivated",
     account: walletClient?.account.address,
   });
@@ -33,30 +35,32 @@ const TokenInfo = () => {
   });
 
   const { data: VotreXTokenOwner } = useScaffoldReadContract({
-    contractName: "VotreXToken",
+    contractName: "VotreXTokenT2",
     functionName: "getOwnerAddress",
     account: walletClient?.account.address,
   });
 
   const { data: TokencirculatingSupply } = useScaffoldReadContract({
-    contractName: "VotreXToken",
+    contractName: "VotreXTokenT2",
     functionName: "totalSupply",
   });
 
   const { data: contractTokenBalance } = useScaffoldReadContract({
-    contractName: "VotreXToken",
+    contractName: "VotreXTokenT2",
     functionName: "balanceOf",
     args: [VotreXToken?.address],
   });
 
   const { data: contractVotreXTokenBalance } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "CheckTokenETHBalance",
+    account: walletClient?.account.address,
   });
 
   const { data: contractVotreXVOXTokenBalance } = useScaffoldReadContract({
-    contractName: "VotreXSystem",
+    contractName: "VotreXSystemA1",
     functionName: "CheckTokenBalance",
+    account: walletClient?.account.address,
   });
 
   const [tokenName, setTokenName] = useState<string | null>(null);
@@ -167,8 +171,9 @@ const TokenInfo = () => {
 
   return (
     <div className="sticky-card">
-      <div className="card w-90 bg-base-100 shadow-xl">
-        <div className="card-body items-center text-center">
+      <FontAwesomeIcon icon={faEyeSlash} className="close-btn" beatFade size="lg" onClick={onClose} />
+      <div className="card w-full lg:w-80 bg-base-100 shadow-xl">
+        <div className="card-body items-start lg:items-center text-start lg:text-center">
           <div className="card-title items-center">Token Address:</div>
           <div className="col">
             <div className="flex items-center space-x-2">
@@ -209,7 +214,7 @@ const TokenInfo = () => {
             <div>{votreXStatusState !== null ? votreXStatusState : "Loading..."}</div>
           </div>
           <div className="col">
-            <div className="card-title justify-content text-center">MAX Supply:</div>
+            <div className="card-title text-center lg:text-start">MAX Supply:</div>
             <div>{tokenSupply !== null ? tokenSupply.toString() : "Loading..."}</div>
           </div>
           <div className="col">

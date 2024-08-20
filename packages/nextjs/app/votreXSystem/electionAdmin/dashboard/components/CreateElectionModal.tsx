@@ -25,7 +25,7 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
     }
   }, [walletClient]);
 
-  const { writeContractAsync: createElection } = useScaffoldWriteContract("VotreXSystem");
+  const { writeContractAsync: createElection } = useScaffoldWriteContract("VotreXSystemA1");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
