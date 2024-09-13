@@ -36,16 +36,6 @@ const RegistrationForm = () => {
 
   const { data: walletClient } = useWalletClient();
 
-  const { data: adminRegistrationFeeChecks } = useScaffoldReadContract({
-    contractName: "VotreXSystemA1",
-    functionName: "getRegistrationFee",
-  });
-
-  const { data: InterfaceCheck } = useScaffoldReadContract({
-    contractName: "VotreXTXInterface",
-    functionName: "isActivatedInterfaceCheck",
-  });
-
   const { data: VotreXStatusCheck } = useScaffoldReadContract({
     contractName: "VotreXSystemA1",
     functionName: "isVotreXActivated",
@@ -60,7 +50,6 @@ const RegistrationForm = () => {
     event.preventDefault();
     const VotreXSysStatus = VotreXStatusCheck;
     const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
-    const registrationFee = adminRegistrationFeeChecks as bigint;
     const adminAddress = walletClient?.account.address;
     const orgTypeValue = selectedOption === "Organization" ? 0 : 1;
     try {
@@ -75,7 +64,6 @@ const RegistrationForm = () => {
         {
           functionName: "registerOrganization",
           args: [formData.orgName, formData.orgID, formData.adminName, orgTypeValue],
-          value: registrationFee,
           account: walletClient?.account.address,
         },
         {

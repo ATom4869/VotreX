@@ -3099,19 +3099,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "getRegistrationFee",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "getTotalOrganization",
           outputs: [
             {
@@ -3354,19 +3341,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "_PriceinEther",
-              type: "uint256",
-            },
-          ],
-          name: "setOrgPriceFee",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "string",
               name: "_userElectionID",
               type: "string",
@@ -3450,10 +3424,6 @@ const deployedContracts = {
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
         },
       ],
       inheritedFunctions: {},

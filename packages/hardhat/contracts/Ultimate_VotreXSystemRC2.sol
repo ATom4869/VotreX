@@ -18,7 +18,7 @@ contract VotreXSystemA1{
     bytes32 public VotreXOwnerName = keccak256(abi.encodePacked("ATom"));
     uint256 private organizationsCounter;
     uint256 private VotreXUserCounter;
-    uint256 private OrganizationPriceFee = 20 ether;
+    // uint256 private OrganizationPriceFee = 20 ether;
     
     mapping(string  => Organization) public organizationData;
     mapping(address => ElectionAdmins) public admin;
@@ -210,18 +210,18 @@ contract VotreXSystemA1{
     function changeSystemState() external onlyVotreXOwner{
         if (VotreXActivated == false) {
             VotreXActivated = true;
-        } else if (VotreXActivated == true) {
+        } else {
             VotreXActivated = false;
         }
     }
 
-    function setOrgPriceFee(uint256 _PriceinEther) external onlyVotreXOwner {
-        OrganizationPriceFee = _PriceinEther * 1 ether;
-    }
+    // function setOrgPriceFee(uint256 _PriceinEther) external onlyVotreXOwner {
+    //     OrganizationPriceFee = _PriceinEther * 1 ether;
+    // }
 
-    receive() external payable {
+    // receive() external payable {
 
-    }
+    // }
 
     function registerOrganization(
         string memory _orgName,
@@ -236,11 +236,11 @@ contract VotreXSystemA1{
     {
         ElectionAdmins storage AdminInfo = admin[msg.sender];
 
-        require(
-            msg.value == OrganizationPriceFee,
-            // error 34 = error wrong ether value being sent
-            "error:34"
-        );
+        // require(
+        //     msg.value == OrganizationPriceFee,
+        //     // error 34 = error wrong ether value being sent
+        //     "error:34"
+        // );
 
         require(
             organizationsCounter < 32000,
@@ -347,9 +347,9 @@ contract VotreXSystemA1{
         payable
         onlyWhenActivated
     {
-        require(
-            msg.value == (OrganizationPriceFee/2)
-        );
+        // require(
+        //     msg.value == (OrganizationPriceFee/2)
+        // );
 
         Voter storage voter = voters[msg.sender];
         // string memory uniqueVoterID = generateUniqueVoterID(_orgID);
@@ -703,51 +703,13 @@ contract VotreXSystemA1{
         return VotreXActivated;
     }
 
-    function getRegistrationFee() external view returns (uint256){
-        return OrganizationPriceFee;
-    }
+    // function getRegistrationFee() external view returns (uint256){
+    //     return OrganizationPriceFee;
+    // }
 
     function getTotalOrganization() external virtual view returns (uint256) {
         return organizationsCounter;
     }
-
-    // function getCandidateDetail(
-    //     string memory _userElectionID,
-    //     string memory _candidateName
-    // )
-    //     external
-    //     view
-    //     returns(
-    //         string memory candidateName,
-    //         uint8 candidateID,
-    //         uint256 voteCount
-    //     )
-    // {
-    //     require(
-    //         bytes(_userElectionID).length > 0,
-    //         "Election ID can't be empty"
-    //     );
-
-    //     bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
-    //     ElectionDetail storage election = electionInfo[userElectionID];
-
-    //     for (uint32 i = 0; i < election.candidates.length; ++i) {
-    //         if (
-    //             keccak256(abi.encodePacked(election.candidates[i].candidateName))
-    //             ==
-    //             keccak256(abi.encodePacked(_candidateName))
-    //         ) {
-    //             return (
-    //                 election.candidates[i].candidateName,
-    //                 election.candidates[i].candidateID,
-    //                 election.candidates[i].candidateVoteCount
-    //             );
-    //         }
-    //     }
-
-    //     return ('', 0, 0);
-
-    // }
 
     function getelectionInfo(string memory _userElectionID)
         external

@@ -29,11 +29,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
 
   const tokenAddrData = VotreXToken?.address;
 
-  const { data: InterfaceContract } = useScaffoldContract({
-    contractName: "VotreXTXInterface",
-    walletClient,
-  });
-
   const { data: VotreXTokenOwner } = useScaffoldReadContract({
     contractName: "VotreXTokenT2",
     functionName: "getOwnerAddress",
@@ -57,12 +52,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
     account: walletClient?.account.address,
   });
 
-  const { data: contractVotreXVOXTokenBalance } = useScaffoldReadContract({
-    contractName: "VotreXSystemA1",
-    functionName: "CheckTokenBalance",
-    account: walletClient?.account.address,
-  });
-
   const [tokenName, setTokenName] = useState<string | null>(null);
   const [tokenAddr, setTokenAddr] = useState<string | null>(null);
   const [tokenOwner, setTokenOwner] = useState<string | null>(null);
@@ -74,7 +63,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
   const [circulatingSupply, setcirculatingSupply] = useState<string | null>(null);
   const [contractBalance, setcontractBalance] = useState<string | null>(null);
   const [contractBalanceVotreX, setContractBalanceVotreX] = useState<string | null>(null);
-  const [contractVOXBalanceVotreX, setContractVOXBalanceVotreX] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string>("");
 
   useEffect(() => {
@@ -107,7 +95,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
         const formattedStatus = status ? "Paused" : "Active";
         setTokenStatus(formattedStatus);
 
-        const interfaceStatus = await InterfaceContract?.read.isActivatedInterfaceCheck();
         const formattedInterfaceStatus = interfaceStatus ? "Active" : "Paused";
         setinterfaceStatus(formattedInterfaceStatus);
 
@@ -124,10 +111,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
         const formattedContractBalance = formatTokenSupply(contractBalanceData as bigint, 18);
         setcontractBalance(formattedContractBalance);
 
-        const contractVotreXVOXBalanceData = contractVotreXVOXTokenBalance as bigint;
-        const formattedcontractVotreXVOXBalance = formatTokenSupply(contractVotreXVOXBalanceData as bigint, 18);
-        setContractVOXBalanceVotreX(formattedcontractVotreXVOXBalance);
-
         const contractVotreXBalanceData = contractVotreXTokenBalance as bigint;
         const formattedcontractVotreXBalance = formatTokenSupply(contractVotreXBalanceData as bigint, 18);
         setContractBalanceVotreX(formattedcontractVotreXBalance);
@@ -140,13 +123,11 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
   }, [
     VotreXToken,
     VotreXTokenMAXSupply,
-    InterfaceContract,
     contractTokenBalance,
     TokencirculatingSupply,
     VotreXTokenOwner,
     VotreXStatus,
     contractVotreXTokenBalance,
-    contractVotreXVOXTokenBalance,
   ]);
 
   const formatTokenSupply = (supply: bigint, decimals: number) => {
@@ -224,11 +205,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
           <div className="col">
             <div className="card-title">Token Contract Balance:</div>
             <div>{contractBalance !== null ? contractBalance.toString() : "Loading..."}</div>
-          </div>
-          <div className="col">
-            <div className="card-title">VotreX Contract Balance:</div>
-            <div>{contractVOXBalanceVotreX !== null ? contractVOXBalanceVotreX.toString() + " VOX" : "Loading..."}</div>
-            <div>{contractBalanceVotreX !== null ? contractBalanceVotreX.toString() + " FLR" : "Loading..."}</div>
           </div>
         </div>
       </div>

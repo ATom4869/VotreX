@@ -7,22 +7,14 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   authorized: string;
-  stakingContract: string;
-  dexContract: string;
   VotreXContract: string;
-  interfaceContract: string;
-  AirdropContract: string;
 }
 
 const ContractStorageModal: React.FC<Props> = ({
   isOpen,
   onClose,
   authorized,
-  stakingContract,
-  dexContract,
   VotreXContract,
-  interfaceContract,
-  AirdropContract,
 }) => {
   if (!isOpen) return null;
 
@@ -38,29 +30,9 @@ const ContractStorageModal: React.FC<Props> = ({
             <label className="title-md">{authorized}</label>
           </div>
           <br />
-          <div className="Staking-container">
-            <h2>Staking Contract</h2>
-            <label className="title-md">{stakingContract}</label>
-          </div>
-          <br />
-          <div className="DEx-container">
-            <h2>DEx Contract</h2>
-            <label className="title-md">{dexContract}</label>
-          </div>
-          <br />
           <div className="VotreXAddr-container">
             <h2>VotreX Contract</h2>
             <label className="title-md">{VotreXContract}</label>
-          </div>
-          <br />
-          <div className="Interface-container">
-            <h2>Interface Contract</h2>
-            <label className="title-md">{interfaceContract}</label>
-          </div>
-          <br />
-          <div className="Airdrop-container">
-            <h2>Airdrop Contract</h2>
-            <label className="title-md">{AirdropContract}</label>
           </div>
           <br />
         </div>

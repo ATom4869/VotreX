@@ -31,20 +31,10 @@ const RegistrationForm = () => {
     walletClient,
   });
 
-  const { data: VotreXSystemInterface } = useScaffoldContract({
-    contractName: "VotreXTXInterface",
-    walletClient,
-  });
-
   const { data: organizationDataFetches } = useScaffoldReadContract({
     contractName: "VotreXSystemA1",
     functionName: "organizationData",
     args: [formData.orgID],
-  });
-
-  const { data: InterfaceCheck } = useScaffoldReadContract({
-    contractName: "VotreXTXInterface",
-    functionName: "isActivatedInterfaceCheck",
   });
 
   const { data: VotreXStatusCheck } = useScaffoldReadContract({
@@ -60,22 +50,15 @@ const RegistrationForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const interfaceStatus = InterfaceCheck;
       const VotreXSysStatus = VotreXStatusCheck;
-      const formattedInterfaceStatus = interfaceStatus ? "Active" : "Paused";
       const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
-      if (!interfaceStatus && VotreXSysStatus) {
-        toast.error(`Interface is ${formattedInterfaceStatus}. Please try again later.`, {
-          autoClose: 3000,
-        });
+      if (VotreXSysStatus) {
         toast.error(`VotreX System is ${formattedVotreXStatus}. Please try again later.`, {
           autoClose: 3000,
         });
         return;
       }
 
-      const registrationFee = await VotreXSystem?.read.getRegistrationFee();
-      const voterRegFee = (registrationFee as bigint) / 2n;
       const voterAddress = walletClient?.account.address;
       let currentMemberNumber = Number(organizationDataFetches?.[4] as bigint);
 
@@ -87,7 +70,6 @@ const RegistrationForm = () => {
         {
           functionName: "registerVoter",
           args: [formData.voterName, formData.orgID, uniqueVoterID as Hex],
-          value: voterRegFee,
         },
         {
           onBlockConfirmation: txnReceipt => {
