@@ -58,18 +58,13 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const interfaceStatus = InterfaceCheck;
     const VotreXSysStatus = VotreXStatusCheck;
-    const formattedInterfaceStatus = interfaceStatus ? "Active" : "Paused";
     const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
     const registrationFee = adminRegistrationFeeChecks as bigint;
     const adminAddress = walletClient?.account.address;
     const orgTypeValue = selectedOption === "Organization" ? 0 : 1;
     try {
-      if (!interfaceStatus || !VotreXSysStatus) {
-        toast.error(`Interface is ${formattedInterfaceStatus}. Please try again later`, {
-          autoClose: 3000,
-        });
+      if (!VotreXSysStatus) {
         toast.error(`VotreX System is ${formattedVotreXStatus}. Please try again later.`, {
           autoClose: 3000,
         });

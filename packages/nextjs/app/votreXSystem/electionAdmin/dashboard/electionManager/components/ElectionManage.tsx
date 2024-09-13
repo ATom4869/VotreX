@@ -59,7 +59,6 @@ const ElectionManage = () => {
   const [electionResult, setElectionResult] = useState<ElectionResult | null>(null);
   const [showAddCandidate, setShowAddCandidate] = useState(false);
   const [candidateName, setCandidateName] = useState("");
-  const [voxTokenValue, setVoxTokenValue] = useState<bigint>(BigInt(0));
   const [error, setError] = useState<string | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<bigint | null>(null);
 
@@ -334,13 +333,13 @@ const ElectionManage = () => {
 
   const handleVoteClick = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedElection || selectedCandidate === null || !voxTokenValue) return;
+    if (!selectedElection || selectedCandidate === null) return;
 
     try {
       await VOXCommand(
         {
           functionName: "vote",
-          args: [selectedElection.electionID, Number(selectedCandidate), BigInt(voxTokenValue)],
+          args: [selectedElection.electionID, Number(selectedCandidate)],
         },
         {
           onBlockConfirmation: txnReceipt => {
@@ -354,7 +353,6 @@ const ElectionManage = () => {
         },
       );
       setSelectedCandidate(null);
-      setVoxTokenValue(BigInt(0));
     } catch (error) {
       console.error("Error voting for candidate:", error);
     }
@@ -642,27 +640,6 @@ const ElectionManage = () => {
                         <span className="">{name}</span>
                       </label>
                     ))}
-                  </div>
-                </div>
-                <div className="mt-3 text-center">
-                  <label className="block font-medium mb-1">Vote Value:</label>
-                  <input
-                    id="voteCounts"
-                    name="voteCounts"
-                    type="range"
-                    min={1}
-                    max="5"
-                    value={voxTokenValue.toString()}
-                    className="range w-2/3 mx-auto"
-                    step="1"
-                    onChange={e => setVoxTokenValue(BigInt(e.target.value))}
-                  />
-                  <div className="flex w-2/3 mx-auto justify-between px-2 text-xs">
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>4</span>
-                    <span>5</span>
                   </div>
                 </div>
                 <div className="flex justify-center mt-3">

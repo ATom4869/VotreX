@@ -3,19 +3,15 @@
 pragma solidity ^0.8.24;
 
 import "./UtilityLibrary.sol";
-import "./VotreXTxInterface.sol";
 
 contract VotreXSystemA1{
 
     using UtilityLibrary for *;
 
-    constructor(address _TXInterfaceAddress){
+    constructor(){
         VotreXOwnerAddress = msg.sender;
         VotreXActivated = false;
-        TxInterface = VotreXTXInterface(_TXInterfaceAddress);
     }
-
-    VotreXTXInterface internal immutable TxInterface;
     bool private VotreXActivated;
     address private previousVotreXOwnerAddress;
     address private VotreXOwnerAddress;
@@ -207,25 +203,6 @@ contract VotreXSystemA1{
         _;
     }
 
-    function buyContract(string memory _YourName) public payable {
-        require(VotreXActivated == false);
-        // error 34 = error wrong ether value being sent
-        require(msg.value == 12 ether, "error:34");
-
-        previousVotreXOwnerAddress = VotreXOwnerAddress;
-        VotreXOwnerAddress = address(0);
-        VotreXOwnerName = keccak256(abi.encodePacked(_YourName));
-
-        payable(previousVotreXOwnerAddress).transfer(msg.value);
-
-        previousVotreXOwnerAddress = address(0);
-        VotreXOwnerAddress = msg.sender;
-    }
-
-    function CheckTokenBalance () external view onlyVotreXOwner returns (uint256) {
-        return TxInterface.checkBalance(address(this));
-    }
-
     function CheckTokenETHBalance () external view onlyVotreXOwner returns (uint256) {
         return (address(this).balance);
     }
@@ -257,7 +234,6 @@ contract VotreXSystemA1{
         canCreateOrg
         onlyWhenActivated
     {
-        uint8 VXTAmount = 5;
         ElectionAdmins storage AdminInfo = admin[msg.sender];
 
         require(
@@ -358,8 +334,6 @@ contract VotreXSystemA1{
 
         ++organizationsCounter;
         ++VotreXUserCounter;
-
-        TxInterface.VotreXTx(msg.sender, VXTAmount);
     }
 
     
@@ -378,7 +352,6 @@ contract VotreXSystemA1{
         );
 
         Voter storage voter = voters[msg.sender];
-        uint8 VXTAmount = 5;
         // string memory uniqueVoterID = generateUniqueVoterID(_orgID);
         bytes16 VoterID16 = bytes16(abi.encodePacked(uniqueVoterID));
         // bytes32 orgIDs = keccak256(abi.encodePacked(_orgID));
@@ -440,8 +413,6 @@ contract VotreXSystemA1{
         votersIDExists[VoterID16] = true;
         ++VotreXUserCounter;
         ++organizationData[_orgID].totalMembers;
-
-        TxInterface.VotreXTx(msg.sender, VXTAmount);
     }
 
     function createElection(
@@ -699,8 +670,7 @@ contract VotreXSystemA1{
 
     function vote(
         string memory _userElectionID,
-        uint8 candidateID,
-        uint256 VotesAmount
+        uint8 candidateID
     )
         external
         onlyWhenActivated
@@ -710,19 +680,17 @@ contract VotreXSystemA1{
         ElectionDetail storage election = electionInfo[userElectionID];
         Voter storage voter = voters[msg.sender];
         bytes32 electionName = election.electionName;
-        require(VotesAmount <= 5);
         require(bytes(_userElectionID).length > 0, "Election ID can't be empty");
         require(candidateID < election.candidates.length, "Invalid candidate ID");
         require(election.status == ElectionStatus.Started, "Election is not in progress");
         require(!hasParticipatedInElection(msg.sender, electionName), "You already voted in this election");
 
-        election.candidates[candidateID].candidateVoteCount += VotesAmount;
+        ++election.candidates[candidateID].candidateVoteCount;
         voter.participatedElectionEvents = UtilityLibrary.appendToStringArray(
             voter.participatedElectionEvents,
             string(abi.encodePacked(election.electionName))
         );
         ++election.totalParticipants;
-        TxInterface.VoteTx(msg.sender, VotesAmount);
     }
 
 

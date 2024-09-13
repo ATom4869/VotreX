@@ -22,13 +22,11 @@ const deployVotreXSystem: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   console.log("Deployed from address: ", `${deployer}`);
   const { deploy } = hre.deployments;
-  const Interface = await hre.ethers.getContract<Contract>("VotreXTXInterface", deployer);
-  const InterfaceAddress = await Interface.getAddress();
 
   await deploy("VotreXSystemA1", {
     from: deployer,
     // Contract constructor arguments
-    args: [`${InterfaceAddress}`],
+    args: [],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.

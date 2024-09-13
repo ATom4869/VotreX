@@ -19,7 +19,6 @@ interface VoteModalProps {
 const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null);
-  const [votesAmount, setVotesAmount] = useState<bigint>(BigInt(0));
   const [loading, setLoading] = useState(true);
 
   const { writeContractAsync: doVote } = useScaffoldWriteContract("VotreXSystemA1");
@@ -65,7 +64,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
   }, [isOpen, electionID, electionData]);
 
   const handleVote = async () => {
-    if (selectedCandidate === null || votesAmount <= BigInt(0)) {
+    if (selectedCandidate === null) {
       toast.error("Please select a candidate and enter a valid number of votes.");
       return;
     }
@@ -74,7 +73,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
       await doVote(
         {
           functionName: "vote",
-          args: [electionID, selectedCandidate, votesAmount],
+          args: [electionID, selectedCandidate],
         },
         {
           onBlockConfirmation: txnReceipt => {
@@ -117,31 +116,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
               </div>
             ))
           )}
-        </div>
-        <div className="mt-4">
-          <label htmlFor="votes" className="block text-sm font-medium">
-            Number of Votes
-          </label>
-
-          <input
-            id="voteCounts"
-            name="voteCounts"
-            type="range"
-            min={1}
-            defaultValue={3}
-            max="5"
-            value={votesAmount.toString()}
-            className="range w-full mx-auto"
-            step="1"
-            onChange={e => setVotesAmount(BigInt(e.target.value))}
-          />
-          <div className="flex w-full mx-auto justify-between px-2 text-xs">
-            <span>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-          </div>
         </div>
         <div className="mt-4 flex justify-end">
           <button onClick={onClose} className="btn btn-secondary mr-2">
