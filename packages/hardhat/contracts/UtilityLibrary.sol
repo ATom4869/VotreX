@@ -32,9 +32,12 @@ library UtilityLibrary{
     function onlyAlphanumericCharacters(string memory _input) internal pure returns (bool) {
         bytes memory b = bytes(_input);
         for (uint i = 0; i < b.length; ++i) {
-            if (!((uint8(b[i]) >= 48 && uint8(b[i]) <= 57) || // 0-9
+            if (
+                !((uint8(b[i]) >= 48 && uint8(b[i]) <= 57) || // 0-9
                 (uint8(b[i]) >= 65 && uint8(b[i]) <= 90) || // A-Z
-                (uint8(b[i]) >= 97 && uint8(b[i]) <= 122))) { // a-z
+                (uint8(b[i]) >= 97 && uint8(b[i]) <= 122))|| // a-z
+                uint8(b[i]) == 32 // Space
+            ){ 
                 return false;
             }
         }

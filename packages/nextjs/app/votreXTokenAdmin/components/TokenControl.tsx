@@ -20,29 +20,17 @@ const TokenControl = () => {
     walletClient,
   });
 
-  const { data: VotreXSysContract } = useScaffoldContract({
-    contractName: "VotreXSystemA1",
-    walletClient,
-  });
-
   const { data: VotreXStateCheck } = useScaffoldReadContract({
-    contractName: "VotreXSystemA1",
+    contractName: "TestCompleXA2C",
     functionName: "isVotreXActivated",
   });
 
-  const { writeContractAsync: VotreXControl } = useScaffoldWriteContract("VotreXSystemA1");
+  const { writeContractAsync: VotreXControl } = useScaffoldWriteContract("TestCompleXA2C");
 
   const [votreXAddress, setVotreXAddress] = useState<string>("");
-  const [interfaceContract, setInterfaceContract] = useState("");
-  const [stakingContract, setStakingContract] = useState("");
-  const [dexContract, setDexContract] = useState("");
-  const [balanceTransferAmount, setBalanceTransferAmount] = useState("");
-  const [balanceWithdrawalsAmount, setBalanceWithdrawalsAmount] = useState("");
-  const [destinationAddress, setDestinationAddress] = useState<string>("");
   const [isBurnModalOpen, setIsBurnModalOpen] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);
   const [isContractStrgModalOpen, setIsContractStrgModalOpen] = useState(false);
-  const [interfaceApprovalValue, setInterfaceApprovalValue] = useState<string>("");
   const [VotreXSysApprovalValue, setVotreXSysApprovalValue] = useState<string>("");
   const [contractStorageData, setContractStorageData] = useState({
     Authorized: "",
@@ -243,14 +231,6 @@ const TokenControl = () => {
       toast.error("Error Approval tokens" + e, {
         autoClose: 3000,
       });
-    }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (/^\d*$/.test(value)) {
-      setInterfaceApprovalValue(value);
-      setVotreXSysApprovalValue(value);
     }
   };
 

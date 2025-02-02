@@ -5,25 +5,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
-  --primary: rgb(241, 0, 167);
-  --secondary: rgb(0, 185, 0);
-  --color-base-100: rgb(255, 253, 227);
-  --color-base-200: rgb(222, 220, 197);
-  --color-base-300: rgb(190, 188, 168);
+  --primary: rgb(147, 187, 251);       /* #93BBFB */
+  --secondary: rgb(218, 232, 255);     /* #DAE8FF */
+  --base-100: rgb(255, 255, 255);      /* #ffffff */
+  --base-200: rgb(244, 248, 255);      /* #f4f8ff */
+  --base-300: rgb(218, 232, 255); 
 }
 
 /* Dark theme */
 [data-theme='dark'] {
-  --primary: rgb(199, 56, 189);
-  --secondary: rgb(175, 71, 210);
-  --color-base-100: rgb(133, 15, 141);
-  --color-base-200: rgb(115, 11, 122);
-  --color-base-300: rgb(97, 8, 103);
+  --primary-dark: rgb(33, 38, 56);       /* #212638 */
+  --secondary-dark: rgb(50, 63, 97);     /* #323f61 */
+  --base-100-dark: rgb(56, 81, 131);     /* #385183 */
+  --base-200-dark: rgb(42, 54, 85);      /* #2A3655 */
+  --base-300-dark: rgb(33, 38, 56);
 }
 
 
 body {
-  min-height: 100vh;
+  min-height: fit-content;
   display: flex;
   flex-direction: column;
   background-color: var(--color-base-200);
@@ -281,11 +281,21 @@ form input {
   }
 }
 
-
 .Basic-Data-ORG {
+  padding: 2rem 2rem;
+  margin: 0 auto; /* Center on all screen sizes */
   flex-grow: 1;
-  margin-top: -0.5rem;
-  padding: 4rem 20rem;
-  margin-left: -1.5rem; /* Adjust margin as needed */
   align-items: flex-start;
+}
+
+
+@media (max-width: 1080px) {
+  .Basic-Data-ORG {
+      padding: 1rem;
+      width: 100%; /* Ensure it spans full width on mobile */
+  };
+  .ElectionManage {
+    padding: 1rem;
+    width: 100%; /* Ensure it spans full width on mobile */
+  }
 }

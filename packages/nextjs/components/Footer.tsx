@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { hardhat } from "viem/chains";
 import { CurrencyDollarIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
@@ -65,6 +66,11 @@ export const Footer = () => {
                 <BuidlGuidlLogo className="w-3 h-5 pb-1" />
                 <span className="link">BuidlGuidl</span>
               </a>
+            </div>
+            <span>·</span>
+            <div className="flex justify-center items-center gap-2">
+              <Image alt="SE2 logo" className="cursor-pointer" width={12} height={12} src="/logo.svg" />
+              <a href="https://scaffold-eth-2-docs.vercel.app/" target="_blank" className="link">Powered by Scaffold-ETH</a>
             </div>
             <span>·</span>
             <div className="text-center">

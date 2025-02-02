@@ -6,17 +6,11 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   114: {
-    VotreXDex: {
-      address: "0xe94Ae4C4eD8938B0678c7B518783b5533dd99c29",
+    TestCompleXA2B: {
+      address: "0xDAfe6A26D55C50A51b0583E82b2918Fa2841ec4F",
       abi: [
         {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_intefaceAddress",
-              type: "address",
-            },
-          ],
+          inputs: [],
           stateMutability: "nonpayable",
           type: "constructor",
         },
@@ -24,593 +18,33 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
-              indexed: true,
-              internalType: "address",
-              name: "Requester",
-              type: "address",
-            },
-            {
               indexed: false,
-              internalType: "uint256",
-              name: "FLRSent",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "VXTAmount",
-              type: "uint256",
+              internalType: "string",
+              name: "electionID",
+              type: "string",
             },
           ],
-          name: "BuyVXTEvent",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "BuyVXT",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "CheckTokenBalance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "ContractOwner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "GetVXTtoFLRPrice",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "VXPriceRequested",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_flrPrice",
-              type: "uint256",
-            },
-          ],
-          name: "addVXTPricingFLR",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "allowances",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "approveDeX",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "ETHAmount",
-              type: "uint256",
-            },
-          ],
-          name: "calculateReqPricesFLR",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "FLRAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "VXTAmount",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_FLRAmount",
-              type: "uint256",
-            },
-          ],
-          name: "checkFLR",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "pure",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_VXTAmount",
-              type: "uint256",
-            },
-          ],
-          name: "convertToVXT",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "pure",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "vxtInterface",
-          outputs: [
-            {
-              internalType: "contract VotreXTXInterface",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdrawBalance",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdrawToken",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
-        },
-      ],
-      inheritedFunctions: {},
-    },
-    VotreXStake: {
-      address: "0xD726D018f56DdB2B0d390063327e6E489B9048c3",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_intefaceAddress",
-              type: "address",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "staker",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "stakeValue",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "rewardPercentage",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "rewardValue",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "StartTime",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "NextRewardTime",
-              type: "uint256",
-            },
-          ],
-          name: "Staked",
+          name: "ElectionReset",
           type: "event",
         },
         {
           anonymous: false,
           inputs: [
             {
-              indexed: true,
+              indexed: false,
               internalType: "address",
-              name: "Destination",
+              name: "voter",
               type: "address",
             },
             {
               indexed: false,
-              internalType: "uint256",
-              name: "printedValue",
-              type: "uint256",
+              internalType: "bool",
+              name: "status",
+              type: "bool",
             },
           ],
-          name: "TokenPrinted",
+          name: "LogResetVoter",
           type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "staker",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "stakeValueTaken",
-              type: "uint256",
-            },
-          ],
-          name: "Unstaked",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "CheckTokenBalance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "allowances",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "approveStaking",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_AutomationAddress",
-              type: "address",
-            },
-          ],
-          name: "authorizeAutomation",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "checkTotalInitialRewards",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "checkTotalPrintToken",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "checkTotalStakes",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "checksharedRewards",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "distributeRewards",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getStakerRewardTimes",
-          outputs: [
-            {
-              internalType: "address[]",
-              name: "stakerAddressList",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "rewardTimeList",
-              type: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_interfaceAddress",
-              type: "address",
-            },
-          ],
-          name: "setNewInterfaceAddress",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "stakeVXTValue",
-              type: "uint256",
-            },
-          ],
-          name: "stake",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "stakerInfo",
-          outputs: [
-            {
-              internalType: "address",
-              name: "StakerAddress",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "StakingValue",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "initialReward",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "accumulativeReward",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "totalPrintedToken",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "PrintValue",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "startStakingTime",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "rewardTime",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "unstake",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_destination",
-              type: "address",
-            },
-          ],
-          name: "withdrawPrintedTokento",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdrawTokentoOwner",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {},
-    },
-    VotreXSystemA1: {
-      address: "0xE4D9b841A2Cd0db17461a8F8c3fEE640cD283f48",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_TXInterfaceAddress",
-              type: "address",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          inputs: [],
-          name: "CheckTokenBalance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
         },
         {
           inputs: [],
@@ -636,24 +70,6 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "_userElectionID",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_candidateName",
-              type: "string",
-            },
-          ],
-          name: "addCandidateDetail",
-          outputs: [],
-          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -716,19 +132,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
-            {
-              internalType: "string",
-              name: "_YourName",
-              type: "string",
-            },
-          ],
-          name: "buyContract",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
           inputs: [],
           name: "changeSystemState",
           outputs: [],
@@ -752,11 +155,6 @@ const deployedContracts = {
               name: "_electionName",
               type: "string",
             },
-            {
-              internalType: "uint8",
-              name: "_candidateCount",
-              type: "uint8",
-            },
           ],
           name: "createElection",
           outputs: [],
@@ -774,7 +172,7 @@ const deployedContracts = {
           name: "electionInfo",
           outputs: [
             {
-              internalType: "enum VotreXSystemA1.ElectionStatus",
+              internalType: "enum TestCompleXA2B.ElectionStatus",
               name: "status",
               type: "uint8",
             },
@@ -818,6 +216,11 @@ const deployedContracts = {
               name: "totalParticipants",
               type: "uint256",
             },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -841,6 +244,11 @@ const deployedContracts = {
               internalType: "address",
               name: "adminAddress",
               type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
             },
             {
               internalType: "uint256",
@@ -903,10 +311,56 @@ const deployedContracts = {
               name: "_dataHash",
               type: "bytes32",
             },
+            {
+              internalType: "bool",
+              name: "isSingleWaveOrFinalStage",
+              type: "bool",
+            },
+            {
+              internalType: "uint256",
+              name: "threshold",
+              type: "uint256",
+            },
           ],
           name: "finishElection",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "getAllCandidates",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint8",
+                  name: "candidateID",
+                  type: "uint8",
+                },
+                {
+                  internalType: "uint256",
+                  name: "candidateVoteCount",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "candidateName",
+                  type: "string",
+                },
+              ],
+              internalType: "struct TestCompleXA2B.CandidateDetail[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -942,6 +396,65 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "getElectionInfo",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "electionID",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "electionName",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "totalCandidates",
+              type: "uint256",
+            },
+            {
+              internalType: "uint8[]",
+              name: "candidateIDs",
+              type: "uint8[]",
+            },
+            {
+              internalType: "string[]",
+              name: "candidateNames",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "voteCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256",
+              name: "totalParticipants",
+              type: "uint256",
+            },
+            {
+              internalType: "enum TestCompleXA2B.ElectionStatus",
+              name: "statusElection",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
               name: "orgID",
               type: "string",
             },
@@ -959,7 +472,7 @@ const deployedContracts = {
               type: "bytes32[]",
             },
             {
-              internalType: "enum VotreXSystemA1.ElectionStatus[]",
+              internalType: "enum TestCompleXA2B.ElectionStatus[]",
               name: "",
               type: "uint8[]",
             },
@@ -1007,19 +520,6 @@ const deployedContracts = {
               internalType: "bytes32",
               name: "",
               type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getRegistrationFee",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -1097,52 +597,22 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "_userElectionID",
-              type: "string",
-            },
-          ],
-          name: "getelectionInfo",
-          outputs: [
-            {
               internalType: "bytes32",
-              name: "electionID",
+              name: "",
               type: "bytes32",
             },
             {
-              internalType: "string",
-              name: "electionName",
-              type: "string",
+              internalType: "address",
+              name: "",
+              type: "address",
             },
+          ],
+          name: "hasVoted",
+          outputs: [
             {
-              internalType: "uint256",
-              name: "totalCandidates",
-              type: "uint256",
-            },
-            {
-              internalType: "uint8[]",
-              name: "candidateIDs",
-              type: "uint8[]",
-            },
-            {
-              internalType: "string[]",
-              name: "candidateNames",
-              type: "string[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "voteCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "uint256",
-              name: "totalParticipants",
-              type: "uint256",
-            },
-            {
-              internalType: "enum VotreXSystemA1.ElectionStatus",
-              name: "statusElection",
-              type: "uint8",
+              internalType: "bool",
+              name: "",
+              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -1172,7 +642,7 @@ const deployedContracts = {
           name: "organizationData",
           outputs: [
             {
-              internalType: "enum VotreXSystemA1.OrganizationType",
+              internalType: "enum TestCompleXA2B.OrganizationType",
               name: "orgType",
               type: "uint8",
             },
@@ -1233,14 +703,14 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "enum VotreXSystemA1.OrganizationType",
+              internalType: "enum TestCompleXA2B.OrganizationType",
               name: "_orgType",
               type: "uint8",
             },
           ],
           name: "registerOrganization",
           outputs: [],
-          stateMutability: "payable",
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -1262,19 +732,6 @@ const deployedContracts = {
             },
           ],
           name: "registerVoter",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_PriceinEther",
-              type: "uint256",
-            },
-          ],
-          name: "setOrgPriceFee",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -1300,14 +757,9 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "uint8",
-              name: "candidateID",
-              type: "uint8",
-            },
-            {
-              internalType: "uint256",
-              name: "VotesAmount",
-              type: "uint256",
+              internalType: "string",
+              name: "_candidateName",
+              type: "string",
             },
           ],
           name: "vote",
@@ -1359,1339 +811,6 @@ const deployedContracts = {
               internalType: "string",
               name: "RegisteredOrgID2",
               type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdrawFees",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
-        },
-      ],
-      inheritedFunctions: {},
-    },
-    VotreXTokenT2: {
-      address: "0x6c826F349d8fd94C7C5a5ABb916E7227aa28683c",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_initialMintedToken",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_MaxSupplies",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          inputs: [],
-          name: "ECDSAInvalidSignature",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "length",
-              type: "uint256",
-            },
-          ],
-          name: "ECDSAInvalidSignatureLength",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-          ],
-          name: "ECDSAInvalidSignatureS",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "allowance",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "needed",
-              type: "uint256",
-            },
-          ],
-          name: "ERC20InsufficientAllowance",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "balance",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "needed",
-              type: "uint256",
-            },
-          ],
-          name: "ERC20InsufficientBalance",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "approver",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidApprover",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "receiver",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidReceiver",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidSender",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidSpender",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-          ],
-          name: "ERC2612ExpiredSignature",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "signer",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "ERC2612InvalidSigner",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "EnforcedPause",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "ExpectedPause",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "currentNonce",
-              type: "uint256",
-            },
-          ],
-          name: "InvalidAccountNonce",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "InvalidShortString",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "str",
-              type: "string",
-            },
-          ],
-          name: "StringTooLong",
-          type: "error",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "Approval",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [],
-          name: "EIP712DomainChanged",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "Paused",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "from",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "Transfer",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "Unpaused",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "Activate",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "Owner",
-              type: "address",
-            },
-          ],
-          name: "ContractStorage",
-          outputs: [
-            {
-              internalType: "address",
-              name: "Authorized",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "stakingContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "dexContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "VotreXContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "interfaceContract",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "DOMAIN_SEPARATOR",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "MAXSupply",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-          ],
-          name: "allowance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "approve",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "autoMinting",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "balanceOf",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "burn",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "burnFrom",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "calculateHalving",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "checkBlockTime",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "customApprove",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "decimals",
-          outputs: [
-            {
-              internalType: "uint8",
-              name: "",
-              type: "uint8",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "eip712Domain",
-          outputs: [
-            {
-              internalType: "bytes1",
-              name: "fields",
-              type: "bytes1",
-            },
-            {
-              internalType: "string",
-              name: "name",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "version",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "chainId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "verifyingContract",
-              type: "address",
-            },
-            {
-              internalType: "bytes32",
-              name: "salt",
-              type: "bytes32",
-            },
-            {
-              internalType: "uint256[]",
-              name: "extensions",
-              type: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getCurrentMintAmount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getOwnerAddress",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "mint",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "name",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "nonces",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "pause",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "paused",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-            {
-              internalType: "uint8",
-              name: "v",
-              type: "uint8",
-            },
-            {
-              internalType: "bytes32",
-              name: "r",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-          ],
-          name: "permit",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_executorAddress",
-              type: "address",
-            },
-          ],
-          name: "setAutomationExecutor",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_DEXContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setDexContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_InterfaceContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setInterface",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_stakingContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setStakingContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_VotreXContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setVotreXContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "symbol",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalSupply",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "transfer",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "from",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "transferFrom",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {},
-    },
-    VotreXTXInterface: {
-      address: "0x5A676999715177E69Ce8CEdE05686C3e98f3E9c8",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_tokenAddress",
-              type: "address",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "Buyer",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "VXTTransfered",
-              type: "uint256",
-            },
-          ],
-          name: "BuyVXTEvent",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "Recipient",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "DroppedValue",
-              type: "uint256",
-            },
-          ],
-          name: "TokenDropped",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "Receiver",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "VXTTransfered",
-              type: "uint256",
-            },
-          ],
-          name: "TransferedVXTEvent",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "Voter",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "VotedPower",
-              type: "uint256",
-            },
-          ],
-          name: "VotedEvent",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "from",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "Receiver",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "VXTTransfered",
-              type: "uint256",
-            },
-          ],
-          name: "withdrawnToken",
-          type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "InterfaceMaster",
-              type: "address",
-            },
-          ],
-          name: "ContractStorage",
-          outputs: [
-            {
-              internalType: "address",
-              name: "Authorized",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "tokenContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "stakingContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "dexContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "VotreXContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "airdropContract",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bool",
-              name: "isStaking",
-              type: "bool",
-            },
-            {
-              internalType: "address",
-              name: "_Recipient",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_value",
-              type: "uint256",
-            },
-          ],
-          name: "Stake",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_value",
-              type: "uint256",
-            },
-          ],
-          name: "TokenWithdraw",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_Sender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_value",
-              type: "uint256",
-            },
-          ],
-          name: "VoteTx",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_Recipient",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_value",
-              type: "uint256",
-            },
-          ],
-          name: "VotreXTx",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "approveAirdrop",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "approveDeX",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "approveStaking",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint32",
-              name: "amount",
-              type: "uint32",
-            },
-          ],
-          name: "approveTxInterface",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "approveVotreX",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_Recipient",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_value",
-              type: "uint256",
-            },
-          ],
-          name: "balanceTx",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "changeSystemState",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_ContractAddress",
-              type: "address",
-            },
-          ],
-          name: "checkApprovalLimit",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "checkBalance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getTokenContract",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "isActivatedInterfaceCheck",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "isActivatedInterface",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_recipient",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_rewardValue",
-              type: "uint256",
-            },
-          ],
-          name: "printVXT",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_AirdropContract",
-              type: "address",
-            },
-          ],
-          name: "setAirdrop",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_dexContract",
-              type: "address",
-            },
-          ],
-          name: "setDeX",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_stakingAddress",
-              type: "address",
-            },
-          ],
-          name: "setStakingContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_VotreXContract",
-              type: "address",
-            },
-          ],
-          name: "setVotreXSys",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalSupplies",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -2702,8 +821,8 @@ const deployedContracts = {
     },
   },
   31337: {
-    VotreXSystemA1: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    TestCompleXA2C: {
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [],
@@ -2842,6 +961,11 @@ const deployedContracts = {
               name: "_candidateCount",
               type: "uint8",
             },
+            {
+              internalType: "bool",
+              name: "_isHaveCandidateMode",
+              type: "bool",
+            },
           ],
           name: "createElection",
           outputs: [],
@@ -2859,7 +983,7 @@ const deployedContracts = {
           name: "electionInfo",
           outputs: [
             {
-              internalType: "enum VotreXSystemA1.ElectionStatus",
+              internalType: "enum TestCompleXA2C.ElectionStatus",
               name: "status",
               type: "uint8",
             },
@@ -2871,6 +995,11 @@ const deployedContracts = {
             {
               internalType: "bool",
               name: "isFinished",
+              type: "bool",
+            },
+            {
+              internalType: "bool",
+              name: "isHaveCandidateMode",
               type: "bool",
             },
             {
@@ -2903,6 +1032,11 @@ const deployedContracts = {
               name: "totalParticipants",
               type: "uint256",
             },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -2926,6 +1060,11 @@ const deployedContracts = {
               internalType: "address",
               name: "adminAddress",
               type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
             },
             {
               internalType: "uint256",
@@ -2988,10 +1127,56 @@ const deployedContracts = {
               name: "_dataHash",
               type: "bytes32",
             },
+            {
+              internalType: "bool",
+              name: "isSingleWaveOrFinalStage",
+              type: "bool",
+            },
+            {
+              internalType: "uint256",
+              name: "_threshold",
+              type: "uint256",
+            },
           ],
           name: "finishElection",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "getAllCandidates",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint8",
+                  name: "candidateID",
+                  type: "uint8",
+                },
+                {
+                  internalType: "uint256",
+                  name: "candidateVoteCount",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "candidateName",
+                  type: "string",
+                },
+              ],
+              internalType: "struct TestCompleXA2C.CandidateDetail[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -3027,6 +1212,70 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "getElectionInfo",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "electionID",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "electionName",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "totalCandidates",
+              type: "uint256",
+            },
+            {
+              internalType: "uint8[]",
+              name: "candidateIDs",
+              type: "uint8[]",
+            },
+            {
+              internalType: "string[]",
+              name: "candidateNames",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "voteCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256",
+              name: "totalParticipants",
+              type: "uint256",
+            },
+            {
+              internalType: "enum TestCompleXA2C.ElectionStatus",
+              name: "statusElection",
+              type: "uint8",
+            },
+            {
+              internalType: "bool",
+              name: "isHaveCandidateMode",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
               name: "orgID",
               type: "string",
             },
@@ -3044,7 +1293,7 @@ const deployedContracts = {
               type: "bytes32[]",
             },
             {
-              internalType: "enum VotreXSystemA1.ElectionStatus[]",
+              internalType: "enum TestCompleXA2C.ElectionStatus[]",
               name: "",
               type: "uint8[]",
             },
@@ -3169,52 +1418,22 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "_userElectionID",
-              type: "string",
-            },
-          ],
-          name: "getelectionInfo",
-          outputs: [
-            {
               internalType: "bytes32",
-              name: "electionID",
+              name: "",
               type: "bytes32",
             },
             {
-              internalType: "string",
-              name: "electionName",
-              type: "string",
+              internalType: "address",
+              name: "",
+              type: "address",
             },
+          ],
+          name: "hasVoted",
+          outputs: [
             {
-              internalType: "uint256",
-              name: "totalCandidates",
-              type: "uint256",
-            },
-            {
-              internalType: "uint8[]",
-              name: "candidateIDs",
-              type: "uint8[]",
-            },
-            {
-              internalType: "string[]",
-              name: "candidateNames",
-              type: "string[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "voteCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "uint256",
-              name: "totalParticipants",
-              type: "uint256",
-            },
-            {
-              internalType: "enum VotreXSystemA1.ElectionStatus",
-              name: "statusElection",
-              type: "uint8",
+              internalType: "bool",
+              name: "",
+              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -3244,7 +1463,7 @@ const deployedContracts = {
           name: "organizationData",
           outputs: [
             {
-              internalType: "enum VotreXSystemA1.OrganizationType",
+              internalType: "enum TestCompleXA2C.OrganizationType",
               name: "orgType",
               type: "uint8",
             },
@@ -3305,7 +1524,7 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "enum VotreXSystemA1.OrganizationType",
+              internalType: "enum TestCompleXA2C.OrganizationType",
               name: "_orgType",
               type: "uint8",
             },
@@ -3363,6 +1582,16 @@ const deployedContracts = {
               name: "candidateID",
               type: "uint8",
             },
+            {
+              internalType: "string",
+              name: "_candidateName",
+              type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "isModeHaveCandidate",
+              type: "bool",
+            },
           ],
           name: "vote",
           outputs: [],
@@ -3416,864 +1645,6 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdrawFees",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {},
-    },
-    VotreXTokenT2: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_initialMintedToken",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_MaxSupplies",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          inputs: [],
-          name: "ECDSAInvalidSignature",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "length",
-              type: "uint256",
-            },
-          ],
-          name: "ECDSAInvalidSignatureLength",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-          ],
-          name: "ECDSAInvalidSignatureS",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "allowance",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "needed",
-              type: "uint256",
-            },
-          ],
-          name: "ERC20InsufficientAllowance",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "balance",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "needed",
-              type: "uint256",
-            },
-          ],
-          name: "ERC20InsufficientBalance",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "approver",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidApprover",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "receiver",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidReceiver",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidSender",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-          ],
-          name: "ERC20InvalidSpender",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-          ],
-          name: "ERC2612ExpiredSignature",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "signer",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "ERC2612InvalidSigner",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "EnforcedPause",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "ExpectedPause",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "currentNonce",
-              type: "uint256",
-            },
-          ],
-          name: "InvalidAccountNonce",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "InvalidShortString",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "str",
-              type: "string",
-            },
-          ],
-          name: "StringTooLong",
-          type: "error",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "Approval",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [],
-          name: "EIP712DomainChanged",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "Paused",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "from",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "Transfer",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "Unpaused",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "Activate",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "Owner",
-              type: "address",
-            },
-          ],
-          name: "ContractStorage",
-          outputs: [
-            {
-              internalType: "address",
-              name: "Authorized",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "stakingContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "dexContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "VotreXContract",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "interfaceContract",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "DOMAIN_SEPARATOR",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "MAXSupply",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-          ],
-          name: "allowance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "approve",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "autoMinting",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "balanceOf",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "burn",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "burnFrom",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "calculateHalving",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "checkBlockTime",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "customApprove",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "decimals",
-          outputs: [
-            {
-              internalType: "uint8",
-              name: "",
-              type: "uint8",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "eip712Domain",
-          outputs: [
-            {
-              internalType: "bytes1",
-              name: "fields",
-              type: "bytes1",
-            },
-            {
-              internalType: "string",
-              name: "name",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "version",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "chainId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "verifyingContract",
-              type: "address",
-            },
-            {
-              internalType: "bytes32",
-              name: "salt",
-              type: "bytes32",
-            },
-            {
-              internalType: "uint256[]",
-              name: "extensions",
-              type: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getCurrentMintAmount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getOwnerAddress",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "mint",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "name",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "nonces",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "pause",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "paused",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-            {
-              internalType: "uint8",
-              name: "v",
-              type: "uint8",
-            },
-            {
-              internalType: "bytes32",
-              name: "r",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-          ],
-          name: "permit",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_executorAddress",
-              type: "address",
-            },
-          ],
-          name: "setAutomationExecutor",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_DEXContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setDexContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_InterfaceContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setInterface",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_stakingContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setStakingContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_VotreXContractAddress",
-              type: "address",
-            },
-          ],
-          name: "setVotreXContract",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "symbol",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalSupply",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "transfer",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "from",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "transferFrom",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
           type: "function",
         },
       ],

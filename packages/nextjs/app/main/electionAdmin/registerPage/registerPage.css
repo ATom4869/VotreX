@@ -1,0 +1,17 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+.myRadButton {
+    display: flex;
+    align-items: center;
+  }
+  
+  .myRadButton input {
+    margin: 0;
+  }
+  
+  .myRadButton span {
+    line-height: 1.2; /* Adjust as needed */
+  }
+  

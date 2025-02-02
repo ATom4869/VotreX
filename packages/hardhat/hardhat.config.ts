@@ -24,7 +24,7 @@ const deployerAddress = process.env.DEPLOYER_FLARE_ADDRES as string;
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.24",
+    version: "0.8.25",
     settings: {
       optimizer: {
         enabled: true,
@@ -130,12 +130,15 @@ const config: HardhatUserConfig = {
     pgnTestnet: {
       url: "https://sepolia.publicgoods.network",
       accounts: [deployerPrivateKey],
-    }
+    },
+    'flare-testnet-coston2': {
+      url: 'https://coston2-api.flare.network/ext/C/rpc'
+    },
   },
   // configuration for harhdat-verify plugin
-  etherscan: {
-    apiKey: `${etherscanApiKey}`,
-  },
+  // etherscan: {
+  //   apiKey: `${etherscanApiKey}`,
+  // },
   // configuration for etherscan-verify from hardhat-deploy plugin
   verify: {
     etherscan: {

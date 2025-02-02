@@ -9,45 +9,26 @@ module.exports = {
     themes: [
       {
         light: {
-          primary: "#6d28d9",
-          
-          "primary-content": "#ded8fb",
-                    
-          secondary: "#a21caf",
-                    
-          "secondary-content": "#efd6f1",
-                    
-          accent: "#62a900",
-                    
-          "accent-content": "#030a00",
-                    
-          neutral: "#1d1617",
-                    
-          "neutral-content": "#cccacb",
-                    
-          "base-100": "#bebeb2",
-                    
-          "base-200": "#a5a59a",
-                    
-          "base-300": "#8c8c83",
-                    
-          "base-content": "#0d0d0c",
-                    
-          info: "#00d2ff",
-                    
-          "info-content": "#001016",
-                    
-          success: "#81e36e",
-                    
-          "success-content": "#061204",
-                    
-          warning: "#ffb400",
-                    
-          "warning-content": "#160c00",
-                    
-          error: "#cc2633",
-                    
-          "error-content": "#fbd8d5",
+          primary: "#93BBFB",
+          "primary-content": "#080d15",
+          secondary: "#DAE8FF",
+          "secondary-content": "#111316",
+          accent: "#93BBFB",
+          "accent-content": "#080d15",
+          neutral: "#212638",
+          "neutral-content": "#cdcfd4",
+          "base-100": "#ffffff",
+          "base-200": "#dedede",
+          "base-300": "#bebebe",
+          "base-content": "#161616",
+          info: "#87CEEB",
+          "info-content": "#080d15",
+          success: "#34EEB6",
+          "success-content": "#01140c",
+          warning: "#FFCF72",
+          "warning-content": "#161004",
+          error: "#FF8863",
+          "error-content": "#160603",
 
           "--rounded-btn": "9999rem",
 
@@ -63,7 +44,7 @@ module.exports = {
           
           ".form-control": {
             backgroundColor: "#fffff0",
-            borderColor: "#120916",
+            borderColor: "#bebebe",
             color: "#120916",
           },
 
@@ -78,10 +59,10 @@ module.exports = {
             color: "#120916",
           },
           ".modal-content":{
-            backgroundColor: "#dedcc5",
+            backgroundColor: "#dedede",
           },
           ".text-theme":{
-            color: "#161612",
+            color: "#25292e",
           },
           "barColor" : {
             barColor: '#00b900',
@@ -90,28 +71,28 @@ module.exports = {
       },
       {
         dark: {
-            primary: "#C738BD",                     
-            "primary-content": "#0e010d",
-            secondary: "#AF47D2",                     
-            "secondary-content": "#F9FBFF",                     
-            accent: "#E49BFF",                     
-            "accent-content": "#120916",                     
-            neutral: "#F9FBFF",                     
-            "neutral-content": "#151516",                     
-            "base-100": "#850F8D",                     
-            "base-200": "#730b7a",                     
-            "base-300": "#610867",                     
-            "base-content": "#e8d2e9",                     
-            info: "#604CC3",                     
-            "info-content": "#dcdbf6",                     
-            success: "#80C4E9",                     
-            "success-content": "#060e13",                     
-            warning: "#FFDB00",                     
-            "warning-content": "#161100",                     
-            error: "#dc2626",
-            "text-accent": "#e0cfe1",
-            "error-content": "#ffd9d4",
-            "--rounded-btn": "9999rem",
+          primary: "#212638",
+          "primary-content": "#cdcfd4",
+          secondary: "#323F61",
+          "secondary-content": "#d2d6de",
+          accent: "#4969A6",
+          "accent-content": "#d8e0ee",
+          neutral: "#F9FBFF",
+          "neutral-content": "#151516",
+          "base-100": "#385183",
+          "base-200": "#2f4571",
+          "base-300": "#273a60",
+          "base-content": "#d4dae6",
+          info: "#87CEEB",
+          "info-content": "#060f13",
+          success: "#34EEB6",
+          "success-content": "#01140c",
+          warning: "#FFCF72",
+          "warning-content": "#161004",
+          error: "#FF8863",
+          "error-content": "#160603",
+          
+          "--rounded-btn": "9999rem",
 
           ".tooltip": {
             "--tooltip-tail": "6px",
@@ -124,26 +105,26 @@ module.exports = {
             opacity: "80%",
           },
           ".modal-form-control": {
-            backgroundColor: "#E49BFF",
+            backgroundColor: "#2A3655",
             borderColor: "#0e010d",
-            color: "#161612",
+            color: "#ffffff",
           },
           ".form-control": {
-            backgroundColor: "#E49BFF",
-            color: "#0e010d",
-            placeholder: "#dad7f6",
-            placeholderColor: "#dad7f6",
+            backgroundColor: "#2A3655",
+            color: "#ffffff",
+            placeholder: "#ffffff",
+            placeholderColor: "#ffffff",
           },
           ".Contract-modal-content": {
-            backgroundColor: "#850F8D",
+            backgroundColor: "#2A3655",
             color: "#F9FBFF",
           },
           ".modal-content":{
-            backgroundColor: "#850F8D",
+            backgroundColor: "#2A3655",
             color: "#F9FBFF",
           },
           ".text-theme":{
-            color: "#e8d2e9",
+            color: "#ffffff",
           },
           "barColor" : {
             fill: '#AF47D2',

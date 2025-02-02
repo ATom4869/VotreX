@@ -4,9 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
+import { BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
   label: string;
@@ -22,11 +21,11 @@ export const menuLinks: HeaderMenuLink[] = [
   },
   {
     label: "VotreX System",
-    href: "/votreXSystem",
+    href: "/main",
   },
   {
     label: "VotreX Token",
-    href: "/votreXTokenAdmin",
+    href: "/VotreXAdminPanel",
   },
 ];
 
@@ -42,9 +41,8 @@ export const HeaderMenuLinks = () => {
             <Link
               href={href}
               passHref
-              className={`${
-                isActive ? "bg-secondary shadow-md" : ""
-              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+              className={`${isActive ? "bg-secondary shadow-md" : ""
+                } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
             >
               {icon}
               <span>{label}</span>
@@ -60,21 +58,21 @@ export const HeaderMenuLinks = () => {
  * Site header
  */
 export const Header = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [orgID, setOrgID] = useState<string | null>(null);
   const pathname = usePathname();
-  const burgerMenuRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(
-    burgerMenuRef,
-    useCallback(() => setIsDrawerOpen(false), []),
-  );
+  // const burgerMenuRef = useRef<HTMLDivElement>(null);
+  // useOutsideClick(
+  //   burgerMenuRef,
+  //   useCallback(() => setIsDrawerOpen(false), []),
+  // );
 
   useEffect(() => {
     // Fetch OrgID from local storage
     const storedOrgID = localStorage.getItem("orgID");
     if (
-      pathname.startsWith("/votreXSystem/electionAdmin/dashboard") ||
-      pathname.startsWith("/votreXSystem/voter/dashboard")
+      pathname.startsWith("/dashboard") &&
+      (pathname.includes("role=admin") || pathname.includes("role=voter"))
     ) {
       if (storedOrgID) {
         setOrgID(storedOrgID);
@@ -89,7 +87,7 @@ export const Header = () => {
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
       <div className="navbar-start w-auto lg:w-1/2">
-        <div className="dropdown dropdown-start" ref={burgerMenuRef}>
+        {/* <div className="dropdown dropdown-start" ref={burgerMenuRef}>
           <label
             tabIndex={0}
             className={`ml-1 btn btn-ghost ${isDrawerOpen ? "hover:bg-secondary" : "hover:bg-transparent"}`}
@@ -110,13 +108,14 @@ export const Header = () => {
               <HeaderMenuLinks />
             </ul>
           )}
-        </div>
+        </div> */}
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
+            {/* <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" /> */}
+            <Image alt="VotreX-Logo" className="cursor-pointer" fill src="/VotreX-Logo-potrait.png" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">VotreX-Scaffold-ETH</span>
+            <span className="font-bold leading-tight">VotreX System</span>
             <span className="text-xs">Your trusted dApps</span>
           </div>
         </Link>
@@ -125,12 +124,14 @@ export const Header = () => {
         </ul> */}
       </div>
       {/* Conditionally render "OrgID Dashboard" */}
-      {(pathname.startsWith("/votreXSystem/electionAdmin/dashboard") ||
-        pathname.startsWith("/votreXSystem/voter/dashboard")) && (
-        <div className="text-center p-3 flex bg-base-300 rounded-3xl border border-base-200 items-center">
-          <h2 className="text-sm font-bold truncate">{orgID ? `${orgID} Dashboard` : "Loading..."}</h2>
-        </div>
-      )}
+      {pathname.startsWith("/dashboard") &&
+        (pathname.includes("role=admin") || pathname.includes("role=voter")) && (
+          <div className="text-center p-3 flex bg-base-300 rounded-3xl border border-base-200 items-center">
+            <h2 className="text-sm font-bold truncate">
+              {orgID ? `${orgID} Dashboard` : "Loading..."}
+            </h2>
+          </div>
+        )}
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
         <FaucetButton />

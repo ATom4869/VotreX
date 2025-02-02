@@ -1,7 +1,0 @@
-.recharts-bar {
-    fill: var(--primary); /* Using DaisyUI primary color */
-  }
-  
-  .recharts-bar-alt {
-    fill: var(--secondary); /* Example for secondary color */
-  }

@@ -7,7 +7,7 @@ interface Props {
 const ButtonA: React.FC<Props> = ({ buttonLabel }) => {
   return (
     <div>
-      <button type="submit" className="btn btn-primary btn-sm">
+      <button type="submit" className="btn btn-accent btn-sm shadow-sm px-8">
         {buttonLabel}
       </button>
     </div>

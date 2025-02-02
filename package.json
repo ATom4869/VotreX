@@ -33,14 +33,24 @@
     "postinstall": "husky install",
     "precommit": "lint-staged",
     "vercel": "yarn workspace @se-2/nextjs vercel",
+    "vercel:login": "yarn workspace @se-2/nextjs vercel login",
+    "vercel:deploy": "yarn workspace @se-2/nextjs vercel deploy",
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "eslint-config-next": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
   }
 }

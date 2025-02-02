@@ -22,7 +22,7 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
   });
 
   const { data: VotreXStatus } = useScaffoldReadContract({
-    contractName: "VotreXSystemA1",
+    contractName: "TestCompleXA2B",
     functionName: "isVotreXActivated",
     account: walletClient?.account.address,
   });
@@ -47,7 +47,7 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
   });
 
   const { data: contractVotreXTokenBalance } = useScaffoldReadContract({
-    contractName: "VotreXSystemA1",
+    contractName: "TestCompleXA2B",
     functionName: "CheckTokenETHBalance",
     account: walletClient?.account.address,
   });
@@ -62,7 +62,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
   const [votreXStatusState, setVotreXStatusState] = useState<string | null>(null);
   const [circulatingSupply, setcirculatingSupply] = useState<string | null>(null);
   const [contractBalance, setcontractBalance] = useState<string | null>(null);
-  const [contractBalanceVotreX, setContractBalanceVotreX] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string>("");
 
   useEffect(() => {
@@ -110,10 +109,6 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ onClose }) => {
         const contractBalanceData = contractTokenBalance as bigint;
         const formattedContractBalance = formatTokenSupply(contractBalanceData as bigint, 18);
         setcontractBalance(formattedContractBalance);
-
-        const contractVotreXBalanceData = contractVotreXTokenBalance as bigint;
-        const formattedcontractVotreXBalance = formatTokenSupply(contractVotreXBalanceData as bigint, 18);
-        setContractBalanceVotreX(formattedcontractVotreXBalance);
       } catch (error) {
         console.error("Error fetching token data:", error);
       }
