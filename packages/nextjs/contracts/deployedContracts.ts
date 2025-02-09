@@ -819,10 +819,8 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-  },
-  31337: {
     TestCompleXA2C: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x1CD12738d77B681c35b07a728AB1584D6846D6a6",
       abi: [
         {
           inputs: [],
