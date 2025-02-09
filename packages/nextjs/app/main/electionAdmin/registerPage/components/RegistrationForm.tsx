@@ -47,11 +47,12 @@ const RegistrationForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const VotreXSysStatus = VotreXStatusCheck;
+    console.log(VotreXSysStatus);
     const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
     const adminAddress = walletClient?.account.address;
     const orgTypeValue = selectedOption === "Organization" ? 0 : 1;
     try {
-      if (!VotreXSysStatus) {
+      if (formattedVotreXStatus === "Paused") {
         toast.error(`VotreX System is ${formattedVotreXStatus}. Please try again later.`, {
           autoClose: 3000,
         });

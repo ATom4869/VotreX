@@ -38,8 +38,11 @@ const deployVotreXSystem: DeployFunction = async function (hre: HardhatRuntimeEn
   const VotreXSystem = await hre.ethers.getContract<Contract>("TestCompleXA2C", deployer);
   const VotreXSystemAddress = await VotreXSystem.getAddress();
   const OwnerName = await VotreXSystem.getOwnerName();
+  const VotreXSystemStatus = await VotreXSystem.isVotreXActivated();
+  const formattedVotreXStatus = VotreXSystemStatus ? "Active" : "Paused";
   console.log("VotreX System Address: ", VotreXSystemAddress);
   console.log("VotreX System Owner Name: ", OwnerName);
+  console.log("VotreX System Status: ", formattedVotreXStatus);
   console.log(" ");
 };
 

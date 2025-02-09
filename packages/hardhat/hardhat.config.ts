@@ -22,6 +22,7 @@ const deployerPrivateKey =
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 const deployerAddress = process.env.DEPLOYER_FLARE_ADDRES as string;
 
+
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.25",
@@ -34,7 +35,7 @@ const config: HardhatUserConfig = {
       viaIR: true,
     },
   },
-  defaultNetwork: "localhost",
+  defaultNetwork: "flareTestnet",
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer

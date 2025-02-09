@@ -149,7 +149,6 @@ const VoterDashboard = () => {
           setElections(elections);
         }
       } catch (error) {
-        console.error("Error fetching elections:", error);
         setError("Error fetching elections");
       } finally {
         setLoading(false);
@@ -244,7 +243,6 @@ const VoterDashboard = () => {
           setElectionResult(null);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
         setError("Error fetching data");
       }
     }
@@ -283,7 +281,7 @@ const VoterDashboard = () => {
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr>
+              <tr className="border-b">
                 <th className="py-2 px-4 bg-base-200 rounded-tl-xl">ID Pemilihan</th>
                 <th className="py-2 px-4 bg-base-200">Nama Pemilihan</th>
                 <th className="py-2 px-4 bg-base-200">Status</th>
@@ -292,11 +290,15 @@ const VoterDashboard = () => {
             </thead>
             <tbody className="cursor-pointer">
               {elections.map((election, index) => (
-                <tr key={index} onClick={() => handleManageClick(election.electionID, election.electionStatus)}>
+                <tr
+                  key={index}
+                  onClick={() => handleManageClick(election.electionID, election.electionStatus)}
+                  className={selectedElection?.electionID === election.electionID ? "bg-accent" : ""}
+                >
                   <td className="py-2 px-4 border-b text-center">{election.electionID}</td>
-                  <td className="py-2 px-4 border-b text-center">{election.electionName}</td>
-                  <td className="py-2 px-4 border-b text-center">{election.electionStatus}</td>
-                  <td className="py-2 px-4 border-b text-center">
+                  <td className="py-2 px-4 border-b border-l text-center">{election.electionName}</td>
+                  <td className="py-2 px-4 border-b border-l text-center">{election.electionStatus}</td>
+                  <td className="py-2 px-4 border-b border-l  text-center">
                     {election.electionStatus === "Sedang Berjalan" && (
                       <button className="btn btn-sm btn-primary" onClick={e => handleVoteClick(e, election.electionID)}>
                         Pilih Sekarang
@@ -346,7 +348,7 @@ const VoterDashboard = () => {
 
               {selectedElection.electionStatus === "Sedang Berjalan" && (
                 <>
-                  {selectedElection && selectedElection.voteCounts.some((count) => count > 0) && (
+                  {selectedElection && selectedElection.voteCounts.some((count) => count > 1) && (
                     <div className="flex w-full sm:w-2/3 justify-center">
                       <ResponsiveContainer
                         width={isMobile ? "100%" : "80%"}

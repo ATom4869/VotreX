@@ -9,7 +9,7 @@ interface Props {
 const ButtonB: React.FC<Props> = ({ linkDest, buttonLabel }) => {
   return (
     <Link href={linkDest}>
-      <button type="submit" className="btn btn-info btn-sm">
+      <button type="submit" className="btn btn-info btn-sm px-6">
         {buttonLabel}
       </button>
     </Link>

@@ -1406,11 +1406,6 @@ const deployedContracts = {
               name: "voterIDList",
               type: "string[]",
             },
-            {
-              internalType: "string[]",
-              name: "participatedElectionEvents",
-              type: "string[]",
-            },
           ],
           stateMutability: "view",
           type: "function",
@@ -1429,6 +1424,25 @@ const deployedContracts = {
             },
           ],
           name: "hasVoted",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "isVoterChecked",
           outputs: [
             {
               internalType: "bool",

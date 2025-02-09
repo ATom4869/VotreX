@@ -19,6 +19,25 @@ library UtilityLibrary{
 
         return decodedString;
     }
+
+    function capitalizeFirstLetter(string memory str) internal pure returns (string memory) {
+        bytes memory bStr = bytes(str);
+        if (bStr.length == 0) return ""; // Return empty string if no input
+
+        // ✅ Convert first letter to uppercase
+        if (bStr[0] >= 0x61 && bStr[0] <= 0x7A) { // Check if lowercase a-z
+            bStr[0] = bytes1(uint8(bStr[0]) - 32);
+        }
+
+        // ✅ Convert the rest to lowercase
+        for (uint256 i = 1; i < bStr.length; i++) {
+            if (bStr[i] >= 0x41 && bStr[i] <= 0x5A) { // Check if uppercase A-Z
+                bStr[i] = bytes1(uint8(bStr[i]) + 32); // Convert to lowercase
+            }
+        }
+        
+        return string(bStr);
+    }
     
     function arrayContains(string[] storage array, string memory element) internal view returns (bool) {
         for (uint256 i = 0; i < array.length; ++i) {

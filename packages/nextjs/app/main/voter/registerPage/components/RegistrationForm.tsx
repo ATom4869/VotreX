@@ -48,9 +48,9 @@ const RegistrationForm = () => {
     try {
       const VotreXSysStatus = VotreXStatusCheck;
       const formattedVotreXStatus = VotreXSysStatus ? "Active" : "Paused";
-      if (VotreXSysStatus) {
+      if (!VotreXSysStatus) {
         toast.error(`VotreX System is ${formattedVotreXStatus}. Please try again later.`, {
-          autoClose: 3000,
+          autoClose: 2000,
         });
         return;
       }
@@ -102,9 +102,9 @@ const RegistrationForm = () => {
         },
       });
     } catch (error) {
-      toast.error("Error registering as voter. Please try again." + error, {
-        autoClose: 3000,
-      });
+      // toast.error("Error registering as voter. Please try again.", {
+      //   autoClose: 3000,
+      // });
     }
   };
 

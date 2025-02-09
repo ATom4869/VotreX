@@ -148,7 +148,15 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
         },
         {
           onBlockConfirmation: txnReceipt => {
-            toast.success(`Berhasil memilih: ${chosenCandidateName || "Candidate ID: " + chosenCandidateID}`, {
+            const gasUsedData = txnReceipt.cumulativeGasUsed
+            const gasPriceData = txnReceipt.effectiveGasPrice
+            const gasCostWei = gasUsedData * gasPriceData
+            // Convert from Wei to ETH
+            const gasCostETH = Number(gasCostWei) / 1e18;
+
+            // Format to 6 decimal places for better readability
+            const formattedGasCost = gasCostETH.toFixed(6);
+            toast.success(`Berhasil memilih: ${chosenCandidateName || "Candidate ID: " + chosenCandidateID}, Gas Used: ${formattedGasCost} ETH`, {
               autoClose: 1500,
               onClose: () => {
                 setCandidateName("");
@@ -160,7 +168,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
         }
       );
     } catch (error: any) {
-      toast.error(`Gagal memilih: ${error.message}`);
+      // toast.error(`Gagal memilih: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -189,11 +197,11 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
               waveNumber === 1 ? (
                 // Wave 1: Show radio buttons for all candidates
                 <div>
-                  <label className="flex justify-center mb-2 font-medium items-center text-center">
+                  <label className="flex justify-center mb-2 font-medium items-center justify-content text-center">
                     Pilih Salah Satu Kandidat:
                   </label>
                   {candidates.map((candidate, index) => (
-                    <label key={index} className="flex flex-start text-center items-center mb-2 px-12">
+                    <label key={index} className="flex flex-start justify-center items-center mb-2 px-24">
                       <input
                         type="radio"
                         value={candidate.candidateID.toString()}
@@ -202,7 +210,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                         onChange={e => setSelectedRadioCandidate(e.target.value)}
                         className="radio radio-info mt-2 mr-2"
                       />
-                      <span>{candidate.candidateName}</span>
+                      <span className="flex justify-start">{candidate.candidateName}</span>
                     </label>
                   ))}
                 </div>
@@ -219,7 +227,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                           name="candidate"
                           checked={selectedRadioCandidate === candidate.candidateName}
                           onChange={e => setSelectedRadioCandidate(e.target.value)}
-                          className="radio radio-accent mr-4"
+                          className="radio radio-info mr-4"
                         />
                         <span>{candidate.candidateName}</span>
                       </label>
@@ -256,7 +264,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                           name="candidate"
                           checked={selectedRadioCandidate === candidate.candidateName}
                           onChange={e => setSelectedRadioCandidate(e.target.value)}
-                          className="radio radio-accent mr-4"
+                          className="radio radio-info mr-4"
                         />
                         <span>{candidate.candidateName}</span>
                       </label>

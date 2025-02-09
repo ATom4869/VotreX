@@ -103,7 +103,6 @@ const LoginForm = () => {
             name="orgID"
             className="input input-bordered input-accent w-3/4"
             placeholder="Masukkan ID Disini"
-            style={{ color: "black" }}
             value={formData.orgID}
             onChange={handleInputChange}
             required

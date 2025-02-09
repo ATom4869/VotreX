@@ -93,7 +93,6 @@ contract TestCompleXA2C{
         string VoterName;
         string RegisteredOrgID1;
         string RegisteredOrgID2;
-        string[] participatedElectionEvents;
     }
 
     struct ElectionDetail{
@@ -396,7 +395,6 @@ contract TestCompleXA2C{
 
         voter.VoterAddress = msg.sender;
         voter.VoterName = _voterName;
-        voter.participatedElectionEvents = new string[](0);
         voter.isRegistered = true;
         votersIDExists[VoterID16] = true;
         ++VotreXUserCounter;
@@ -514,7 +512,11 @@ contract TestCompleXA2C{
     {
         bytes32 packedElectionID = bytes32(abi.encodePacked(_userElectionID));
         ElectionDetail storage elections = electionInfo[packedElectionID];
-        bytes32 electionIdBytes = keccak256(abi.encodePacked(_userElectionID));
+        bytes32 electionIdBytes = keccak256(
+            abi.encodePacked(
+                bytes32(abi.encodePacked(_userElectionID)), "-" , elections.electionName
+            )
+        );
         string memory orgIDs = UtilityLibrary.extractOrgId(_userElectionID);
         string memory adminName = getAdminName(msg.sender);
 
@@ -726,21 +728,20 @@ contract TestCompleXA2C{
     {
         bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
         ElectionDetail storage election = electionInfo[userElectionID];
-        Voter storage voter = voters[msg.sender];
         bytes32 electionName = election.electionName;
-        bytes32 electionIdBytes = keccak256(abi.encodePacked(_userElectionID));
+        bytes32 electionIdBytes = keccak256(abi.encodePacked(userElectionID, "-" , electionName));
+        string memory formattedName = UtilityLibrary.capitalizeFirstLetter(_candidateName);
         if(isModeHaveCandidate == true){
             require(bytes(_userElectionID).length > 0, "Election ID can't be empty");
             require(candidateID < election.candidates.length, "Invalid candidate ID");
             require(election.status == ElectionStatus.Started, "Election is not in progress");
-            require(!hasParticipatedInElection(msg.sender, electionName), "You already voted in this election");
-
+            require(!hasVoted[electionIdBytes][msg.sender], "Anda sudah memilih!");
+            
             ++election.candidates[candidateID].candidateVoteCount;
-            voter.participatedElectionEvents = UtilityLibrary.appendToStringArray(
-                voter.participatedElectionEvents,
-                string(abi.encodePacked(election.electionName))
-            );
             ++election.totalParticipants;
+            
+            hasVoted[electionIdBytes][msg.sender] = true;
+            votersList[electionIdBytes].push(msg.sender);
         }else{
             require(bytes(_candidateName).length > 0, "Silahkan masukkan nama");
             require(!hasVoted[electionIdBytes][msg.sender], "Anda sudah memilih!");
@@ -754,7 +755,7 @@ contract TestCompleXA2C{
                 if (
                     keccak256(abi.encodePacked(election.candidates[i].candidateName))
                     ==
-                    keccak256(abi.encodePacked(_candidateName))) {
+                    keccak256(abi.encodePacked(formattedName))) {
                     // Jika kandidat ditemukan, tambahkan voteCount
                     election.candidates[i].candidateVoteCount += 1;
                     candidateExists = true;
@@ -791,7 +792,7 @@ contract TestCompleXA2C{
         return election.candidates;
     }
 
-    function isVotreXActivated() external onlyVotreXOwner view returns (bool) {
+    function isVotreXActivated() external view returns (bool) {
         return VotreXActivated;
     }
 
@@ -888,90 +889,71 @@ contract TestCompleXA2C{
         address userAddress,
         string memory userName,
         string[] memory registeredOrgList,
-        string[] memory voterIDList,
-        string[] memory participatedElectionEvents
+        string[] memory voterIDList
     ) {
         userAddress = msg.sender;
 
-        if (admin[userAddress].isRegistered) {
+        bool isAdminRole = admin[userAddress].isRegistered;
+        bool isVoterRole = voters[userAddress].isRegistered;
+
+        // ✅ Initialize arrays before assigning values
+        string[] memory RegisteredOrgIDList = new string[](2);
+        string[] memory RegisteredVoterIDList = new string[](2);
+        string memory combinedName = ""; // Store either admin or voter name
+
+        // ✅ If user is an Admin, fill RegisteredOrgIDList & VoterIDList
+        if (isAdminRole) {
             ElectionAdmins storage adminInfo = admin[userAddress];
-            
-            string[] memory VoterRegisteredOrgList = new string[](2);
-            VoterRegisteredOrgList[0] = adminInfo.RegisteredOrgID1;
-            VoterRegisteredOrgList[1] = adminInfo.RegisteredOrgID2;
 
-            string[] memory VoterIDList = new string[](2);
-            VoterIDList[0] = string(abi.encodePacked(adminInfo.AdminVoterIDOrg1));
-            VoterIDList[1] = string(abi.encodePacked(adminInfo.AdminVoterIDOrg2));
+            RegisteredOrgIDList[0] = adminInfo.RegisteredOrgID1;
+            RegisteredOrgIDList[1] = adminInfo.RegisteredOrgID2;
 
-            return (
-                true,
-                true,
-                userAddress,
-                string(abi.encodePacked(adminInfo.adminName)),
-                VoterRegisteredOrgList,
-                VoterIDList,
-                new string[](0)
-            );
+            RegisteredVoterIDList[0] = string(abi.encodePacked(adminInfo.AdminVoterIDOrg1));
+            RegisteredVoterIDList[1] = string(abi.encodePacked(adminInfo.AdminVoterIDOrg2));
 
-        } else if (voters[userAddress].isRegistered) {
+            combinedName = string(abi.encodePacked(adminInfo.adminName));
+        }
+
+        // ✅ If user is a Voter, ensure the data is merged properly
+        if (isVoterRole) {
             Voter storage voter = voters[userAddress];
 
-            string[] memory RegisteredOrgIDList = new string[](2);
-            RegisteredOrgIDList[0] = voter.RegisteredOrgID1;
-            RegisteredOrgIDList[1] = voter.RegisteredOrgID2;
+            if (!isAdminRole) {
+                // ✅ If user is ONLY a voter, store voter info directly
+                RegisteredOrgIDList[0] = voter.RegisteredOrgID1;
+                RegisteredOrgIDList[1] = voter.RegisteredOrgID2;
 
-            string[] memory RegisteredVoterIDList = new string[](2);
-            RegisteredVoterIDList[0] = string(abi.encodePacked(voter.VoterIDOrg1));
-            RegisteredVoterIDList[1] = string(abi.encodePacked(voter.VoterIDOrg2));
-            return (
-                true,
-                false,
-                userAddress,
-                voter.VoterName,
-                RegisteredOrgIDList,
-                RegisteredVoterIDList,
-                voter.participatedElectionEvents
-            );
-        } else {
-            return (
-                false,
-                false,
-                userAddress,
-                "",
-                new string[](0),
-                new string[](0),
-                new string[](0)
-            );
+                RegisteredVoterIDList[0] = string(abi.encodePacked(voter.VoterIDOrg1));
+                RegisteredVoterIDList[1] = string(abi.encodePacked(voter.VoterIDOrg2));
+
+                combinedName = voter.VoterName;
+            } else {
+                // ✅ If user is BOTH Admin & Voter, merge voter data without overwriting Admin data
+                if (bytes(RegisteredOrgIDList[1]).length == 0) {
+                    RegisteredOrgIDList[1] = voter.RegisteredOrgID1;
+                }
+
+                if (bytes(RegisteredVoterIDList[1]).length == 0) {
+                    RegisteredVoterIDList[1] = string(abi.encodePacked(voter.VoterIDOrg1));
+                }
+            }
         }
+
+        return (
+            isAdminRole || isVoterRole, // ✅ isRegistered (true if either role exists)
+            isAdminRole, // ✅ isAdmin (true only if Admin)
+            userAddress,
+            combinedName, // ✅ Stores either Admin name or Voter name
+            RegisteredOrgIDList, // ✅ List of registered OrgIDs
+            RegisteredVoterIDList  // ✅ List of voter IDs
+        );
     }
+
 
     function ElectionActiveCheck(string memory _orgID) private view returns (uint256) {
 
         return organizationData[_orgID].activeElectionCounter;
     
-    }
-
-    function hasParticipatedInElection(
-        address voterAddress,
-        bytes32 electionName
-    )
-        private
-        view
-        returns (bool)
-    {
-        Voter storage voter = voters[voterAddress];
-        for (uint i = 0; i < voter.participatedElectionEvents.length; ++i) {
-            if (
-                keccak256(abi.encodePacked(voter.participatedElectionEvents[i]))
-                ==
-                keccak256(abi.encodePacked(electionName))
-            ) {
-                return true; 
-            }
-        }
-
-        return false; 
     }
 
     function determineWinner(string memory _userElectionID) private view returns (string memory) {
@@ -995,6 +977,13 @@ contract TestCompleXA2C{
 
     //     return string(abi.encodePacked(_orgID, "-", UtilityLibrary.uint2str(nextID)));
     // }
+
+    function isVoterChecked(string memory _userElectionID) public view returns (bool) {
+        bytes32 userElectionID = bytes32(abi.encodePacked(_userElectionID));
+        bytes32 electionName = electionInfo[userElectionID].electionName;
+        bytes32 electionIdBytes = keccak256(abi.encodePacked(userElectionID, "-", electionName));
+        return hasVoted[electionIdBytes][msg.sender];
+    }
 
     function getOrgIDHash(string memory _orgID) external pure returns (bytes32) {
         bytes32 orgIDHash = keccak256(abi.encodePacked(_orgID));

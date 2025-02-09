@@ -4,6 +4,7 @@ import { ethers, Wallet } from "ethers";
 import QRCode from "qrcode";
 import { config } from "hardhat";
 
+
 async function main() {
   const privateKey = process.env.DEPLOYER_PRIVATE_KEY;
 

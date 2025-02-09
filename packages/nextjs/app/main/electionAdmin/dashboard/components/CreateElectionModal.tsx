@@ -75,6 +75,11 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
   const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
+      setFormData({
+        electionName: "",
+        electionID: "",
+        candidateCounts: 0,
+      })
     }
   };
 
