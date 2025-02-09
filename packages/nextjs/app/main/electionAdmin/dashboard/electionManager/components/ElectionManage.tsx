@@ -468,7 +468,7 @@ const ElectionManage = () => {
 
             const candidates = candidateIDs.map(
               (id: number, index: number) => ({
-                candidateID: BigInt(id), // Convert to BigInt
+                candidateID: BigInt(id),
                 name: candidateNames[index].replace(/\0/g, "").trim(),
                 voteCount: Number(candidateVoteCounts[index]),
               })
@@ -518,26 +518,6 @@ const ElectionManage = () => {
       }
     }
   };
-
-  // const handleAddCandidateSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!selectedElection || !candidateName) return;
-
-  //   try {
-  //     await VotreXContract?.write.addCandidateDetail([selectedElection.electionID as string, candidateName]);
-  //     // Optionally refresh the election data or show a success message
-  //     setCandidateName("");
-  //     setShowAddCandidate(false);
-  //     toast.success(`${candidateName} telah ditambahkan ke daftar kandidat`, {
-  //       autoClose: 3000,
-  //       onClose: () => {
-  //         handleManageClick(selectedElection.electionID, "Dalam Persiapan");
-  //       },
-  //     });
-  //   } catch (error) {
-  //     toast.error(`Error menambahkan kandidat:  ${error}`);
-  //   }
-  // };
 
   const handleVoteClick = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -763,19 +743,6 @@ const ElectionManage = () => {
       hourCycle: 'h23'
     });
   };
-
-  // const handleAddSignature = async () => {
-  //   try {
-  //     const orgData = await VotreXContract?.read.organizationData([orgID as string]);
-  //     const orgName = hexToAscii(orgData?.[6] as Hex);
-  //     const adminData = await VotreXContract?.read.admin([adminAddress as Address])
-  //     const computedSig = soliditySha3(
-  //       { type: "string", value: orgName as string + selectedElection?.electionName + orgData?.[6] + adminData?.[6] }
-  //     )
-  //     setComputedSignature(computedSig as HexString);
-  //   } catch (error) {
-  //   }
-  // };
 
   return (
     <>
@@ -1077,9 +1044,6 @@ const ElectionManage = () => {
                 <h3 className="text-center text-xl font-bold mb-4">
                   Hasil Pemilihan: {electionResult.electionName} - {electionResult.electionID}
                 </h3>
-                {/* <button onClick={handleAddSignature} className="btn btn-secondary mt-3 justify-center">
-              <h2>Add Signature</h2>
-            </button> */}
                 <p className="text-center text-lg font-regular mb-4">Jumlah Pemilih: {electionResult.totalVoter}</p>
                 <p className="text-center text-lg font-regular mb-4">Pemenang:</p>
                 <h2 className="text-center">{electionResult.electionWinner}</h2>

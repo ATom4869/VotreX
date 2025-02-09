@@ -52,10 +52,9 @@ const BasicOrgData = () => {
   }, [orgDataFetch, adminAddress]);
 
   useEffect(() => {
-    // ✅ Increase checking delay to 3 seconds
     const timer = setTimeout(() => {
       setIsCheckingAccess(false);
-    }, 3000); // ⏳ Delay changed to 3 seconds
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -92,7 +91,6 @@ const BasicOrgData = () => {
     }
   }, [orgDataFetch, orgID, adminAddress, isAdmin]);
 
-  // ✅ Redirect to login if OrgID verification fails
   useEffect(() => {
     if (isAdmin === false) {
       setCountdown(5);
@@ -101,7 +99,7 @@ const BasicOrgData = () => {
       }, 1000);
 
       const timeout = setTimeout(() => {
-        window.location.href = "/login"; // ✅ Redirect to login page
+        window.location.href = "/login";
       }, 5000);
 
       return () => {
@@ -126,7 +124,6 @@ const BasicOrgData = () => {
   return (
     <>
       {isCheckingAccess ? (
-        // ✅ 1. Loading screen selama 2 detik sebelum cek akses
         <p className="text-center font-medium text-white-600 mt-6">
           Memeriksa hak akses...
         </p>
