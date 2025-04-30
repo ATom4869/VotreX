@@ -15,7 +15,7 @@
 - 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
 - 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
 
-![Debug Contracts tab](https://ipfs.io/ipfs/bafybeigqas76wg4xptaiil4ilnqnjjk74qtuk5fojikg5oz4faqqp6xxyi)
+![VotreX User Interface](https://ipfs.io/ipfs/bafybeigqas76wg4xptaiil4ilnqnjjk74qtuk5fojikg5oz4faqqp6xxyi)
 
 ## Documentation
 
@@ -23,7 +23,7 @@ Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building wit
 
 To know more about its features, check out our [website](https://scaffoldeth.io).
 
-Checkout VotreX Documentation [docs] (https://votrexian.gitbook.io/votrex-docs).
+Checkout VotreX Documentation [Documentation](https://votrexian.gitbook.io/votrex-docs).
 
 ## Contributing to Scaffold-ETH 2
 
