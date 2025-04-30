@@ -1,4 +1,4 @@
-# 🏗 Scaffold-ETH 2
+# 🏗 VotreX Powered by Scaffold-ETH 2
 
 <h4 align="center">
   <a href="https://docs.scaffoldeth.io">Documentation</a> |
@@ -19,14 +19,12 @@
 
 ## Documentation
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+Visit Scaffold-eth [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+To know more about its features, check out scaffold-eth [website](https://scaffoldeth.io).
 
 Checkout VotreX [Documentation](https://votrexian.gitbook.io/votrex-docs).
 
 ## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
 
 Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
