@@ -23,7 +23,7 @@ Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building wit
 
 To know more about its features, check out our [website](https://scaffoldeth.io).
 
-Checkout VotreX Documentation [Documentation](https://votrexian.gitbook.io/votrex-docs).
+Checkout VotreX [Documentation](https://votrexian.gitbook.io/votrex-docs).
 
 ## Contributing to Scaffold-ETH 2
 
