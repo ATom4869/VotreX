@@ -25,7 +25,7 @@ const deployerAddress = process.env.DEPLOYER_FLARE_ADDRES as string;
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.25",
+    version: "0.8.27",
     settings: {
       optimizer: {
         enabled: true,

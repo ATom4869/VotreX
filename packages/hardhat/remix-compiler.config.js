@@ -1,9 +1,9 @@
 module.exports = {
-              solidity: '0.8.25',
+              solidity: '0.8.28',
               settings: {
                 optimizer: {
-                  enabled: true,
-                  runs: 100
+                  enabled: false,
+                  runs: 200
                 }
               }
             }

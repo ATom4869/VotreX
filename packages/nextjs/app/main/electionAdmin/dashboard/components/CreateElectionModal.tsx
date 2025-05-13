@@ -13,8 +13,8 @@ interface Props {
 const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
   const { data: walletClient } = useWalletClient();
   const [orgID, setOrgID] = useState<string | null>(null);
-  const [isHaveCandidateMode, setIsHaveCandidateMode] = useState<boolean>(true); // New state for mode selection
-  const [candidateCount, setCandidateCount] = useState<number>(2); // Default 2 candidates
+  const [isHaveCandidateMode, setIsHaveCandidateMode] = useState<boolean>(true);
+  const [candidateCount, setCandidateCount] = useState<number>(2);
 
   const [formData, setFormData] = useState({
     electionName: "",
@@ -45,7 +45,6 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
       toast.error("Jumlah kandidat harus antara 2 hingga 5!");
       return;
     }
-    console.log('candidateCount: ' + candidateCount)
 
     try {
       await createElection(
@@ -63,9 +62,6 @@ const CreateElectionModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => 
               },
             );
           },
-          // onError: error => {
-          //   toast.error(`Can't create electiion: ${error?.cause}`);
-          // },
         },
       );
       onCreate();

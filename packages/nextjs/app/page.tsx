@@ -3,17 +3,20 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-// import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import ButtonB from "./main/loginPage/component/ButtonB";
 import ButtonA from "~~/components/ButtonA";
 import { ToastContainer } from "react-toastify";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
   return (
     <>
+      <Analytics />
+      <SpeedInsights />
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center">
@@ -26,17 +29,10 @@ const Home: NextPage = () => {
           </div>
           <p className="text-center text-lg">
             Silahkan melanjutkan navigasi dengan tombol dibawah
-            {/* <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code> */}
           </p>
         </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
+        <div className="flex flex-grow bg-base-300 w-full mt-16 px-8 py-12">
           <div className="container mx-auto p-4">
             <div className="flex justify-center mb-4">
               <ButtonB linkDest="/login" buttonLabel="Masuk" />
@@ -49,32 +45,8 @@ const Home: NextPage = () => {
                 <ButtonA buttonLabel="Daftar Sebagai Admin" />
               </Link>
             </div>
-
             <ToastContainer />
           </div>
-
-          {/* <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Go To {" "}
-                <Link href="/main" passHref className="link">
-                  VotreX System
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Take Control token with {" "}
-                <Link href="/votreXTokenAdmin" passHref className="link">
-                  Token Dashboard
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div> */}
         </div>
       </div>
     </>

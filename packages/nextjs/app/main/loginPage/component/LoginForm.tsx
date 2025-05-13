@@ -47,8 +47,6 @@ const LoginForm = () => {
     try {
       const currentAddress = walletClient?.account.address;
 
-      // Check if the current address is the admin of the organization
-
       if (VotreXOrgData?.[1] && currentAddress === VotreXOrgData?.[1]) {
         if (getUserInfo?.[1]) {
           toast.success("Masuk sebagai Admin", {
@@ -64,7 +62,11 @@ const LoginForm = () => {
         }
       }
 
-      if (votersData?.[0] && (votersData[5] === formData.orgID || votersData[6] === formData.orgID)) {
+      if (
+        votersData?.[0] && (
+          votersData[5] === formData.orgID ||
+          votersData[6] === formData.orgID
+        )) {
         toast.success("Masuk sebagai Voter", {
           autoClose: 3000,
           onClose: () => {

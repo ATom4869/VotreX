@@ -10,12 +10,17 @@ import { useSignTypedData, useWalletClient } from "wagmi";
 import { asciiToHex, encodePacked, padRight, soliditySha3 } from "web3-utils";
 import ButtonA from "~~/components/ButtonA";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { encryptBirthDate } from "~~/components/BirthDateHandler";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
     voterName: "",
     orgID: "",
+    birthDate: new Date(),
   });
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -61,16 +66,18 @@ const RegistrationForm = () => {
       const uniqueVoterIDRaw = encodePacked((formData.orgID as string) + "-" + ++currentMemberNumber);
       const uniqueVoterID = padRight(asciiToHex(uniqueVoterIDRaw), 64);
 
+      const encryptedBirthDate = encryptBirthDate(formData.birthDate) as Hex;
+
       await VoterRegistration(
         {
           functionName: "registerVoter",
-          args: [formData.voterName, formData.orgID, uniqueVoterID as Hex],
+          args: [formData.voterName, formData.orgID, encryptedBirthDate, uniqueVoterID as Hex],
         },
         {
           onBlockConfirmation: txnReceipt => {
             toast.success(`Registration success Receipt: ` + txnReceipt.blockHash + txnReceipt.cumulativeGasUsed, {
               autoClose: 3000,
-              onClose: () => (window.location.href = "/"),
+              onClose: () => (window.location.reload()),
             });
           },
         },
@@ -102,11 +109,20 @@ const RegistrationForm = () => {
         },
       });
     } catch (error) {
-      // toast.error("Error registering as voter. Please try again.", {
-      //   autoClose: 3000,
-      // });
     }
   };
+
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      setFormData(prevData => ({
+        ...prevData,
+        birthDate: date,
+      }));
+      console.log("Selected date:", date, "Epoch:", Math.floor(date.getTime() / 1000));
+      setIsCalendarOpen(false);
+    }
+  };
+
 
   return (
     <form onSubmit={handleSubmit}>
@@ -118,7 +134,6 @@ const RegistrationForm = () => {
             id="voterName"
             name="voterName"
             className="input form-control input-bordered"
-            style={{ color: "black" }}
             value={formData.voterName}
             onChange={handleInputChange}
             required
@@ -135,6 +150,35 @@ const RegistrationForm = () => {
             onChange={handleInputChange}
             required
           />
+        </label>
+        <br />
+        <label className="space-y-2">
+          Tanggal Lahir Admin:
+          <div className="dropdown">
+            <input
+              type="text"
+              tabIndex={0}
+              placeholder="Pilih tanggal lahir"
+              className="input input-bordered w-full"
+              value={formData.birthDate ? formData.birthDate.toLocaleDateString('id-ID') : ""}
+              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+              readOnly
+            />
+            {isCalendarOpen && (
+              <div tabIndex={0} className="dropdown-content z-[1] bg-base-100 rounded-lg shadow-lg px-4 py-2">
+                <DayPicker
+                  required={true}
+                  mode="single"
+                  selected={formData.birthDate}
+                  onSelect={handleDateChange}
+                  numberOfMonths={2}
+                  captionLayout="dropdown"
+                  showOutsideDays
+                  defaultMonth={new Date()}
+                />
+              </div>
+            )}
+          </div>
         </label>
         <br />
       </div>

@@ -290,11 +290,6 @@ contract TestCompleXA2{
         );
 
         require(
-            !UtilityLibrary.containsWhitespaceCheck(_orgID),
-            "spaces in Org ID not allowed"
-        );
-
-        require(
             keccak256(abi.encodePacked(admin[msg.sender].RegisteredOrgID1))
             !=
             keccak256(abi.encodePacked(_orgID))
@@ -652,7 +647,7 @@ contract TestCompleXA2{
         );
 
         require(
-            UtilityLibrary.onlyAlphanumericCharacters(_candidateName),
+            UtilityLibrary.allowWhiteSpace(_candidateName),
             "Candidate name can only contain alphabetical"
         );
 

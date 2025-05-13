@@ -7,78 +7,41 @@ import html2canvas from "html2canvas-pro";
 import jsPDF from 'jspdf';
 import { ToastContainer, toast } from "react-toastify";
 import { useWalletClient } from "wagmi";
+import encoderPacked from "./encoderPacked";
 import "react-toastify/dist/ReactToastify.css";
 import { Bar, BarChart, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Address, Hex } from "viem";
-import { encodePacked, keccak256, hexToAscii as originalHexToAscii, soliditySha3 } from "web3-utils";
+import { hexToAscii as originalHexToAscii, soliditySha3 } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useSignTypedData } from "wagmi";
 import BackBtn from "~~/app/main/loginPage/component/BackBtn";
 import HomeBtn from "~~/app/main/loginPage/component/homeButton";
 import AddCandidateModal from "../../components/AddCandidateModal";
-
-
-interface Election {
-  electionID: string;
-  electionName: string;
-  electionStatus: string;
-}
-
-interface ElectionDetails {
-  electionID: string;
-  electionName: string;
-  waveNumber: number;
-  totalCandidates: number;
-  candidateIDs: bigint[];
-  candidateNames: string[];
-  voteCounts: number[];
-  totalParticipants: number;
-  electionStatus: string;
-  electionMode: string;
-}
-
-interface ElectionResult {
-  isPruned: boolean;
-  adminAddress: string;
-  waveNumber: number;
-  startTime: bigint;
-  endTime: bigint;
-  totalVoter: number;
-  electionID: string;
-  electionName: string;
-  digitalSignature: string;
-  registeredOrganization: string;
-  electionWinner: string;
-  signedBy: string;
-  candidates: {
-    candidateID: bigint;
-    name: string;
-    voteCount: number;
-  }[];
-}
-
-interface CandidateResult {
-  electionID: string; // ID Pemilihan
-  candidateName: string; // Nama Kandidat
-  voteCount: number; // Jumlah Suara
-}
+import { ElectionDetails, ElectionResult, useElectionStore } from "~~/app/main/stores/electionStores";
 
 
 const ElectionManage = () => {
   const { data: walletClient } = useWalletClient();
   const [orgID, setOrgID] = useState<string | null>(null);
-  const [electionOverviewData, setelectionOverviewData] = useState<Election[]>([]);
-  const [selectedElection, setSelectedElection] = useState<ElectionDetails | null>(null);
-  const [electionResult, setElectionResult] = useState<ElectionResult | null>(null);
-  const [candidateName, setCandidateName] = useState("");
-  const [passedCandidates, setPassedCandidates] = useState<CandidateResult[] | null>(null);
   const [selectedRadioCandidate, setSelectedRadioCandidate] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isAddCandidateModalOpen, setIsAddCandidateModalOpen] = useState(false);
   const [hasVotedCheck, setHasVotedCheck] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isCheckingAccess, setIsCheckingAccess] = useState(true); // ✅ Tambahkan state loading
+  const [isCheckingAccess, setIsCheckingAccess] = useState(true);
   const [countdown, setCountdown] = useState<number>(3);
+
+  const {
+    candidateName,
+    setCandidateName,
+    electionOverviewData,
+    setelectionOverviewData,
+    selectedElection,
+    setSelectedElection,
+    setPassedCandidates,
+    electionResult,
+    setElectionResult,
+  } = useElectionStore();
 
   const adminAddress = walletClient?.account.address;
 
@@ -90,18 +53,14 @@ const ElectionManage = () => {
 
 
   useEffect(() => {
-    // Jalankan hanya di client-side
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    // Set ukuran saat pertama kali render
     handleResize();
 
-    // Tambahkan event listener
     window.addEventListener("resize", handleResize);
 
-    // Bersihkan event listener saat komponen unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -140,20 +99,9 @@ const ElectionManage = () => {
   const { data: votedChecker } = useScaffoldReadContract({
     contractName: "TestCompleXA2C",
     functionName: "isVoterChecked",
-    args: [selectedElection?.electionID],
+    args: [selectedElection?.electionID as string],
+    account: walletClient?.account.address
   });
-
-  // Ensure selectedElection properties are defined before hashing
-  const electionIDBytes =
-    selectedElection?.electionID && selectedElection?.electionName
-      ? soliditySha3(
-        encodePacked(
-          { type: "string", value: selectedElection.electionID },
-          { type: "string", value: "-" },
-          { type: "string", value: selectedElection.electionName }
-        ) as string
-      )
-      : null;
 
   const { writeContractAsync: VOXCommand } = useScaffoldWriteContract("TestCompleXA2C");
   const { signTypedData } = useSignTypedData();
@@ -167,7 +115,6 @@ const ElectionManage = () => {
     }
   };
 
-  // ✅ Check if the stored OrgID matches the user's registered OrgIDs
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedOrgID = localStorage.getItem("orgID");
@@ -183,7 +130,6 @@ const ElectionManage = () => {
   }, [orgDataFetch, adminAddress]);
 
   useEffect(() => {
-    // ✅ Tahan loading selama 2 detik sebelum cek akses
     const timer = setTimeout(() => {
       setIsCheckingAccess(false);
     }, 1100);
@@ -199,7 +145,7 @@ const ElectionManage = () => {
       }, 1000);
 
       const timeout = setTimeout(() => {
-        window.location.href = "/login"; // ✅ Redirect to login page
+        window.location.href = "/login";
       }, 5000);
 
       return () => {
@@ -208,20 +154,6 @@ const ElectionManage = () => {
       };
     }
   }, [isAdmin]);
-
-  useEffect(() => {
-    const fetchHasVoted = async () => {
-      if (electionIDBytes && adminAddress) {
-        try {
-          setHasVotedCheck(Boolean(votedChecker)); // ✅ Ensure it's a boolean
-        } catch (error) {
-          setHasVotedCheck(false); // ✅ Assume "false" on failure (prevents undefined issues)
-        }
-      }
-    };
-
-    fetchHasVoted();
-  }, [electionIDBytes, adminAddress, votedChecker]); // ✅ Re-run when election changes
 
   useEffect(() => {
     if (orgID) {
@@ -237,7 +169,7 @@ const ElectionManage = () => {
           const elections = electionIDs.map((idHex: string, index: number) => {
             const electionID = hexToAscii(idHex);
             const electionName = hexToAscii(electionNames[index]);
-            const electionStatus = getStatusString(electionStatuses[index]); // Convert status to string
+            const electionStatus = getStatusString(electionStatuses[index]);
 
             return {
               electionID,
@@ -251,7 +183,6 @@ const ElectionManage = () => {
 
 
         } catch (error) {
-          toast.error("Error fetching data");
         }
       };
       fetchData();
@@ -270,9 +201,9 @@ const ElectionManage = () => {
       case 0:
         return "Dalam Persiapan";
       case 1:
-        return "Dijadwalkan";
-      case 2:
         return "Sedang Berjalan";
+      case 2:
+        return "Babak Final";
       case 3:
         return "Pemilihan Selesai";
       default:
@@ -281,10 +212,16 @@ const ElectionManage = () => {
   };
 
   const getElectionStatus = (status: string) => {
-    return status === "Dalam Persiapan" ? "Mulai Pemilihan" : "Hentikan Pemilihan";
+    if (status === "Dalam Persiapan") {
+      return "Mulai Pemilihan";
+    } else if (status === "Sedang Berjalan" || status === "Babak Final") {
+      return "Hentikan Pemilihan";
+    } else {
+      return "Unknown";
+    }
   };
 
-  const handleButtonClick = async (
+  const handleElectionButtonClick = async (
     e: React.MouseEvent,
     electionID: string,
     status: string,
@@ -293,6 +230,7 @@ const ElectionManage = () => {
     try {
       if (status === "Dalam Persiapan") {
         try {
+          console.log("Starting Election:", electionID);
           await VOXCommand(
             {
               functionName: "startElection",
@@ -310,14 +248,15 @@ const ElectionManage = () => {
             }
           );
         } catch (error) {
+          toast.error(`Error starting election: ${error instanceof Error ? error.message : String(error)}`);
         }
-      } else if (status === "Sedang Berjalan") {
+      } else if (status === "Sedang Berjalan" || status === "Babak Final") {
         const orgData = await VotreXContract?.read.organizationData([orgID as string]);
         const adminData = await VotreXContract?.read.admin([adminAddress as Address]);
         const orgName = hexToAscii(orgData?.[6] as Hex);
-        const totalVotes = selectedElection?.voteCounts.reduce((sum, count) => sum + count, 0) || 0;
-        const numCandidates = selectedElection?.candidateNames.length || 0;
-        const thresholdPass = Math.ceil(totalVotes / numCandidates);
+        const totalVotes = selectedElection?.voteCounts.reduce((sum, count) => sum + count, 0) as number;
+        const numCandidates = selectedElection?.candidateNames.length as number;
+        const thresholdPass = Math.ceil(totalVotes / numCandidates) as number;
 
         const candidates = selectedElection?.candidateNames.map((name, index) => ({
           electionID: electionID,
@@ -326,7 +265,7 @@ const ElectionManage = () => {
           voteCount: selectedElection.voteCounts[index],
         })) || [];
 
-        const passingCandidates = candidates.filter(candidate => candidate.voteCount >= thresholdPass);
+        const passingCandidates = candidates.filter(candidate => candidate.voteCount > thresholdPass);
 
         if (passingCandidates.length === 0) {
           toast.error("Tidak ada kandidat yang lolos threshold. Pemilu tidak dapat diselesaikan.");
@@ -335,70 +274,24 @@ const ElectionManage = () => {
 
         setPassedCandidates(passingCandidates);
 
-        // ✅ Fix: Finish the election only if 1 candidate passes, otherwise continue
-        const isSingleorFinalWaveElection = passingCandidates.length === 1;
-
-        const updatedCandidates = passingCandidates.map(candidate => ({
-          candidateID: candidate.candidateID,
-          candidateName: candidate.candidateName,
-          candidateVoteCount: BigInt(0),
-        }));
-
         const dataHash = soliditySha3({
           type: "string",
-          value: orgName + selectedElection?.electionName + orgData?.[6] + adminData?.[6],
+          value: orgName + selectedElection?.electionName + orgData?.[7] + adminData?.[6],
         });
 
         try {
-          if (isSingleorFinalWaveElection) {
-            // ✅ If only 1 candidate remains, store the result directly
-            await VOXCommand(
-              {
-                functionName: "finishElection",
-                args: [electionID as string, dataHash as Hex, isSingleorFinalWaveElection, BigInt(0)],
+          await VOXCommand(
+            {
+              functionName: "finishElection",
+              args: [electionID as string, dataHash as Hex, BigInt(thresholdPass) as bigint],
+            },
+            {
+              onBlockConfirmation: txnReceipt => {
+                checkElectionStatus(electionID, txnReceipt.cumulativeGasUsed);
               },
-              {
-                onBlockConfirmation: txnReceipt => {
-                  toast.success(`Pemilihan Berhasil Diselesaikan: ${electionID} - ${txnReceipt.cumulativeGasUsed}`, {
-                    autoClose: 3000,
-                    onClose: () => {
-                      window.location.reload();
-                    },
-                  });
-                },
-              }
-            );
-          } else {
-            // ✅ More than 1 candidate remains → Proceed to next round
-            toast.info("Pemilu dilanjutkan ke tahap berikutnya. Kandidat dengan suara di bawah threshold dieliminasi.", {
-              autoClose: 3000,
-              onClose: () => {
-                window.location.reload();
-              },
-            });
-            setSelectedElection(prev => ({
-              ...prev!,
-              candidateNames: passingCandidates.map(candidate => candidate.candidateName),
-              voteCounts: passingCandidates.map(() => 0), // Reset semua suara kandidat yang tersisa
-              candidateIDs: passingCandidates.map(candidate => BigInt(candidate.candidateID)), // Konversi ke bigint
-            }));
-
-            await VOXCommand(
-              {
-                functionName: "finishElection",
-                args: [electionID as string, dataHash as Hex, isSingleorFinalWaveElection, BigInt(thresholdPass)],
-              },
-              {
-                onBlockConfirmation: txnReceipt => {
-                  toast.success(`Pemilu direset untuk tahap berikutnya: ${electionID} - ${txnReceipt.cumulativeGasUsed}`, {
-                    autoClose: 3000,
-                    onClose: () => {
-                      window.location.reload();
-                    },
-                  });
-                },
-              }
-            );
+            }
+          );
+          if (status === "Babak Final") {
 
             signTypedData({
               types: {
@@ -418,25 +311,60 @@ const ElectionManage = () => {
                   electionName: electionResult?.electionName as string,
                   adminName: electionResult?.signedBy as string,
                   adminAddress: walletClient?.account.address as Address,
-                  contents: soliditySha3({
-                    type: "string",
-                    value: orgName + selectedElection?.electionName + orgData?.[6] + adminData?.[6],
-                  }) as string,
+                  contents: dataHash as string,
                 },
               },
             });
           }
         } catch (error) {
-          toast.error(`Error finishing election: ${error}`);
         }
       }
     } catch (error) {
-      toast.error(`Error interacting with smart contract: ${error}`);
     }
   };
 
+  async function checkElectionStatus(electionId: string, gasUsed: bigint) {
+    try {
+      const packedElectionID = encoderPacked(electionId) as Hex;
+      const electionInfo = await VotreXContract?.read.electionInfo([packedElectionID]);
 
-  const handleManageClick = async (electionID: string, status: string) => {
+      if (electionInfo) {
+        const status = parseInt(electionInfo?.[0].toString());
+        const waveNumber = parseInt(electionInfo?.[10].toString());
+        const isFinished = electionInfo?.[2];
+        const previousWave = selectedElection?.waveNumber || 0;
+
+        if (isFinished) {
+          toast.success(`Pemilihan Berhasil Diselesaikan: ${electionId} - ${gasUsed}`, {
+            autoClose: 3000,
+            onClose: () => {
+              window.location.reload();
+            },
+          });
+        } else if (waveNumber > previousWave) {
+          toast.info("Pemilu dilanjutkan ke tahap berikutnya. Kandidat dengan suara di bawah threshold dieliminasi.", {
+            autoClose: 3000,
+            onClose: () => {
+              window.location.reload();
+            },
+          });
+        } else {
+          toast.info(`Status pemilu telah diperbarui: ${getStatusString(status)}`, {
+            autoClose: 3000,
+            onClose: () => {
+              window.location.reload();
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error checking election status:", error);
+      window.location.reload();
+    }
+  }
+
+
+  const handleElectionTable = async (electionID: string, status: string) => {
 
     if (selectedElection?.electionID === electionID && status === "Dalam Persiapan") {
       setSelectedElection(null);
@@ -507,9 +435,19 @@ const ElectionManage = () => {
               voteCounts: electionData[6].map((count: any) => Number(count)),
               totalParticipants: Number(electionData[7]),
               electionStatus: getStatusString(electionData[8]),
-              electionMode: getElectionMode(electionData[9])
+              electionMode: getElectionMode(electionData[9]),
+              candidateLimit: Number(electionData[10]),
             };
             setSelectedElection(electionDetails);
+            console.log("Raw electionData[3]:", electionData[3]);
+            console.log("Election Details:", {
+              totalCandidates: electionDetails.totalCandidates,
+              currentCandidates: electionDetails.candidateIDs.length,
+              candidateLimit: electionDetails.candidateLimit,
+            });
+
+            const hasVotedChecks = await VotreXContract?.read.isVoterChecked([selectedElection?.electionID as string]);
+            setHasVotedCheck(hasVotedChecks as boolean)
           }
           setElectionResult(null);
         }
@@ -539,20 +477,22 @@ const ElectionManage = () => {
       }
       chosenCandidateID = parseInt(selectedRadioCandidate, 10);
       chosenCandidateName = "";
-    } else if (selectedElection.waveNumber === 1) {
-      if (!candidateName.trim()) {
-        toast.error("Masukkan nama kandidat!");
-        return;
-      }
-      chosenCandidateID = 0;
-      chosenCandidateName = candidateName.trim();
     } else {
-      if (!selectedRadioCandidate) {
-        toast.error("Pilih kandidat terlebih dahulu!");
-        return;
+      if (selectedElection.waveNumber === 1) {
+        if (!candidateName.trim()) {
+          toast.error("Masukkan nama kandidat!");
+          return;
+        }
+        chosenCandidateID = 0;
+        chosenCandidateName = candidateName.trim();
+      } else {
+        if (!selectedRadioCandidate) {
+          toast.error("Pilih kandidat terlebih dahulu!");
+          return;
+        }
+        chosenCandidateID = 0;
+        chosenCandidateName = selectedRadioCandidate;
       }
-      chosenCandidateID = 0;
-      chosenCandidateName = selectedRadioCandidate;
     }
 
     try {
@@ -710,17 +650,15 @@ const ElectionManage = () => {
       pdf.setFontSize(12);
       pdf.setFont("helvetica", "normal");
       centerText(pdf, `${electionResult?.digitalSignature?.toString() ?? ''}`, yOffset, 12);
-      yOffset += 10;
+      yOffset += isMobile ? 13 : 10;
 
-      const imgWidth = 110;
-      const imgHeight = canvas.height * imgWidth / canvas.width; // Maintain aspect ratio
+      const imgWidth = isMobile ? 50 : 110;;
+      const imgHeight = (canvas.height / 3) * imgWidth / (canvas.width / 2)
       const xOffset = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
 
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+      pdf.save(isMobile ? `${electionID}-election-results-mobile.pdf` : `${electionID}-election-results.pdf`);
 
-      pdf.save(`${electionID}-election-results.pdf`);
-
-      // Restore original styles
       input.style.backgroundColor = originalStyles.backgroundColor;
       input.style.color = originalStyles.color;
 
@@ -731,23 +669,33 @@ const ElectionManage = () => {
   };
 
   const formatTimestamp = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp) * 1000); // Convert seconds to milliseconds
+    const date = new Date(Number(timestamp) * 1000);
     return date.toLocaleString('en-US', {
-      weekday: 'long', // "Monday"
-      year: 'numeric', // "2024"
-      month: 'long', // "July"
-      day: 'numeric', // "27"
-      hour: 'numeric', // "10"
-      minute: 'numeric', // "30"
-      second: 'numeric', // "00"
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
       hourCycle: 'h23'
     });
   };
 
+  useEffect(() => {
+    if (selectedElection) {
+      console.log("Debug Values:", {
+        totalCandidates: selectedElection.totalCandidates,
+        currentCandidatesLength: selectedElection.candidateIDs.length,
+        candidateIDs: selectedElection.candidateIDs
+      });
+    }
+  }, [selectedElection]);
+
+
   return (
     <>
       {isCheckingAccess ? (
-        // ✅ 1. Loading screen selama 2 detik sebelum cek akses
         <p className=" flex justify-center text-center font-medium text-white-600 mt-6">
           Memuat Data ...
         </p>
@@ -792,7 +740,7 @@ const ElectionManage = () => {
                   electionOverviewData.map((election, index) => (
                     <tr
                       key={index}
-                      onClick={() => handleManageClick(election.electionID, election.electionStatus)}
+                      onClick={() => handleElectionTable(election.electionID, election.electionStatus)}
                       className={selectedElection?.electionID === election.electionID ? "bg-accent" : ""}
                     >
                       <td className="py-2 px-4 border-b text-center text-sm md:text-md">
@@ -807,9 +755,9 @@ const ElectionManage = () => {
                       <td className="py-2 px-4 border-b text-center text-sm md:text-md">
                         {election.electionStatus !== "Pemilihan Selesai" && (
                           <button
-                            className="btn btn-primary btn-sm"
+                            className={`btn btn-sm ${election.electionStatus === "Sedang Berjalan" ? "btn-error" : "btn-primary"}`}
                             onClick={(e) =>
-                              handleButtonClick(e, election.electionID, election.electionStatus)
+                              handleElectionButtonClick(e, election.electionID, election.electionStatus)
                             }
                           >
                             {getElectionStatus(election.electionStatus)}
@@ -851,17 +799,19 @@ const ElectionManage = () => {
                     ))}
                   </ul>
                 </div>
-                {selectedElection?.electionStatus === "Dalam Persiapan" && selectedElection.electionMode === "Mode Kandidat Diketahui" && (
-                  <div className="flex justify-center items-center">
-                    <button
-                      onClick={() => setIsAddCandidateModalOpen(true)}
-                      className="btn btn-secondary p-21 mt-3"
-                    >
-                      Tambah Kandidat
-                    </button>
-                  </div>
-                )}
-
+                {selectedElection.electionStatus === "Dalam Persiapan" &&
+                  selectedElection.electionMode === "Mode Kandidat Diketahui" &&
+                  selectedElection.totalCandidates < selectedElection.candidateLimit &&
+                  (
+                    <div className="flex justify-center items-center">
+                      <button
+                        onClick={() => setIsAddCandidateModalOpen(true)}
+                        className="btn btn-secondary p-21 mt-3"
+                      >
+                        Tambah Kandidat
+                      </button>
+                    </div>
+                  )}
 
                 {/* Add Candidate Modal */}
                 {isAddCandidateModalOpen && (
@@ -889,16 +839,14 @@ const ElectionManage = () => {
                     </p>
                     <hr />
 
-
-
                     {/* Tampilkan Threshold */}
                     <div className="p-4 rounded-lg mt-4">
                       <h4 className="text-lg sm:text-lg font-bold text-center">Threshold Kandidat</h4>
                       <ul className="flex flex-row justify-center text-left mt-4">
                         {selectedElection.candidateNames.map((name, index) => {
                           const totalVotes = selectedElection.voteCounts.reduce((sum, votes) => sum + votes, 0);
-                          const threshold = totalVotes / selectedElection.candidateNames.length;
-                          const isAboveThreshold = selectedElection.voteCounts[index] >= threshold;
+                          const threshold = Math.ceil(totalVotes / selectedElection.candidateNames.length);
+                          const isAboveThreshold = selectedElection.voteCounts[index] > threshold;
 
                           return (
                             <li key={index} className="justify-center mr-4 mb-2">
@@ -918,9 +866,9 @@ const ElectionManage = () => {
                     </div>
 
                     {/* Voting UI */}
-                    {hasVotedCheck === undefined ? (
+                    {votedChecker === undefined ? (
                       <p className="text-center font-medium text-gray-600 mt-6">Memeriksa status suara...</p>
-                    ) : hasVotedCheck === false ? (
+                    ) : votedChecker === false ? (
                       <form onSubmit={handleVoteClick} className="mt-6">
                         {selectedElection.waveNumber === 1 ? (
                           selectedElection.electionMode === "Mode Kandidat Diketahui" ? (
@@ -968,9 +916,13 @@ const ElectionManage = () => {
                                 <label key={index} className="flex items-center mx-auto mb-2">
                                   <input
                                     type="radio"
-                                    value={name}
+                                    value={selectedElection.electionMode === "Mode Kandidat Diketahui"
+                                      ? index.toString()
+                                      : name}
                                     name="candidate"
-                                    checked={selectedRadioCandidate === name}
+                                    checked={selectedElection.electionMode === "Mode Kandidat Diketahui"
+                                      ? selectedRadioCandidate === index.toString()
+                                      : selectedRadioCandidate === name}
                                     onChange={(e) => setSelectedRadioCandidate(e.target.value)}
                                     className="radio radio-accent mr-2"
                                   />
@@ -985,9 +937,15 @@ const ElectionManage = () => {
                           <button type="submit" className="btn btn-primary">Pilih Sekarang</button>
                         </div>
 
-                        {selectedElection && selectedElection.voteCounts.some((count) => count > 1) && (
+                      </form>
+                    ) : (
+                      <div>
+                        <p className="text-center font-medium text-red-600 mt-6">
+                          Anda sudah memberikan suara dalam pemilihan ini.
+                        </p>
+                        {selectedElection && selectedElection.voteCounts.some((count) => count > 0) && (
                           <div className="flex flex-wrap justify-center items-center">
-                            <ResponsiveContainer width={isMobile ? "100%" : "60%"} height={isMobile ? 300 : 400}>
+                            <ResponsiveContainer width={isMobile ? "100%" : "40%"} height={isMobile ? 300 : 400}>
                               <BarChart
                                 data={selectedElection.candidateNames.map((name, index) => ({
                                   name: name,
@@ -1007,6 +965,7 @@ const ElectionManage = () => {
                                     position: "relative",
                                     marginTop: isMobile ? "15px" : "0",
                                     marginLeft: "40px",
+                                    marginBottom: isMobile ? "0" : "30px",
                                     textAlign: isMobile ? "center" : "inherit",
                                   }}
                                   align="center"
@@ -1015,19 +974,15 @@ const ElectionManage = () => {
                                 <Bar
                                   dataKey="votes"
                                   radius={5}
-                                  fill="#AF47D2"
-                                  barSize={isMobile ? 25 : 100}
+                                  fill="#7340FF"
+                                  barSize={isMobile ? 25 : 130}
                                 />
                               </BarChart>
                             </ResponsiveContainer>
                           </div>
                         )}
+                      </div>
 
-                      </form>
-                    ) : (
-                      <p className="text-center font-medium text-red-600 mt-6">
-                        Anda sudah memberikan suara dalam pemilihan ini.
-                      </p>
                     )}
 
                   </div>
@@ -1038,96 +993,88 @@ const ElectionManage = () => {
           }
 
 
-          {
-            electionResult && (
-              <div id="pdf-content" className="bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-2/3">
-                <h3 className="text-center text-xl font-bold mb-4">
-                  Hasil Pemilihan: {electionResult.electionName} - {electionResult.electionID}
-                </h3>
-                <p className="text-center text-lg font-regular mb-4">Jumlah Pemilih: {electionResult.totalVoter}</p>
-                <p className="text-center text-lg font-regular mb-4">Pemenang:</p>
-                <h2 className="text-center">{electionResult.electionWinner}</h2>
-                <br />
-                <h3 className="text-center font-bold font-lg">
-                  Waktu Mulai Pemilihan:
-                </h3>
-                <h3 className="text-center font-regular">
-                  {formatTimestamp(electionResult.startTime)}
-                </h3>
-                <h3 className="text-center font-bold font-lg">
-                  Waktu Selesai Pemilihan:
-                </h3>
-                <h3 className="text-center">
-                  {formatTimestamp(electionResult.endTime)}
-                </h3>
-                <br />
-                <h3 className="text-center text-lg font-medium">-Kandidat-</h3>
-                <div className="flex justify-center">
-                  <ul className="text-left mb-4">
-                    {electionResult.candidates.map((candidate, index) => (
-                      <li key={index} className="mb-2">
-                        <div>
-                          <span className="font-bold mr-2">No: {index + 1}</span>
-                          <span className="mr-4">{candidate.name}</span>
-                          <span className="text-left">Jumlah Suara: {candidate.voteCount}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <h3 className="text-center">
-                  Jumlah Gelombang : {electionResult.waveNumber}
-                </h3>
-                <br />
-                <h3 className="text-center">
-                  Ditanda tangani oleh :
-                  <br />
-                  {electionResult.signedBy}
-                </h3>
-                <br />
-                <h3 className="text-center font-bold font-lg">Tanda tangan Digital :</h3>
-                <h4 className="text-center font-medium overflow-x-auto">{(electionResult.digitalSignature)}</h4>
-                {/* {computedSignature && (
-              <div className="mt-4">
-                <h3 className="text-center font-bold font-lg">Computed Signature:</h3>
-                <h4 className="text-center font-medium">{computedSignature}</h4>
+          {electionResult && (
+            <div id="pdf-content" className={isMobile ? "bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-full" : "bg-base-300 rounded-lg shadow-lg mt-10 p-10 mx-auto w-2/3"}>
+              <h3 className="text-center text-xl font-bold mb-4">
+                Hasil Pemilihan: {electionResult.electionName} - {electionResult.electionID}
+              </h3>
+              <p className="text-center text-lg font-regular mb-4">Jumlah Pemilih: {electionResult.totalVoter}</p>
+              <p className="text-center text-lg font-regular mb-4">Pemenang:</p>
+              <h2 className="text-center">{electionResult.electionWinner}</h2>
+              <br />
+              <h3 className="text-center font-bold font-lg">
+                Waktu Mulai Pemilihan:
+              </h3>
+              <h3 className="text-center font-regular">
+                {formatTimestamp(electionResult.startTime)}
+              </h3>
+              <h3 className="text-center font-bold font-lg">
+                Waktu Selesai Pemilihan:
+              </h3>
+              <h3 className="text-center">
+                {formatTimestamp(electionResult.endTime)}
+              </h3>
+              <br />
+              <h3 className="text-center text-lg font-medium">-Kandidat-</h3>
+              <div className="flex justify-center">
+                <ul className="text-left mb-4">
+                  {electionResult.candidates.map((candidate, index) => (
+                    <li key={index} className="mb-2">
+                      <div>
+                        <span className="font-bold mr-2">No: {index + 1}</span>
+                        <span className="mr-4">{candidate.name}</span>
+                        <span className="text-left">Jumlah Suara: {candidate.voteCount}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )} */}
-                <div className="flex flex-col items-center">
-                  <ResponsiveContainer width={isMobile ? "80%" : "100%"} height={400}>
-                    <PieChart>
-                      <Pie
-                        data={electionResult.candidates.map(candidate => ({
-                          name: candidate.name,
-                          value: candidate.voteCount,
-                        }))}
-                        dataKey="value"
-                        outerRadius={isMobile ? 50 : 150}
-                        fill="#8884d8"
-                        label
-                      >
-                        {electionResult.candidates.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend
-                        layout="horizontal"
-                        align="center"
-                        verticalAlign="bottom"
-                        wrapperStyle={{ paddingTop: 10 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+              <h3 className="text-center">
+                Jumlah Gelombang : {electionResult.waveNumber}
+              </h3>
+              <br />
+              <h3 className="text-center">
+                Ditanda tangani oleh :
+                <br />
+                {electionResult.signedBy}
+              </h3>
+              <br />
+              <h3 className="text-center font-bold font-lg">Tanda tangan Digital :</h3>
+              <h4 className="text-center font-medium overflow-x-auto">{(electionResult.digitalSignature)}</h4>
+              <div className="flex flex-col items-center">
+                <ResponsiveContainer width={isMobile ? "80%" : "100%"} height={isMobile ? 300 : 400}>
+                  <PieChart>
+                    <Pie
+                      data={electionResult.candidates.map(candidate => ({
+                        name: candidate.name,
+                        value: candidate.voteCount,
+                      }))}
+                      dataKey="value"
+                      outerRadius={isMobile ? 50 : 150}
+                      fill="#8884d8"
+                      label
+                    >
+                      {electionResult.candidates.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend
+                      layout="horizontal"
+                      align="center"
+                      verticalAlign="bottom"
+                      wrapperStyle={{ paddingTop: 10 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
 
-                <div className="flex justify-center mt-4">
-                  <button id="save-pdf-button" onClick={saveAsPDF} className="bg-green-500 text-white px-4 py-2 rounded">
-                    <FontAwesomeIcon icon={faPrint} size="sm" />
-                  </button>
-                </div>
+              <div className="flex justify-center mt-4">
+                <button id="save-pdf-button" onClick={saveAsPDF} className="bg-green-500 text-white px-4 py-2 rounded">
+                  <FontAwesomeIcon icon={faPrint} size="sm" />
+                </button>
               </div>
-            )
-          }
+            </div>
+          )}
 
         </div >
       ) : (

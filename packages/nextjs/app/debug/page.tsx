@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import UnAuthorizedPage from "../votreXTokenAdmin/components/UnAuthorizedPage";
+import UnAuthorizedPage from "~~/components/MaintenancePage";
 import { DebugContracts } from "./_components/DebugContracts";
 import type { NextPage } from "next";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
 // import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const Debug: NextPage = () => {
   const { data: walletClient } = useWalletClient();
@@ -22,7 +23,11 @@ const Debug: NextPage = () => {
       setIsLoading(true);
       try {
         const currentAddress = await walletClient?.account.address;
-        if (currentAddress?.toLowerCase() === ADMIN_ADDRESS?.toLowerCase() || currentAddress === VOTER_ADDRESS) {
+        if (
+          currentAddress?.toLowerCase() === ADMIN_ADDRESS?.toLowerCase() ||
+          currentAddress === VOTER_ADDRESS ||
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+        ) {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
@@ -52,17 +57,19 @@ const Debug: NextPage = () => {
     return (
       <div>
         <UnAuthorizedPage />
+        <SpeedInsights />
         <ToastContainer />
       </div>
     );
   }
   return (
     <>
+      <SpeedInsights />
       <DebugContracts />
 
-      <div className="text-center mt-8 bg-secondary p-10">
+      <div className="text-center mt-8 bg-primary p-10">
         <h1 className="text-4xl my-0">Debug Contracts</h1>
-        <p className="text-neutral">
+        <p className="text-secondary">
           You can debug & interact with your deployed contracts here.
           <br /> Check{" "}
           <code className="italic bg-base-300 text-base font-bold [word-spacing:-0.5rem] px-1">

@@ -8,6 +8,7 @@ import { useWalletClient } from "wagmi";
 import { hexToAscii as originalHexToAscii, toNumber } from "web3-utils";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import "react-toastify/dist/ReactToastify.css";
+import { decryptBirthDate } from "~~/components/BirthDateHandler";
 
 const BasicOrgData = () => {
   const { data: walletClient } = useWalletClient();
@@ -15,8 +16,9 @@ const BasicOrgData = () => {
   const [orgID, setOrgID] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isCheckingAccess, setIsCheckingAccess] = useState(true); // ✅ Tambahkan state loading
-  const [countdown, setCountdown] = useState<number>(3); // Countdown for redirect
+  const [isCheckingAccess, setIsCheckingAccess] = useState(true);
+  const [countdown, setCountdown] = useState<number>(3);
+  const [isMobile, setIsMobile] = useState(false);
 
   const adminAddress = walletClient?.account.address;
 
@@ -36,7 +38,20 @@ const BasicOrgData = () => {
     return ascii.replace(/\0/g, "").trim();
   };
 
-  // ✅ Check if the stored OrgID matches the user's registered OrgIDs
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedOrgID = localStorage.getItem("orgID");
@@ -65,6 +80,11 @@ const BasicOrgData = () => {
         const orgData = orgDataFetch;
         const adminData = VotreXContract?.read.admin([adminAddress as Address]);
         const adminName = hexToAscii((await adminData)?.[6] as string);
+
+        const adminBirthDate = (await adminData)?.[7] as string;
+        const birthDate = decryptBirthDate(adminBirthDate);
+        const age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+
         const onPrepElection = orgData?.[2];
         const activeElection = orgData?.[3];
         const archiveElectionData = orgData?.[4];
@@ -77,6 +97,8 @@ const BasicOrgData = () => {
           orgID: orgData?.[7],
           totalMember: Number(orgData?.[5]),
           adminName: adminName,
+          adminBirthDate: birthDate,
+          adminAge: age,
           adminAddress: adminAddress,
           totalElection: toNumber(totalElectionData as bigint),
           onPrepElection: toNumber(orgData?.[2] as bigint),
@@ -128,9 +150,9 @@ const BasicOrgData = () => {
           Memeriksa hak akses...
         </p>
       ) : isAdmin === true && orgID ? (
-        <div className="flex flex-wrap justify-center w-full px-8">
-          <section className="section-1 m-3">
-            <div className="pt-8 bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col relative p-12">
+        <div className={isMobile ? "flex flex-col justify-center" : "flex flex-row justify-center gap-3 w-full"}>
+          <section className={isMobile ? "section-1 m-3" : "section-1 flex flex-1"}>
+            <div className="pt-8 bg-base-100 rounded-3xl shadow-md shadow-primary border border-base-300 flex flex-col relative p-12 w-3/4">
               <div className="p-6 bg-base-300 rounded-[22px] py-[0.65rem] shadow-lg shadow-base-300 flex items-center justify-center">
                 <h3 className="my-0 font-bold text-sm">Data Organisasi</h3>
               </div>
@@ -146,7 +168,8 @@ const BasicOrgData = () => {
                 )}
               </p>
               <p className="title-md">
-                ID Organisasi : <br />
+                ID Organisasi :
+                <br />
                 {data.orgID ? (
                   <>
                     {data.orgID}
@@ -168,8 +191,8 @@ const BasicOrgData = () => {
             </div>
           </section>
 
-          <section className="section-2 m-3 p-3">
-            <div className="pt-8 bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col relative p-12">
+          <section className={isMobile ? "section-2 m-3" : "section-2 flex flex-1"}>
+            <div className="pt-8 bg-base-100 rounded-3xl shadow-md shadow-primary border border-base-300 flex flex-col relative p-12 w-3/4">
               <div className="p-6 bg-base-300 rounded-[22px] py-[0.65rem] shadow-lg shadow-base-300 flex items-center justify-center">
                 <h3 className="my-0 font-bold text-sm">Data Admin</h3>
               </div>
@@ -195,11 +218,31 @@ const BasicOrgData = () => {
                   "Memuat Data..."
                 )}
               </p>
+              <p className="title-md">
+                Tanggal Lahir Admin: <br />
+                {data.adminBirthDate ? (
+                  <>
+                    {data.adminBirthDate.toLocaleDateString('id-ID')}
+                  </>
+                ) : (
+                  "Memuat Data..."
+                )}
+              </p>
+              <p className="title-md">
+                Umur Admin: <br />
+                {data.adminAge ? (
+                  <>
+                    {data.adminAge} tahun
+                  </>
+                ) : (
+                  "Memuat Data..."
+                )}
+              </p>
             </div>
           </section>
 
-          <section className="section-3 m-3">
-            <div className="pt-8 bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col relative p-12">
+          <section className={isMobile ? "section-3 m-3" : "section-3 flex flex-1"}>
+            <div className="pt-8 bg-base-100 rounded-3xl shadow-md shadow-primary border border-base-300 flex flex-col relative p-12 w-3/4">
               <div className="p-6 bg-base-300 rounded-[22px] py-[0.65rem] shadow-lg shadow-base-300 flex items-center justify-center">
                 <h3 className="my-0 font-bold text-sm">Data Jumlah Pemilihan</h3>
               </div>
@@ -259,12 +302,12 @@ const BasicOrgData = () => {
               </button>
               <br />
               <a className="btn btn-sm btn-primary" href="/dashboard/manageElection">
-                Atur Pemilihan
+                Kelola Pemilihan
               </a>
             </div>
           </section>
           <CreateElectionModal isOpen={isModalOpen} onClose={handleCloseModal} onCreate={handleCreateElection} />
-        </div>
+        </div >
       ) : (
         <p className="text-center text-red-600 font-bold">
           Akses Ditolak. Mengalihkan ke halaman login dalam

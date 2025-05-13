@@ -8,14 +8,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { Address } from "viem";
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const dashboard: NextPage = () => {
 
   const [isRegisteredUser, setIsRegisteredUser] = useState<boolean | null>(null);
   const [isVoter, setIsVoter] = useState<boolean | null>(null);
-  const [isCheckingAccess, setIsCheckingAccess] = useState(true); // ✅ Tambahkan state loading
+  const [isCheckingAccess, setIsCheckingAccess] = useState(true);
   const [orgID, setOrgID] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState<number>(3); // Countdown for redirect
+  const [countdown, setCountdown] = useState<number>(3);
 
   const { data: walletClient } = useWalletClient();
 
@@ -34,7 +36,6 @@ const dashboard: NextPage = () => {
     account: currentAddress,
   });
 
-  // ✅ Check if the stored OrgID matches the user's registered OrgIDs
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedOrgID = localStorage.getItem("orgID");
@@ -59,10 +60,9 @@ const dashboard: NextPage = () => {
   }, [orgDataFetch, userInfoCheck, currentAddress]);
 
   useEffect(() => {
-    // ✅ Increase checking delay to 3 seconds
     const timer = setTimeout(() => {
       setIsCheckingAccess(false);
-    }, 3000); // ⏳ Delay changed to 3 seconds
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -75,7 +75,7 @@ const dashboard: NextPage = () => {
       }, 1000);
 
       const timeout = setTimeout(() => {
-        window.location.href = "/login"; // ✅ Redirect to login page
+        window.location.href = "/login";
       }, 5000);
 
       return () => {
@@ -87,8 +87,8 @@ const dashboard: NextPage = () => {
 
   return (
     <>
+      <Analytics />
       {isCheckingAccess ? (
-        // ✅ 1. Loading screen selama 2 detik sebelum cek akses
         <p className="text-center font-medium text-white-600 mt-6">
           Memeriksa hak akses...
         </p>
@@ -96,6 +96,7 @@ const dashboard: NextPage = () => {
         <div>
           <ToastContainer />
           <VoterDashboard />
+          <SpeedInsights />
         </div>
       ) : isVoter === false && isRegisteredUser === true ? (
         <div className="flex flex-col items-center justify-center h-screen">

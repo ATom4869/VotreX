@@ -40,7 +40,6 @@ const AddCandidateModal: React.FC<AddCandidateModalProps> = ({ isOpen, onClose, 
                 }
             );
         } catch (error) {
-            toast.error(`Gagal menambahkan kandidat: ${error}`);
         }
     };
 

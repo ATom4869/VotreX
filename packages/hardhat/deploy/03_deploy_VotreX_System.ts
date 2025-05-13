@@ -22,20 +22,29 @@ const deployVotreXSystem: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   console.log("Deployed from address: ", `${deployer}`);
   const { deploy } = hre.deployments;
+  const  TIME_OFFSET = BigInt(Number(process.env.TIME_OFFSET));
 
-  await deploy("TestCompleXA2C", {
+  const dateTime = await deploy("UtilityLibrary", {
+    from: deployer,
+    log: true,
+  });
+
+  await deploy("VotreXSysA2", {
     from: deployer,
     // Contract constructor arguments
-    args: [],
+    args: [TIME_OFFSET],
     log: true,
+    libraries: {
+      DateTime: dateTime.address,
+    },
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
-    gasLimit: "5000000",
+    gasLimit: "5300000",
   });
 
   // Get the deployed contract to interact with it after deploying.
-  const VotreXSystem = await hre.ethers.getContract<Contract>("TestCompleXA2C", deployer);
+  const VotreXSystem = await hre.ethers.getContract<Contract>("VotreXSysA2", deployer);
   const VotreXSystemAddress = await VotreXSystem.getAddress();
   const OwnerName = await VotreXSystem.getOwnerName();
   const VotreXSystemStatus = await VotreXSystem.isVotreXActivated();
@@ -50,4 +59,4 @@ export default deployVotreXSystem;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployVotreXSystem.tags = ["TestCompleXA2C"];
+deployVotreXSystem.tags = ["VotreXSysA2"];

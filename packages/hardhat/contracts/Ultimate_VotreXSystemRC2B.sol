@@ -296,11 +296,6 @@ contract TestCompleXA2B{
         );
 
         require(
-            !UtilityLibrary.containsWhitespaceCheck(_orgID),
-            "spaces in Org ID not allowed"
-        );
-
-        require(
             keccak256(abi.encodePacked(admin[msg.sender].RegisteredOrgID1))
             !=
             keccak256(abi.encodePacked(_orgID))
@@ -935,4 +930,5 @@ contract TestCompleXA2B{
 
         return (orgIDHash);
     }
+    
 }

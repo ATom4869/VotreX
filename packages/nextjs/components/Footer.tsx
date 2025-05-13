@@ -10,9 +10,6 @@ import { Faucet } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useGlobalState } from "~~/services/store/store";
 
-/**
- * Site footer
- */
 export const Footer = () => {
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
   const { targetNetwork } = useTargetNetwork();
@@ -69,14 +66,8 @@ export const Footer = () => {
             </div>
             <span>·</span>
             <div className="flex justify-center items-center gap-2">
-              <Image alt="SE2 logo" className="cursor-pointer" width={12} height={12} src="/logo.svg" />
+              <Image alt="SE2 logo" className="cursor-pointer" width={12} height={12} src="/scaffold-logo.svg" />
               <a href="https://scaffold-eth-2-docs.vercel.app/" target="_blank" className="link">Powered by Scaffold-ETH</a>
-            </div>
-            <span>·</span>
-            <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Support
-              </a>
             </div>
           </div>
         </ul>

@@ -820,25 +820,43 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     TestCompleXA2C: {
-      address: "0x1CD12738d77B681c35b07a728AB1584D6846D6a6",
+      address: "0x3F24b69c0fB562F806adE84680CAF758b777C8fF",
       abi: [
         {
-          inputs: [],
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_timeOffset",
+              type: "uint256",
+            },
+          ],
           stateMutability: "nonpayable",
           type: "constructor",
         },
         {
-          inputs: [],
-          name: "CheckTokenETHBalance",
-          outputs: [
+          anonymous: false,
+          inputs: [
             {
+              indexed: true,
+              internalType: "bytes32",
+              name: "electionId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "candidateName",
+              type: "string",
+            },
+            {
+              indexed: false,
               internalType: "uint256",
-              name: "",
+              name: "voteCount",
               type: "uint256",
             },
           ],
-          stateMutability: "view",
-          type: "function",
+          name: "CandidateStored",
+          type: "event",
         },
         {
           inputs: [],
@@ -914,6 +932,11 @@ const deployedContracts = {
             {
               internalType: "bytes32",
               name: "adminName",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "userBirthDate",
               type: "bytes32",
             },
             {
@@ -1035,6 +1058,11 @@ const deployedContracts = {
               name: "waveNumber",
               type: "uint256",
             },
+            {
+              internalType: "bool",
+              name: "isTiedVoting",
+              type: "bool",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -1124,11 +1152,6 @@ const deployedContracts = {
               internalType: "bytes32",
               name: "_dataHash",
               type: "bytes32",
-            },
-            {
-              internalType: "bool",
-              name: "isSingleWaveOrFinalStage",
-              type: "bool",
             },
             {
               internalType: "uint256",
@@ -1265,6 +1288,11 @@ const deployedContracts = {
               internalType: "bool",
               name: "isHaveCandidateMode",
               type: "bool",
+            },
+            {
+              internalType: "uint8",
+              name: "candidateLimit",
+              type: "uint8",
             },
           ],
           stateMutability: "view",
@@ -1536,6 +1564,11 @@ const deployedContracts = {
               type: "string",
             },
             {
+              internalType: "bytes32",
+              name: "_userBirthDate",
+              type: "bytes32",
+            },
+            {
               internalType: "enum TestCompleXA2C.OrganizationType",
               name: "_orgType",
               type: "uint8",
@@ -1543,7 +1576,7 @@ const deployedContracts = {
           ],
           name: "registerOrganization",
           outputs: [],
-          stateMutability: "payable",
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -1557,6 +1590,11 @@ const deployedContracts = {
               internalType: "string",
               name: "_orgID",
               type: "string",
+            },
+            {
+              internalType: "bytes32",
+              name: "_userBirthDate",
+              type: "bytes32",
             },
             {
               internalType: "bytes32",
@@ -1580,6 +1618,40 @@ const deployedContracts = {
           name: "startElection",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "temporalCandidates",
+          outputs: [
+            {
+              internalType: "uint8",
+              name: "candidateID",
+              type: "uint8",
+            },
+            {
+              internalType: "uint256",
+              name: "candidateVoteCount",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "candidateName",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -1655,11 +1727,948 @@ const deployedContracts = {
               name: "RegisteredOrgID2",
               type: "string",
             },
+            {
+              internalType: "bytes32",
+              name: "userBirthDate",
+              type: "bytes32",
+            },
           ],
           stateMutability: "view",
           type: "function",
         },
       ],
+      inheritedFunctions: {},
+    },
+    UtilityLibrary: {
+      address: "0x7B0cbc3C732E0597c2BADb4e6563F2C27352c097",
+      abi: [],
+      inheritedFunctions: {},
+    },
+  },
+  31337: {
+    TestCompleXA2C: {
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_timeOffset",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "electionId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "candidateName",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "voteCount",
+              type: "uint256",
+            },
+          ],
+          name: "CandidateStored",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "VotreXOwnerName",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_candidateName",
+              type: "string",
+            },
+          ],
+          name: "addCandidateDetail",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "admin",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "isRegistered",
+              type: "bool",
+            },
+            {
+              internalType: "uint8",
+              name: "adminOrgCount",
+              type: "uint8",
+            },
+            {
+              internalType: "bytes10",
+              name: "AdminVoterIDOrg1",
+              type: "bytes10",
+            },
+            {
+              internalType: "bytes10",
+              name: "AdminVoterIDOrg2",
+              type: "bytes10",
+            },
+            {
+              internalType: "address",
+              name: "electionAdminAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "nextOrgCreationBlock",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes32",
+              name: "adminName",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "userBirthDate",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "RegisteredOrgID1",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "RegisteredOrgID2",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "changeSystemState",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_orgID",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_electionName",
+              type: "string",
+            },
+            {
+              internalType: "uint8",
+              name: "_candidateCount",
+              type: "uint8",
+            },
+            {
+              internalType: "bool",
+              name: "_isHaveCandidateMode",
+              type: "bool",
+            },
+          ],
+          name: "createElection",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "electionInfo",
+          outputs: [
+            {
+              internalType: "enum TestCompleXA2C.ElectionStatus",
+              name: "status",
+              type: "uint8",
+            },
+            {
+              internalType: "uint8",
+              name: "candidateList",
+              type: "uint8",
+            },
+            {
+              internalType: "bool",
+              name: "isFinished",
+              type: "bool",
+            },
+            {
+              internalType: "bool",
+              name: "isHaveCandidateMode",
+              type: "bool",
+            },
+            {
+              internalType: "bytes32",
+              name: "electionID",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "electionName",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "startTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "endTime",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "orgID",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "totalParticipants",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isTiedVoting",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "electionResults",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "isPruned",
+              type: "bool",
+            },
+            {
+              internalType: "address",
+              name: "adminAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "startTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "endTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "totalVoter",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes32",
+              name: "electionID",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "electionName",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "digitalSignature",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "registeredOrganization",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "electionWinner",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "signedBy",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+            {
+              internalType: "bytes32",
+              name: "_dataHash",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "_threshold",
+              type: "uint256",
+            },
+          ],
+          name: "finishElection",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "getAllCandidates",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint8",
+                  name: "candidateID",
+                  type: "uint8",
+                },
+                {
+                  internalType: "uint256",
+                  name: "candidateVoteCount",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "candidateName",
+                  type: "string",
+                },
+              ],
+              internalType: "struct TestCompleXA2C.CandidateDetail[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_electionID",
+              type: "string",
+            },
+          ],
+          name: "getCandidateResult",
+          outputs: [
+            {
+              internalType: "uint8[]",
+              name: "candidateID",
+              type: "uint8[]",
+            },
+            {
+              internalType: "string[]",
+              name: "candidateName",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "candidateVoteCount",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "getElectionInfo",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "electionID",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "electionName",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "waveNumber",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "totalCandidates",
+              type: "uint256",
+            },
+            {
+              internalType: "uint8[]",
+              name: "candidateIDs",
+              type: "uint8[]",
+            },
+            {
+              internalType: "string[]",
+              name: "candidateNames",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "voteCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256",
+              name: "totalParticipants",
+              type: "uint256",
+            },
+            {
+              internalType: "enum TestCompleXA2C.ElectionStatus",
+              name: "statusElection",
+              type: "uint8",
+            },
+            {
+              internalType: "bool",
+              name: "isHaveCandidateMode",
+              type: "bool",
+            },
+            {
+              internalType: "uint8",
+              name: "candidateLimit",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "orgID",
+              type: "string",
+            },
+          ],
+          name: "getElectionListInOrg",
+          outputs: [
+            {
+              internalType: "bytes32[]",
+              name: "",
+              type: "bytes32[]",
+            },
+            {
+              internalType: "bytes32[]",
+              name: "",
+              type: "bytes32[]",
+            },
+            {
+              internalType: "enum TestCompleXA2C.ElectionStatus[]",
+              name: "",
+              type: "uint8[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_orgID",
+              type: "string",
+            },
+          ],
+          name: "getOrgIDHash",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "pure",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getOwnerAddress",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getOwnerName",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getTotalOrganization",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getTotalUser",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getUserInfo",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "isRegistered",
+              type: "bool",
+            },
+            {
+              internalType: "bool",
+              name: "isAdmin",
+              type: "bool",
+            },
+            {
+              internalType: "address",
+              name: "userAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "userName",
+              type: "string",
+            },
+            {
+              internalType: "string[]",
+              name: "registeredOrgList",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "voterIDList",
+              type: "string[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "hasVoted",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "isVoterChecked",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "isVotreXActivated",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "organizationData",
+          outputs: [
+            {
+              internalType: "enum TestCompleXA2C.OrganizationType",
+              name: "orgType",
+              type: "uint8",
+            },
+            {
+              internalType: "address",
+              name: "electionAdminAddresses",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "onPreparationElectionCounter",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "activeElectionCounter",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "archivedElectionCounter",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "totalMembers",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes32",
+              name: "orgName",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "orgID",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_orgName",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_orgID",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_adminName",
+              type: "string",
+            },
+            {
+              internalType: "bytes32",
+              name: "_userBirthDate",
+              type: "bytes32",
+            },
+            {
+              internalType: "enum TestCompleXA2C.OrganizationType",
+              name: "_orgType",
+              type: "uint8",
+            },
+          ],
+          name: "registerOrganization",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_voterName",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_orgID",
+              type: "string",
+            },
+            {
+              internalType: "bytes32",
+              name: "_userBirthDate",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "uniqueVoterID",
+              type: "bytes32",
+            },
+          ],
+          name: "registerVoter",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+          ],
+          name: "startElection",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "temporalCandidates",
+          outputs: [
+            {
+              internalType: "uint8",
+              name: "candidateID",
+              type: "uint8",
+            },
+            {
+              internalType: "uint256",
+              name: "candidateVoteCount",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "candidateName",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userElectionID",
+              type: "string",
+            },
+            {
+              internalType: "uint8",
+              name: "candidateID",
+              type: "uint8",
+            },
+            {
+              internalType: "string",
+              name: "_candidateName",
+              type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "isModeHaveCandidate",
+              type: "bool",
+            },
+          ],
+          name: "vote",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "voters",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "isRegistered",
+              type: "bool",
+            },
+            {
+              internalType: "address",
+              name: "VoterAddress",
+              type: "address",
+            },
+            {
+              internalType: "bytes16",
+              name: "VoterIDOrg1",
+              type: "bytes16",
+            },
+            {
+              internalType: "bytes16",
+              name: "VoterIDOrg2",
+              type: "bytes16",
+            },
+            {
+              internalType: "string",
+              name: "VoterName",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "RegisteredOrgID1",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "RegisteredOrgID2",
+              type: "string",
+            },
+            {
+              internalType: "bytes32",
+              name: "userBirthDate",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {},
+    },
+    UtilityLibrary: {
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      abi: [],
       inheritedFunctions: {},
     },
   },

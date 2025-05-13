@@ -36,7 +36,7 @@ const nextConfig = {
       },
       {
         source: '/register',
-        destination: '/main/voter/registerPage', // Default to voter
+        destination: '/main/voter/registerPage',
       },
       {
         source: '/VotreXAdminPanel/:path*',
@@ -44,21 +44,21 @@ const nextConfig = {
       },
       {
         source: '/login',
-        destination: '/main/loginPage', // Default to voter
+        destination: '/main/loginPage',
       },
       {
-        source: '/dashboard/:path*', // Clean URL
+        source: '/dashboard/:path*', 
         has: [{ type: 'query', key: 'role', value: 'voter' }],
-        destination: '/main/voter/dashboard:path*', // Actual file path
+        destination: '/main/voter/dashboard:path*',
       },
       {
-        source: '/dashboard/:path*', // Clean URL
+        source: '/dashboard/:path*',
         has: [{ type: 'query', key: 'role', value: 'admin' }],
-        destination: '/main/electionAdmin/dashboard:path*', // Actual file path
+        destination: '/main/electionAdmin/dashboard:path*',
       },
       {
-        source: '/dashboard/manageElection:path*', // Clean URL
-        destination: '/main/electionAdmin/dashboard/electionManager:path*', // Actual file path
+        source: '/dashboard/manageElection:path*',
+        destination: '/main/electionAdmin/dashboard/electionManager:path*',
       },
     ];
   },

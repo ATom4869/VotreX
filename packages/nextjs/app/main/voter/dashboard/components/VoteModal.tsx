@@ -32,12 +32,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
     args: [electionID],
   });
 
-  const { data: allCandidatesData } = useScaffoldReadContract({
-    contractName: "TestCompleXA2C",
-    functionName: "getAllCandidates",
-    args: [electionID],
-  });
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -71,16 +65,18 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
           ] = electionData as unknown as [string, string, bigint, number, number[], string[], bigint[], bigint[], string, boolean];
 
           setWaveNumber(Number(waveNumber));
-          setIsHaveCandidateMode(modeFlag); // Store mode
-          console.log("Current Wave= " + waveNumber)
-          console.log("isHaveCandidateMode =", modeFlag);
-          console.log("Election Mode state =", isHaveCandidateMode);
+          setIsHaveCandidateMode(modeFlag);
 
           if (candidateNames.length > 0) {
             const fetchedCandidates = candidateIDs.map((id, index) => ({
               candidateID: id,
               candidateName: candidateNames[index],
             }));
+
+            // console.log("📦 CandidateIDs from contract:", candidateIDs);
+            // console.log("📦 CandidateNames from contract:", candidateNames);
+            // console.log("🧑 Final Candidates:", fetchedCandidates);
+
             setCandidates(fetchedCandidates);
           } else {
             setCandidates([]);
@@ -89,7 +85,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
           setCandidates([]);
         }
       } catch (error) {
-        console.error("Error fetching election data:", error);
       } finally {
         setLoading(false);
       }
@@ -108,33 +103,29 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
     }
 
     let chosenCandidateID: number | null = null;
-    let chosenCandidateName: string | null = null;
+    let chosenCandidateName: string = "";
 
     if (isHaveCandidateMode) {
-      // Mode: Predefined Candidates (isHaveCandidateMode === true)
       if (!selectedRadioCandidate) {
         toast.error("Pilih kandidat terlebih dahulu!");
         return;
       }
-      chosenCandidateID = parseInt(selectedRadioCandidate, 10);
+      chosenCandidateID = Number(selectedRadioCandidate);
       chosenCandidateName = "";
     } else {
-      // Mode: Write-in Candidates (isHaveCandidateMode === false)
       if (waveNumber === 1) {
-        // Wave 1: User inputs candidate name
         if (!candidateName.trim()) {
           toast.error("Masukkan nama kandidat!");
           return;
         }
-        chosenCandidateID = 0; // Always 0 for new candidates
+        chosenCandidateID = 0;
         chosenCandidateName = candidateName.trim();
       } else {
-        // Wave 2+: User selects from existing candidates
         if (!selectedRadioCandidate) {
           toast.error("Pilih kandidat terlebih dahulu!");
           return;
         }
-        chosenCandidateID = 0; // Still use ID = 0 for write-in voting
+        chosenCandidateID = 0;
         chosenCandidateName = selectedRadioCandidate;
       }
     }
@@ -151,10 +142,8 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
             const gasUsedData = txnReceipt.cumulativeGasUsed
             const gasPriceData = txnReceipt.effectiveGasPrice
             const gasCostWei = gasUsedData * gasPriceData
-            // Convert from Wei to ETH
             const gasCostETH = Number(gasCostWei) / 1e18;
 
-            // Format to 6 decimal places for better readability
             const formattedGasCost = gasCostETH.toFixed(6);
             toast.success(`Berhasil memilih: ${chosenCandidateName || "Candidate ID: " + chosenCandidateID}, Gas Used: ${formattedGasCost} ETH`, {
               autoClose: 1500,
@@ -168,7 +157,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
         }
       );
     } catch (error: any) {
-      // toast.error(`Gagal memilih: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -193,9 +181,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
           {/* Conditional Rendering for Voting Mode */}
           {
             isHaveCandidateMode === true ? (
-              // This will be true when isHaveCandidateMode is true
               waveNumber === 1 ? (
-                // Wave 1: Show radio buttons for all candidates
                 <div>
                   <label className="flex justify-center mb-2 font-medium items-center justify-content text-center">
                     Pilih Salah Satu Kandidat:
@@ -215,7 +201,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                   ))}
                 </div>
               ) : (
-                // Wave 2 and beyond: Show radio buttons again
                 <div className="flex flex-col">
                   <label className="text-center font-medium mb-2">Pilih Salah Satu Kandidat:</label>
                   {candidates.length > 0 ? (
@@ -223,10 +208,13 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                       <label key={index} className="flex items-center mb-2 mx-auto">
                         <input
                           type="radio"
-                          value={candidate.candidateName}
+                          value={candidate.candidateID.toString()}
                           name="candidate"
-                          checked={selectedRadioCandidate === candidate.candidateName}
-                          onChange={e => setSelectedRadioCandidate(e.target.value)}
+                          checked={selectedRadioCandidate === candidate.candidateID.toString()}
+                          onChange={e => {
+                            console.log("✅ Selected Candidate ID:", e.target.value);
+                            setSelectedRadioCandidate(e.target.value);
+                          }}
                           className="radio radio-info mr-4"
                         />
                         <span>{candidate.candidateName}</span>
@@ -238,9 +226,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                 </div>
               )
             ) : (
-              // This will be true when isHaveCandidateMode is false
               waveNumber === 1 ? (
-                // Wave 1: Show input form for adding candidate name
                 <div className="flex flex-col justify-center">
                   <label className="block text-center font-medium mb-1">Masukkan Nama Kandidat:</label>
                   <input
@@ -252,7 +238,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, electionID }) =>
                   />
                 </div>
               ) : (
-                // Wave 2 and beyond: Show radio buttons for candidates
                 <div className="flex flex-col">
                   <label className="text-center font-medium mb-2">Pilih Salah Satu Kandidat:</label>
                   {candidates.length > 0 ? (
